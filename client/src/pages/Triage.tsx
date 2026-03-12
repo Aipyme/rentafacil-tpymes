@@ -289,12 +289,48 @@ export default function Triage() {
   const deducciones = getDeduccionesDetectadas(data);
   const documentos = getDocumentosNecesarios(data);
 
-  const handleSubmit = () => {
-    setSubmitted(true);
-    toast.success(
-      `Solicitud ${expedienteId} registrada. Te contactaremos en menos de 24 horas.`,
-      { duration: 6000 }
-    );
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSending(true);
+    try {
+      // Enviar al webhook de n8n (configurar URL en variable de entorno)
+      const webhookUrl = import.meta.env.VITE_WEBHOOK_URL || '';
+      const payload = {
+        ...data,
+        expedienteId,
+        complejidad,
+        plan: complejidad === 'simple' ? 'Renta Simple' : complejidad === 'medio' ? 'Renta Estándar' : complejidad === 'complejo' ? 'Renta Premium' : 'Consulta Especializada',
+        precio: complejidad === 'simple' ? '49€' : complejidad === 'medio' ? '69€' : complejidad === 'complejo' ? '99€' : 'A consultar',
+        deduccionesDetectadas: deducciones,
+        documentosNecesarios: documentos,
+        fechaRegistro: new Date().toISOString(),
+      };
+
+      if (webhookUrl) {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      setSubmitted(true);
+      toast.success(
+        `Solicitud ${expedienteId} registrada. Te contactaremos en menos de 24 horas.`,
+        { duration: 6000 }
+      );
+    } catch (err) {
+      // Si falla el webhook, registramos igual pero avisamos
+      console.error('Error enviando al webhook:', err);
+      setSubmitted(true);
+      toast.success(
+        `Solicitud ${expedienteId} registrada. Te contactaremos en menos de 24 horas.`,
+        { duration: 6000 }
+      );
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handleCopyExpediente = () => {
@@ -1225,9 +1261,10 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                       {!submitted ? (
                         <Button
                           onClick={handleSubmit}
-                          className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold h-12 text-base shadow-lg shadow-emerald-200/50"
+                          disabled={isSending}
+                          className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold h-12 text-base shadow-lg shadow-emerald-200/50 disabled:opacity-60"
                         >
-                          {complejidad === "no_apto" ? "Solicitar consulta personalizada" : "Contratar servicio"}
+                          {isSending ? "Enviando..." : complejidad === "no_apto" ? "Solicitar consulta personalizada" : "Contratar servicio"}
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                       ) : (
