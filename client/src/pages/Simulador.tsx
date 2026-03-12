@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { useSimuladorFiscal } from "@/hooks/useSimuladorFiscal";
+import { useSimuladorFiscal, type ComunidadAutonoma } from "@/hooks/useSimuladorFiscal";
 import {
   Calculator, ArrowRight, ArrowLeft, TrendingUp, TrendingDown,
   Shield, CheckCircle2, AlertCircle, Info
@@ -167,6 +167,43 @@ export default function Simulador() {
                               />
                             </div>
                           )}
+
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                              Comunidad Autónoma
+                            </Label>
+                            <Select
+                              value={datos.comunidadAutonoma}
+                              onValueChange={(v) => updateDatos({ comunidadAutonoma: v as ComunidadAutonoma })}
+                            >
+                              <SelectTrigger className="h-11">
+                                <SelectValue placeholder="Selecciona tu comunidad" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="default">Otra / No lo sé</SelectItem>
+                                <SelectItem value="andalucia">Andalucía</SelectItem>
+                                <SelectItem value="aragon">Aragón</SelectItem>
+                                <SelectItem value="asturias">Asturias</SelectItem>
+                                <SelectItem value="baleares">Islas Baleares</SelectItem>
+                                <SelectItem value="canarias">Canarias</SelectItem>
+                                <SelectItem value="cantabria">Cantabria</SelectItem>
+                                <SelectItem value="castilla_leon">Castilla y León</SelectItem>
+                                <SelectItem value="castilla_la_mancha">Castilla-La Mancha</SelectItem>
+                                <SelectItem value="cataluna">Cataluña</SelectItem>
+                                <SelectItem value="extremadura">Extremadura</SelectItem>
+                                <SelectItem value="galicia">Galicia</SelectItem>
+                                <SelectItem value="la_rioja">La Rioja</SelectItem>
+                                <SelectItem value="madrid">Madrid</SelectItem>
+                                <SelectItem value="murcia">Murcia</SelectItem>
+                                <SelectItem value="navarra">Navarra</SelectItem>
+                                <SelectItem value="pais_vasco">País Vasco</SelectItem>
+                                <SelectItem value="valencia">Comunidad Valenciana</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <p className="text-xs text-gray-400 mt-1">
+                              Los tramos autonómicos varían por comunidad. Afecta al resultado final.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -367,6 +404,90 @@ export default function Simulador() {
                               Primeros 250€: 80% deducción. Resto: 40%.
                             </p>
                           </div>
+
+                          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700">
+                                Familia numerosa
+                              </Label>
+                              <p className="text-xs text-gray-400">General (1.200€) o Especial (2.400€)</p>
+                            </div>
+                            <Switch
+                              checked={datos.esFamiliaNumerosa}
+                              onCheckedChange={(v) => updateDatos({ esFamiliaNumerosa: v, familiaNumerosaCategoria: v ? "general" : "ninguna" })}
+                            />
+                          </div>
+
+                          {datos.esFamiliaNumerosa && (
+                            <Select
+                              value={datos.familiaNumerosaCategoria}
+                              onValueChange={(v: any) => updateDatos({ familiaNumerosaCategoria: v })}
+                            >
+                              <SelectTrigger className="h-11">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="general">General (3-4 hijos) — 1.200€</SelectItem>
+                                <SelectItem value="especial">Especial (5+ hijos) — 2.400€</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+
+                          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700">
+                                Vehículo eléctrico (novedad 2025)
+                              </Label>
+                              <p className="text-xs text-gray-400">15% del valor, máx. 20.000€</p>
+                            </div>
+                            <Switch
+                              checked={datos.tieneVehiculoElectrico}
+                              onCheckedChange={(v) => updateDatos({ tieneVehiculoElectrico: v })}
+                            />
+                          </div>
+
+                          {datos.tieneVehiculoElectrico && (
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                                Valor del vehículo eléctrico (€)
+                              </Label>
+                              <Input
+                                type="number"
+                                value={datos.valorVehiculoElectrico || ""}
+                                onChange={(e) => updateDatos({ valorVehiculoElectrico: Number(e.target.value) })}
+                                placeholder="20000"
+                                className="h-11"
+                              />
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700">
+                                Obras de eficiencia energética
+                              </Label>
+                              <p className="text-xs text-gray-400">20% del importe, máx. 5.000€</p>
+                            </div>
+                            <Switch
+                              checked={datos.obraEficienciaEnergetica}
+                              onCheckedChange={(v) => updateDatos({ obraEficienciaEnergetica: v })}
+                            />
+                          </div>
+
+                          {datos.obraEficienciaEnergetica && (
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                                Importe de las obras (€)
+                              </Label>
+                              <Input
+                                type="number"
+                                value={datos.importeObraEficiencia || ""}
+                                onChange={(e) => updateDatos({ importeObraEficiencia: Number(e.target.value) })}
+                                placeholder="5000"
+                                className="h-11"
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -418,7 +539,9 @@ export default function Simulador() {
                           {[
                             { label: "Base imponible", value: formatEur(resultado.baseImponible) },
                             { label: "Mínimo personal y familiar", value: formatEur(resultado.minimoPersonalFamiliar) },
-                            { label: "Cuota íntegra", value: formatEur(resultado.cuotaIntegra) },
+                            { label: "Cuota estatal", value: formatEur(resultado.cuotaEstatal) },
+                            { label: "Cuota autonómica", value: formatEur(resultado.cuotaAutonomica) },
+                            { label: "Cuota íntegra total", value: formatEur(resultado.cuotaIntegra) },
                             { label: "Deducciones aplicadas", value: `- ${formatEur(resultado.deducciones)}` },
                             { label: "Cuota líquida", value: formatEur(resultado.cuotaLiquida) },
                             { label: "Retenciones practicadas", value: formatEur(resultado.retenciones) },
