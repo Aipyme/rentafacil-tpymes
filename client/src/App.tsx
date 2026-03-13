@@ -9,6 +9,9 @@ import Simulador from "./pages/Simulador";
 import Triage from "./pages/Triage";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
+import AvisoLegal from "./pages/AvisoLegal";
+import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
+import PoliticaCookies from "./pages/PoliticaCookies";
 import WhatsAppButton from "./components/WhatsAppButton";
 
 function Router() {
@@ -19,6 +22,9 @@ function Router() {
       <Route path={"/empezar"} component={Triage} />
       <Route path={"/blog"} component={Blog} />
       <Route path={"/blog/:slug"} component={BlogArticle} />
+      <Route path={"/aviso-legal"} component={AvisoLegal} />
+      <Route path={"/privacidad"} component={PoliticaPrivacidad} />
+      <Route path={"/cookies"} component={PoliticaCookies} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

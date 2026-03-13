@@ -53,6 +53,11 @@ export default function Footer() {
                   Cómo funciona
                 </a>
               </li>
+              <li>
+                <Link href="/blog" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
+                  Blog fiscal
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -63,19 +68,19 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5">
               <li>
-                <a href="#" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
+                <Link href="/aviso-legal" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
                   Aviso legal
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
+                <Link href="/privacidad" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
                   Política de privacidad
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
-                  Cookies
-                </a>
+                <Link href="/cookies" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
+                  Política de cookies
+                </Link>
               </li>
             </ul>
           </div>
