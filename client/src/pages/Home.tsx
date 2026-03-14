@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import {
   Shield, Clock, Users, TrendingUp, CheckCircle2,
   ArrowRight, Calculator, FileText, UserCheck, Zap,
-  Phone, Mail, ChevronRight
+  Phone, Mail, ChevronRight, MapPin
 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
@@ -118,8 +118,7 @@ export default function Home() {
                 <Link href="/empezar">
                   <Button
                     size="lg"
-                    variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10 font-semibold px-8 h-12 text-base w-full sm:w-auto"
+                    className="bg-white/15 backdrop-blur-sm border border-white/25 text-white hover:bg-white/25 font-semibold px-8 h-12 text-base w-full sm:w-auto transition-all"
                   >
                     Hacer mi renta
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -455,6 +454,100 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== TU COMUNIDAD ===== */}
+      <section className="py-16 lg:py-24 bg-white">
+        <div className="container">
+          <FadeUp>
+            <div className="text-center mb-12 lg:mb-16">
+              <span className="inline-block text-xs font-semibold text-[#059669] uppercase tracking-widest mb-3">
+                Tu comunidad
+              </span>
+              <h2 className="font-['DM_Sans'] text-3xl lg:text-4xl font-bold text-[#1a365d] mb-4">
+                Expertos en la normativa de tu comunidad
+              </h2>
+              <p className="text-gray-500 max-w-2xl mx-auto">
+                Cada comunidad autónoma tiene sus propias deducciones y tramos fiscales.
+                Nuestros asesores conocen las particularidades de cada una.
+              </p>
+            </div>
+          </FadeUp>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                name: "Andalucía",
+                href: "/andalucia",
+                deducciones: 8,
+                destacado: "Hasta 600€ por alquiler",
+                color: "from-yellow-400 to-orange-500",
+                iconBg: "bg-yellow-50",
+                iconColor: "text-yellow-600",
+              },
+              {
+                name: "Comunidad de Madrid",
+                href: "/madrid",
+                deducciones: 8,
+                destacado: "Tipos más bajos de España",
+                color: "from-red-400 to-red-600",
+                iconBg: "bg-red-50",
+                iconColor: "text-red-600",
+              },
+              {
+                name: "Catalunya",
+                href: "/cataluna",
+                deducciones: 8,
+                destacado: "Hasta 6.000€ ángel inversor",
+                color: "from-amber-400 to-red-500",
+                iconBg: "bg-amber-50",
+                iconColor: "text-amber-600",
+              },
+              {
+                name: "Comunitat Valenciana",
+                href: "/valencia",
+                deducciones: 8,
+                destacado: "Hasta 800€ por tercer hijo",
+                color: "from-orange-400 to-orange-600",
+                iconBg: "bg-orange-50",
+                iconColor: "text-orange-600",
+              },
+            ].map((region, i) => (
+              <FadeUp key={i} delay={i * 0.1}>
+                <Link href={region.href}>
+                  <Card className="border-0 shadow-lg shadow-gray-200/50 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer h-full bg-white group overflow-hidden">
+                    {/* Gradient top bar */}
+                    <div className={`h-1.5 bg-gradient-to-r ${region.color}`} />
+                    <CardContent className="p-6">
+                      <div className={`w-10 h-10 rounded-lg ${region.iconBg} flex items-center justify-center mb-4`}>
+                        <MapPin className={`w-5 h-5 ${region.iconColor}`} />
+                      </div>
+                      <h3 className="font-['DM_Sans'] font-bold text-[#1a365d] text-lg mb-1 group-hover:text-[#059669] transition-colors">
+                        {region.name}
+                      </h3>
+                      <p className="text-xs text-gray-400 mb-3">
+                        {region.deducciones} deducciones autonómicas
+                      </p>
+                      <p className="text-sm text-[#059669] font-medium mb-4">
+                        {region.destacado}
+                      </p>
+                      <span className="inline-flex items-center text-xs font-semibold text-[#1a365d] group-hover:text-[#059669] transition-colors">
+                        Ver deducciones y tramos
+                        <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
+                      </span>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </FadeUp>
+            ))}
+          </div>
+
+          <FadeUp delay={0.4}>
+            <p className="text-center text-sm text-gray-400 mt-8">
+              Próximamente: País Vasco, Galicia, Canarias y más comunidades.
+            </p>
+          </FadeUp>
+        </div>
+      </section>
+
       {/* ===== CTA FINAL ===== */}
       <section className="py-16 lg:py-24 bg-[#1a365d] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -483,8 +576,7 @@ export default function Home() {
               <Link href="/empezar">
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10 font-semibold px-10 h-13 text-base w-full sm:w-auto"
+                  className="bg-white/15 backdrop-blur-sm border border-white/25 text-white hover:bg-white/25 font-semibold px-10 h-13 text-base w-full sm:w-auto transition-all"
                 >
                   Contratar servicio
                 </Button>
