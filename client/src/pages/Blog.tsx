@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { Calendar, Clock, ArrowRight, Search, Tag } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 
 export interface BlogPost {
   slug: string;
@@ -98,6 +99,11 @@ export const BLOG_POSTS: BlogPost[] = [
 const CATEGORIES = ["Todos", "Deducciones", "Obligaciones", "Situaciones", "Consejos"];
 
 export default function Blog() {
+  useSEO({
+    title: "Blog Fiscal — Guías y Consejos para tu Renta 2025",
+    description: "Artículos y guías prácticas sobre la declaración de la renta 2025: deducciones, obligaciones, errores comunes y cómo ahorrar en tu IRPF.",
+    canonical: "/blog",
+  });
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Todos");
 

@@ -7,8 +7,15 @@ import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Scale, ArrowLeft } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function AvisoLegal() {
+  useSEO({
+    title: "Aviso Legal",
+    description: "Aviso legal e información sobre el titular del sitio web Renta Fácil TPymes, conforme a la Ley 34/2002 de Servicios de la Sociedad de la Información (LSSI-CE).",
+    canonical: "/aviso-legal",
+    noindex: true,
+  });
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f5f2]">
       <Navbar />

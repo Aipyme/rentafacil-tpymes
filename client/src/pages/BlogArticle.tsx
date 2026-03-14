@@ -10,6 +10,7 @@ import { BLOG_POSTS } from "./Blog";
 import { Calendar, Clock, ArrowLeft, ArrowRight, Tag, Share2, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useSEO } from "@/hooks/useSEO";
 
 // Contenido completo de cada artículo
 const ARTICLE_CONTENT: Record<string, string> = {
@@ -338,6 +339,14 @@ export default function BlogArticle() {
   const slug = params.slug || "";
   const post = BLOG_POSTS.find((p) => p.slug === slug);
   const content = ARTICLE_CONTENT[slug] || "";
+
+  useSEO({
+    title: post?.title || "Artículo no encontrado",
+    description: post?.excerpt || "Artículo del blog fiscal de Renta Fácil TPymes.",
+    canonical: `/blog/${slug}`,
+    ogType: "article",
+    ogImage: post?.image,
+  });
 
   if (!post) {
     return (

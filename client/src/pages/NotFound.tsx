@@ -2,8 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, Home } from "lucide-react";
 import { useLocation } from "wouter";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function NotFound() {
+  useSEO({
+    title: "Página no encontrada",
+    description: "La página que buscas no existe o ha sido movida.",
+    noindex: true,
+  });
   const [, setLocation] = useLocation();
 
   const handleGoHome = () => {

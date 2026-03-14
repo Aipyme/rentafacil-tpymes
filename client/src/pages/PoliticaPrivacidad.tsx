@@ -7,8 +7,15 @@ import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function PoliticaPrivacidad() {
+  useSEO({
+    title: "Política de Privacidad",
+    description: "Política de privacidad de Renta Fácil TPymes. Información sobre el tratamiento de datos personales conforme al RGPD y la LOPD-GDD.",
+    canonical: "/privacidad",
+    noindex: true,
+  });
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f5f2]">
       <Navbar />

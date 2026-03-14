@@ -15,6 +15,7 @@ import {
   Phone, Mail, ChevronRight
 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 
 function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
   const [display, setDisplay] = useState(0);
@@ -58,6 +59,11 @@ function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 }
 
 export default function Home() {
+  useSEO({
+    title: "Renta Fácil TPymes — Haz tu declaración de la renta sin complicaciones",
+    description: "Descubre en 2 minutos cuánto te devuelve Hacienda. Simulador gratuito de IRPF 2025 + gestión completa de tu declaración con el respaldo de más de 600 profesionales de Ayuda T Pymes.",
+    canonical: "/",
+  });
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

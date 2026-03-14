@@ -20,6 +20,7 @@ import {
   Shield, CheckCircle2, AlertCircle, Info
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 
 const STEPS = [
   { id: 1, title: "Ingresos", desc: "Tus rendimientos del trabajo" },
@@ -29,6 +30,11 @@ const STEPS = [
 ];
 
 export default function Simulador() {
+  useSEO({
+    title: "Simulador de Renta IRPF 2025 Gratuito",
+    description: "Calcula gratis cuánto te devuelve o te sale a pagar en la declaración de la renta 2025. Simulador con tramos estatales y autonómicos actualizados, deducciones y mínimos personales.",
+    canonical: "/simulador",
+  });
   const [step, setStep] = useState(1);
   const { datos, resultado, updateDatos } = useSimuladorFiscal();
 

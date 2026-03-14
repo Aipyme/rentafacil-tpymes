@@ -7,6 +7,7 @@ import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Cookie, ArrowLeft } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 const COOKIES_TECNICAS = [
   { name: "cookie_consent", purpose: "Almacena la preferencia de cookies del usuario", duration: "1 año", owner: "Propia" },
@@ -47,6 +48,12 @@ function CookieTable({ cookies }: { cookies: typeof COOKIES_TECNICAS }) {
 }
 
 export default function PoliticaCookies() {
+  useSEO({
+    title: "Política de Cookies",
+    description: "Política de cookies de Renta Fácil TPymes. Información sobre las cookies utilizadas, su finalidad y cómo gestionarlas.",
+    canonical: "/cookies",
+    noindex: true,
+  });
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f5f2]">
       <Navbar />
