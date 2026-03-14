@@ -14,6 +14,9 @@ import PoliticaCookies from "@/pages/PoliticaCookies";
 import NotFound from "@/pages/NotFound";
 import DemoAlfredo from "@/pages/DemoAlfredo";
 import Andalucia from "@/pages/Andalucia";
+import Madrid from "@/pages/Madrid";
+import Cataluna from "@/pages/Cataluna";
+import Valencia from "@/pages/Valencia";
 
 function AppRouter() {
   return (
@@ -28,6 +31,9 @@ function AppRouter() {
       <Route path="/cookies" component={PoliticaCookies} />
       <Route path="/demo-alfredo" component={DemoAlfredo} />
       <Route path="/andalucia" component={Andalucia} />
+      <Route path="/madrid" component={Madrid} />
+      <Route path="/cataluna" component={Cataluna} />
+      <Route path="/valencia" component={Valencia} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
