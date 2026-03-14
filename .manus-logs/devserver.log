@@ -1,0 +1,653 @@
+[2026-03-12T15:22:54.771Z] Starting dev server with command: pnpm run dev
+[2026-03-12T15:22:55.880Z] 
+[2026-03-12T15:22:55.881Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-12T15:22:55.882Z] > vite --host
+[2026-03-12T15:22:55.882Z] 
+[2026-03-12T15:22:57.078Z] 
+[2026-03-12T15:22:57.078Z] VITE v7.1.9  ready in 1155 ms
+[2026-03-12T15:22:57.079Z] 
+[2026-03-12T15:22:57.079Z] ➜  Local:   http://localhost:3000/
+[2026-03-12T15:22:57.080Z] ➜  Network: http://169.254.0.21:3000/
+[2026-03-12T15:28:24.726Z] 11:28:24 AM [vite] (client) page reload index.html
+[2026-03-12T15:44:34.378Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-12T15:44:34.670Z] 11:44:34 AM [vite] (client) Pre-transform error: Failed to resolve import "./pages/Triage" from "client/src/App.tsx". Does the file exist?
+[2026-03-12T15:44:34.671Z] Plugin: vite:import-analysis
+[2026-03-12T15:44:34.672Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:9:19
+[2026-03-12T15:44:34.672Z] 8  |  import Home from "./pages/Home";
+[2026-03-12T15:44:34.673Z] 9  |  import Simulador from "./pages/Simulador";
+[2026-03-12T15:44:34.673Z] 10 |  import Triage from "./pages/Triage";
+[2026-03-12T15:44:34.673Z] |                      ^
+[2026-03-12T15:44:34.674Z] 11 |  function Router() {
+[2026-03-12T15:44:34.674Z] 12 |    return /* @__PURE__ */ jsxDEV(Switch, { "data-loc": "client/src/App.tsx:13", children: [
+[2026-03-12T15:44:35.493Z] 11:44:35 AM [vite] Internal server error: Failed to resolve import "./pages/Triage" from "client/src/App.tsx". Does the file exist?
+[2026-03-12T15:44:35.494Z] Plugin: vite:import-analysis
+[2026-03-12T15:44:35.494Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:9:19
+[2026-03-12T15:44:35.494Z] 8  |  import Home from "./pages/Home";
+[2026-03-12T15:44:35.495Z] 9  |  import Simulador from "./pages/Simulador";
+[2026-03-12T15:44:35.495Z] 10 |  import Triage from "./pages/Triage";
+[2026-03-12T15:44:35.495Z] |                      ^
+[2026-03-12T15:44:35.496Z] 11 |  function Router() {
+[2026-03-12T15:44:35.496Z] 12 |    return /* @__PURE__ */ jsxDEV(Switch, { "data-loc": "client/src/App.tsx:13", children: [
+[2026-03-12T15:44:35.496Z] at TransformPluginContext._formatLog (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:31219:43)
+[2026-03-12T15:44:35.497Z] at TransformPluginContext.error (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:31216:14)
+[2026-03-12T15:44:35.497Z] at normalizeUrl (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:29699:18)
+[2026-03-12T15:44:35.497Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-12T15:44:35.498Z] at async file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:29757:32
+[2026-03-12T15:44:35.498Z] at async Promise.all (index 9)
+[2026-03-12T15:44:35.498Z] at async TransformPluginContext.transform (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:29725:4)
+[2026-03-12T15:44:35.498Z] at async EnvironmentPluginContainer.transform (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:31018:14)
+[2026-03-12T15:44:35.499Z] at async loadAndTransform (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:26143:26)
+[2026-03-12T15:44:35.499Z] at async viteTransformMiddleware (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:27221:20)
+[2026-03-12T15:44:39.103Z] 11:44:39 AM [vite] (client) ✨ new dependencies optimized: framer-motion, @radix-ui/react-label, @radix-ui/react-switch, @radix-ui/react-radio-group, @radix-ui/react-select, @radix-ui/react-dialog
+[2026-03-12T15:44:39.110Z] 11:44:39 AM [vite] (client) ✨ optimized dependencies changed. reloading
+[2026-03-12T15:44:39.308Z] 11:44:39 AM [vite] (client) Pre-transform error: Failed to resolve import "./pages/Triage" from "client/src/App.tsx". Does the file exist?
+[2026-03-12T15:44:39.309Z] Plugin: vite:import-analysis
+[2026-03-12T15:44:39.310Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:9:19
+[2026-03-12T15:44:39.310Z] 8  |  import Home from "./pages/Home";
+[2026-03-12T15:44:39.311Z] 9  |  import Simulador from "./pages/Simulador";
+[2026-03-12T15:44:39.311Z] 10 |  import Triage from "./pages/Triage";
+[2026-03-12T15:44:39.312Z] |                      ^
+[2026-03-12T15:44:39.312Z] 11 |  function Router() {
+[2026-03-12T15:44:39.313Z] 12 |    return /* @__PURE__ */ jsxDEV(Switch, { "data-loc": "client/src/App.tsx:13", children: [
+[2026-03-12T15:44:39.708Z] 11:44:39 AM [vite] Internal server error: Failed to resolve import "./pages/Triage" from "client/src/App.tsx". Does the file exist?
+[2026-03-12T15:44:39.709Z] Plugin: vite:import-analysis
+[2026-03-12T15:44:39.710Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:9:19
+[2026-03-12T15:44:39.710Z] 8  |  import Home from "./pages/Home";
+[2026-03-12T15:44:39.710Z] 9  |  import Simulador from "./pages/Simulador";
+[2026-03-12T15:44:39.711Z] 10 |  import Triage from "./pages/Triage";
+[2026-03-12T15:44:39.711Z] |                      ^
+[2026-03-12T15:44:39.712Z] 11 |  function Router() {
+[2026-03-12T15:44:39.712Z] 12 |    return /* @__PURE__ */ jsxDEV(Switch, { "data-loc": "client/src/App.tsx:13", children: [
+[2026-03-12T15:44:39.713Z] at TransformPluginContext._formatLog (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:31219:43)
+[2026-03-12T15:44:39.713Z] at TransformPluginContext.error (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:31216:14)
+[2026-03-12T15:44:39.713Z] at normalizeUrl (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:29699:18)
+[2026-03-12T15:44:39.714Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-12T15:44:39.714Z] at async file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:29757:32
+[2026-03-12T15:44:39.715Z] at async Promise.all (index 9)
+[2026-03-12T15:44:39.715Z] at async TransformPluginContext.transform (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:29725:4)
+[2026-03-12T15:44:39.715Z] at async EnvironmentPluginContainer.transform (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:31018:14)
+[2026-03-12T15:44:39.716Z] at async loadAndTransform (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:26143:26)
+[2026-03-12T15:44:39.716Z] at async viteTransformMiddleware (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:27221:20)
+[2026-03-12T15:48:15.371Z] 11:48:15 AM [vite] (client) page reload src/pages/Triage.tsx
+[2026-03-12T15:48:24.197Z] Dev server process group stopped
+[2026-03-12T15:48:24.200Z] ELIFECYCLE  Command failed.
+[2026-03-12T15:48:24.227Z] Dev server exited with code -15
+[2026-03-12T15:48:27.231Z] Starting dev server with command: pnpm run dev
+[2026-03-12T15:48:28.099Z] 
+[2026-03-12T15:48:28.100Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-12T15:48:28.101Z] > vite --host
+[2026-03-12T15:48:28.101Z] 
+[2026-03-12T15:48:28.623Z] 
+[2026-03-12T15:48:28.624Z] VITE v7.1.9  ready in 480 ms
+[2026-03-12T15:48:28.624Z] 
+[2026-03-12T15:48:28.624Z] ➜  Local:   http://localhost:3000/
+[2026-03-12T15:48:28.625Z] ➜  Network: http://169.254.0.21:3000/
+[2026-03-12T15:48:29.676Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-12T16:14:35.826Z] 12:14:35 PM [vite] (client) hmr update /src/index.css, /src/pages/Simulador.tsx
+[2026-03-12T16:15:36.087Z] Dev server process group stopped
+[2026-03-12T16:15:36.090Z] ELIFECYCLE  Command failed.
+[2026-03-12T16:15:36.114Z] Dev server exited with code -15
+[2026-03-12T16:15:39.111Z] Starting dev server with command: pnpm run dev
+[2026-03-12T16:15:39.880Z] 
+[2026-03-12T16:15:39.881Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-12T16:15:39.882Z] > vite --host
+[2026-03-12T16:15:39.882Z] 
+[2026-03-12T16:15:40.300Z] 
+[2026-03-12T16:15:40.301Z] VITE v7.1.9  ready in 377 ms
+[2026-03-12T16:15:40.301Z] 
+[2026-03-12T16:15:40.301Z] ➜  Local:   http://localhost:3000/
+[2026-03-12T16:15:40.302Z] ➜  Network: http://169.254.0.21:3000/
+[2026-03-12T16:15:41.499Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-12T16:16:41.641Z] 12:16:41 PM [vite] (client) hmr update /src/pages/Simulador.tsx, /src/index.css
+[2026-03-12T16:16:49.756Z] Dev server process group stopped
+[2026-03-12T16:16:49.759Z] ELIFECYCLE  Command failed.
+[2026-03-12T16:16:49.782Z] Dev server exited with code -15
+[2026-03-12T16:16:52.762Z] Starting dev server with command: pnpm run dev
+[2026-03-12T16:16:53.718Z] 
+[2026-03-12T16:16:53.719Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-12T16:16:53.720Z] > vite --host
+[2026-03-12T16:16:53.721Z] 
+[2026-03-12T16:16:54.222Z] 
+[2026-03-12T16:16:54.223Z] VITE v7.1.9  ready in 456 ms
+[2026-03-12T16:16:54.223Z] 
+[2026-03-12T16:16:54.224Z] ➜  Local:   http://localhost:3000/
+[2026-03-12T16:16:54.224Z] ➜  Network: http://169.254.0.21:3000/
+[2026-03-12T16:16:54.710Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-12T21:24:33.133Z] 5:24:33 PM [vite] (client) page reload index.html
+[2026-03-12T21:24:33.134Z] 5:24:33 PM [vite] vite.config.ts changed, restarting server...
+[2026-03-12T21:24:33.174Z] 5:24:33 PM [vite] (client) Re-optimizing dependencies because vite config has changed
+[2026-03-12T21:24:33.212Z] 5:24:33 PM [vite] server restarted.
+[2026-03-12T21:24:33.213Z] 
+[2026-03-12T21:24:33.213Z] ➜  Local:   http://localhost:5173/
+[2026-03-12T21:24:33.214Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-12T21:24:49.480Z] Dev server process group stopped
+[2026-03-12T21:24:49.484Z] ELIFECYCLE  Command failed.
+[2026-03-12T21:24:49.502Z] Dev server exited with code -15
+[2026-03-12T21:24:52.485Z] Starting dev server with command: pnpm run dev
+[2026-03-12T21:24:53.253Z] 
+[2026-03-12T21:24:53.254Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-12T21:24:53.254Z] > vite --host
+[2026-03-12T21:24:53.255Z] 
+[2026-03-12T21:24:53.617Z] 
+[2026-03-12T21:24:53.618Z] VITE v7.1.9  ready in 322 ms
+[2026-03-12T21:24:53.619Z] 
+[2026-03-12T21:24:53.619Z] ➜  Local:   http://localhost:5173/
+[2026-03-12T21:24:53.620Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-12T21:24:54.806Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-12T21:34:12.992Z] Dev server process group stopped
+[2026-03-12T21:34:12.995Z] ELIFECYCLE  Command failed.
+[2026-03-12T21:34:13.010Z] Dev server exited with code -15
+[2026-03-12T21:34:15.997Z] Starting dev server with command: pnpm run dev
+[2026-03-12T21:34:16.738Z] 
+[2026-03-12T21:34:16.738Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-12T21:34:16.739Z] > vite --host
+[2026-03-12T21:34:16.739Z] 
+[2026-03-12T21:34:17.115Z] 
+[2026-03-12T21:34:17.116Z] VITE v7.1.9  ready in 338 ms
+[2026-03-12T21:34:17.117Z] 
+[2026-03-12T21:34:17.117Z] ➜  Local:   http://localhost:5173/
+[2026-03-12T21:34:17.118Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-12T21:34:18.337Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-12T21:40:35.273Z] 5:40:35 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-12T21:40:47.125Z] 5:40:47 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-12T21:40:55.220Z] 5:40:55 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-12T21:41:34.511Z] 5:41:34 PM [vite] (client) hmr update /src/App.tsx, /src/index.css
+[2026-03-12T21:44:54.749Z] 5:44:54 PM [vite] (client) hmr update /src/index.css, /src/components/Navbar.tsx
+[2026-03-12T21:44:59.507Z] Dev server process group stopped
+[2026-03-12T21:44:59.509Z] ELIFECYCLE  Command failed.
+[2026-03-12T21:44:59.522Z] Dev server exited with code -15
+[2026-03-12T21:45:02.511Z] Starting dev server with command: pnpm run dev
+[2026-03-12T21:45:03.212Z] 
+[2026-03-12T21:45:03.213Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-12T21:45:03.214Z] > vite --host
+[2026-03-12T21:45:03.214Z] 
+[2026-03-12T21:45:03.553Z] 
+[2026-03-12T21:45:03.554Z] VITE v7.1.9  ready in 298 ms
+[2026-03-12T21:45:03.555Z] 
+[2026-03-12T21:45:03.555Z] ➜  Local:   http://localhost:5173/
+[2026-03-12T21:45:03.556Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-12T21:45:04.831Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-13T08:51:53.842Z] Dev server process group stopped
+[2026-03-13T08:51:56.847Z] Starting dev server with command: pnpm run dev
+[2026-03-13T08:51:57.593Z] 
+[2026-03-13T08:51:57.594Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-13T08:51:57.594Z] > vite --host
+[2026-03-13T08:51:57.594Z] 
+[2026-03-13T08:51:57.941Z] 
+[2026-03-13T08:51:57.942Z] VITE v7.1.9  ready in 311 ms
+[2026-03-13T08:51:57.942Z] 
+[2026-03-13T08:51:57.942Z] ➜  Local:   http://localhost:5173/
+[2026-03-13T08:51:57.943Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-13T08:52:09.253Z] Starting dev server with command: pnpm run dev
+[2026-03-13T08:52:09.968Z] 
+[2026-03-13T08:52:09.969Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-13T08:52:09.969Z] > vite --host
+[2026-03-13T08:52:09.969Z] 
+[2026-03-13T08:52:10.502Z] Port 5173 is in use, trying another one...
+[2026-03-13T08:52:10.503Z] 
+[2026-03-13T08:52:10.504Z] VITE v7.1.9  ready in 304 ms
+[2026-03-13T08:52:10.504Z] 
+[2026-03-13T08:52:10.504Z] ➜  Local:   http://localhost:5174/
+[2026-03-13T08:52:10.504Z] ➜  Network: http://169.254.0.21:5174/
+[2026-03-13T08:58:19.476Z] Dev server process group stopped
+[2026-03-13T08:58:19.479Z] ELIFECYCLE  Command failed.
+[2026-03-13T08:58:19.492Z] Dev server exited with code -15
+[2026-03-13T08:58:22.481Z] Starting dev server with command: pnpm run dev
+[2026-03-13T08:58:23.259Z] 
+[2026-03-13T08:58:23.260Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-13T08:58:23.260Z] > vite --host
+[2026-03-13T08:58:23.261Z] 
+[2026-03-13T08:58:23.603Z] Port 5173 is in use, trying another one...
+[2026-03-13T08:58:23.605Z] 
+[2026-03-13T08:58:23.605Z] VITE v7.1.9  ready in 307 ms
+[2026-03-13T08:58:23.606Z] 
+[2026-03-13T08:58:23.606Z] ➜  Local:   http://localhost:5174/
+[2026-03-13T08:58:23.606Z] ➜  Network: http://169.254.0.21:5174/
+[2026-03-13T08:59:23.829Z] Killed
+[2026-03-13T08:59:23.831Z] ELIFECYCLE  Command failed with exit code 137.
+[2026-03-13T08:59:23.866Z] Dev server exited with code 137
+[2026-03-13T08:59:43.889Z] Starting dev server with command: pnpm run dev
+[2026-03-13T08:59:44.633Z] 
+[2026-03-13T08:59:44.634Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-13T08:59:44.634Z] > vite --host
+[2026-03-13T08:59:44.635Z] 
+[2026-03-13T08:59:44.986Z] 
+[2026-03-13T08:59:44.987Z] VITE v7.1.9  ready in 312 ms
+[2026-03-13T08:59:44.987Z] 
+[2026-03-13T08:59:44.987Z] ➜  Local:   http://localhost:5173/
+[2026-03-13T08:59:44.988Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-13T08:59:46.225Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-13T09:00:37.138Z] 5:00:37 AM [vite] vite.config.ts changed, restarting server...
+[2026-03-13T09:00:37.173Z] 5:00:37 AM [vite] server restarted.
+[2026-03-13T09:00:58.170Z] Dev server process group stopped
+[2026-03-13T09:00:58.173Z] ELIFECYCLE  Command failed.
+[2026-03-13T09:00:58.189Z] Dev server exited with code -15
+[2026-03-13T09:01:01.176Z] Starting dev server with command: pnpm run dev
+[2026-03-13T09:01:01.916Z] 
+[2026-03-13T09:01:01.917Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-13T09:01:01.917Z] > vite --host
+[2026-03-13T09:01:01.918Z] 
+[2026-03-13T09:01:02.290Z] 
+[2026-03-13T09:01:02.291Z] VITE v7.1.9  ready in 333 ms
+[2026-03-13T09:01:02.291Z] 
+[2026-03-13T09:01:02.292Z] ➜  Local:   http://localhost:5173/
+[2026-03-13T09:01:02.293Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-13T09:01:03.545Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-13T09:02:42.431Z] 5:02:42 AM [vite] vite.config.ts changed, restarting server...
+[2026-03-13T09:02:42.474Z] 5:02:42 AM [vite] server restarted.
+[2026-03-13T09:03:01.244Z] Dev server process group stopped
+[2026-03-13T09:03:01.248Z] ELIFECYCLE  Command failed.
+[2026-03-13T09:03:01.269Z] Dev server exited with code -15
+[2026-03-13T09:03:04.249Z] Starting dev server with command: pnpm run dev
+[2026-03-13T09:03:05.058Z] 
+[2026-03-13T09:03:05.059Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-13T09:03:05.059Z] > vite --host
+[2026-03-13T09:03:05.059Z] 
+[2026-03-13T09:03:05.534Z] 
+[2026-03-13T09:03:05.535Z] VITE v7.1.9  ready in 428 ms
+[2026-03-13T09:03:05.536Z] 
+[2026-03-13T09:03:05.536Z] ➜  Local:   http://localhost:5173/
+[2026-03-13T09:03:05.538Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-13T09:03:06.602Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-13T09:25:49.170Z] 5:25:49 AM [vite] (client) hmr update /src/App.tsx, /src/index.css
+[2026-03-13T09:25:53.780Z] Dev server process group stopped
+[2026-03-13T09:25:53.782Z] ELIFECYCLE  Command failed.
+[2026-03-13T09:25:53.801Z] Dev server exited with code -15
+[2026-03-13T09:25:56.784Z] Starting dev server with command: pnpm run dev
+[2026-03-13T09:25:57.619Z] 
+[2026-03-13T09:25:57.620Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-13T09:25:57.620Z] > vite --host
+[2026-03-13T09:25:57.621Z] 
+[2026-03-13T09:25:58.008Z] 
+[2026-03-13T09:25:58.009Z] VITE v7.1.9  ready in 346 ms
+[2026-03-13T09:25:58.010Z] 
+[2026-03-13T09:25:58.010Z] ➜  Local:   http://localhost:5173/
+[2026-03-13T09:25:58.011Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-13T09:25:58.762Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-14T03:10:05.054Z] Dev server process group stopped
+[2026-03-14T03:10:08.060Z] Starting dev server with command: pnpm run dev
+[2026-03-14T03:10:08.937Z] 
+[2026-03-14T03:10:08.938Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T03:10:08.938Z] > vite --host
+[2026-03-14T03:10:08.939Z] 
+[2026-03-14T03:10:09.366Z] 
+[2026-03-14T03:10:09.367Z] VITE v7.1.9  ready in 386 ms
+[2026-03-14T03:10:09.367Z] 
+[2026-03-14T03:10:09.368Z] ➜  Local:   http://localhost:5173/
+[2026-03-14T03:10:09.368Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-14T03:10:10.527Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-14T03:10:25.339Z] Starting dev server with command: pnpm run dev
+[2026-03-14T03:10:26.209Z] 
+[2026-03-14T03:10:26.209Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T03:10:26.210Z] > vite --host
+[2026-03-14T03:10:26.210Z] 
+[2026-03-14T03:10:26.603Z] Port 5173 is in use, trying another one...
+[2026-03-14T03:10:26.605Z] 
+[2026-03-14T03:10:26.605Z] VITE v7.1.9  ready in 354 ms
+[2026-03-14T03:10:26.605Z] 
+[2026-03-14T03:10:26.605Z] ➜  Local:   http://localhost:5174/
+[2026-03-14T03:10:26.606Z] ➜  Network: http://169.254.0.21:5174/
+[2026-03-14T03:10:33.962Z] Dev server process group stopped
+[2026-03-14T03:10:33.965Z] ELIFECYCLE  Command failed.
+[2026-03-14T03:10:33.983Z] Dev server exited with code -15
+[2026-03-14T03:10:36.967Z] Starting dev server with command: pnpm run dev
+[2026-03-14T03:10:37.754Z] 
+[2026-03-14T03:10:37.755Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T03:10:37.755Z] > vite --host
+[2026-03-14T03:10:37.756Z] 
+[2026-03-14T03:10:38.143Z] Port 5173 is in use, trying another one...
+[2026-03-14T03:10:38.144Z] 
+[2026-03-14T03:10:38.145Z] VITE v7.1.9  ready in 344 ms
+[2026-03-14T03:10:38.145Z] 
+[2026-03-14T03:10:38.145Z] ➜  Local:   http://localhost:5174/
+[2026-03-14T03:10:38.146Z] ➜  Network: http://169.254.0.21:5174/
+[2026-03-14T03:10:57.262Z] 11:10:57 PM [vite] (client) page reload index.html
+[2026-03-14T03:13:14.047Z] Dev server process group stopped
+[2026-03-14T03:13:14.050Z] ELIFECYCLE  Command failed.
+[2026-03-14T03:13:14.067Z] Dev server exited with code -15
+[2026-03-14T03:13:17.052Z] Starting dev server with command: pnpm run dev
+[2026-03-14T03:13:17.873Z] 
+[2026-03-14T03:13:17.874Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T03:13:17.875Z] > vite --host
+[2026-03-14T03:13:17.875Z] 
+[2026-03-14T03:13:18.280Z] 
+[2026-03-14T03:13:18.281Z] VITE v7.1.9  ready in 354 ms
+[2026-03-14T03:13:18.282Z] 
+[2026-03-14T03:13:18.282Z] ➜  Local:   http://localhost:5173/
+[2026-03-14T03:13:18.284Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-14T03:13:19.404Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-14T13:03:49.000Z] Dev server process group stopped
+[2026-03-14T13:03:52.006Z] Starting dev server with command: pnpm run dev
+[2026-03-14T13:03:52.849Z] 
+[2026-03-14T13:03:52.850Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T13:03:52.850Z] > vite --host
+[2026-03-14T13:03:52.850Z] 
+[2026-03-14T13:03:53.216Z] 
+[2026-03-14T13:03:53.216Z] VITE v7.1.9  ready in 327 ms
+[2026-03-14T13:03:53.217Z] 
+[2026-03-14T13:03:53.217Z] ➜  Local:   http://localhost:5173/
+[2026-03-14T13:03:53.218Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-14T13:04:03.971Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-14T15:19:09.306Z] 11:19:09 AM [vite] (client) hmr update /src/pages/Blog.tsx, /src/index.css
+[2026-03-14T15:19:26.923Z] 11:19:26 AM [vite] (client) hmr update /src/pages/Blog.tsx, /src/index.css
+[2026-03-14T15:19:26.929Z] 11:19:26 AM [vite] (client) page reload index.html
+[2026-03-14T15:19:26.929Z] 11:19:26 AM [vite] (client) hmr update /src/App.tsx, /src/index.css
+[2026-03-14T15:19:26.931Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.931Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.933Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.933Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.933Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.934Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.934Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.934Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/button.tsx
+[2026-03-14T15:19:26.935Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.935Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/card.tsx
+[2026-03-14T15:19:26.935Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.936Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.936Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/checkbox.tsx
+[2026-03-14T15:19:26.937Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.937Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.937Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.938Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/dialog.tsx
+[2026-03-14T15:19:26.938Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.938Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.938Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.942Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.943Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.943Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/input.tsx
+[2026-03-14T15:19:26.943Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/label.tsx
+[2026-03-14T15:19:26.944Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.944Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.944Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.945Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.945Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.945Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/radio-group.tsx
+[2026-03-14T15:19:26.946Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.946Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.946Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/select.tsx
+[2026-03-14T15:19:26.947Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.947Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.947Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.947Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.948Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.948Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ui/switch.tsx
+[2026-03-14T15:19:26.948Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.949Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.949Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.949Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.950Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.950Z] 11:19:26 AM [vite] (client) hmr update /src/components/ui/tooltip.tsx, /src/index.css
+[2026-03-14T15:19:26.950Z] 11:19:26 AM [vite] (client) hmr update /src/index.css
+[2026-03-14T15:19:26.951Z] 11:19:26 AM [vite] (client) hmr update /src/index.css, /src/components/ErrorBoundary.tsx, /src/components/ui/tooltip.tsx, /src/components/ui/button.tsx, /src/components/ui/card.tsx, /src/components/ui/label.tsx, /src/components/ui/radio-group.tsx, /src/components/ui/switch.tsx, /src/components/ui/select.tsx, /src/components/ui/input.tsx, /src/components/ui/checkbox.tsx, /src/components/ui/dialog.tsx
+[2026-03-14T15:19:26.951Z] 11:19:26 AM [vite] (client) page reload src/main.tsx
+[2026-03-14T15:19:26.951Z] 11:19:26 AM [vite] vite.config.ts changed, restarting server...
+[2026-03-14T15:19:26.997Z] 11:19:26 AM [vite] (client) Re-optimizing dependencies because vite config has changed
+[2026-03-14T15:19:27.018Z] 11:19:27 AM [vite] server restarted.
+[2026-03-14T15:19:27.079Z] (!) Failed to run dependency scan. Skipping dependency pre-bundling. Error: The following dependencies are imported but could not be resolved:
+[2026-03-14T15:19:27.080Z] 
+[2026-03-14T15:19:27.080Z] @tanstack/react-query (imported by /home/ubuntu/renta-facil-tpymes/client/src/lib/queryClient.ts)
+[2026-03-14T15:19:27.080Z] @radix-ui/react-toast (imported by /home/ubuntu/renta-facil-tpymes/client/src/components/ui/toast.tsx)
+[2026-03-14T15:19:27.081Z] 
+[2026-03-14T15:19:27.081Z] Are they installed?
+[2026-03-14T15:19:27.081Z] at file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:10939:33
+[2026-03-14T15:19:27.082Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T15:19:27.082Z] at async file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@7.1.9_@types+node@24.7.0_jiti@2.6.1_lightningcss@1.30.1_tsx@4.20.6/node_modules/vite/dist/node/chunks/dep-Chhhsdoe.js:34464:15
+[2026-03-14T15:24:33.021Z] Dev server process group stopped
+[2026-03-14T15:24:33.024Z] ELIFECYCLE  Command failed.
+[2026-03-14T15:24:33.053Z] Dev server exited with code -15
+[2026-03-14T15:24:37.258Z] Starting dev server with command: pnpm run dev
+[2026-03-14T15:24:38.061Z] 
+[2026-03-14T15:24:38.062Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T15:24:38.062Z] > vite --host
+[2026-03-14T15:24:38.063Z] 
+[2026-03-14T15:24:38.467Z] 11:24:38 AM [vite] (client) Re-optimizing dependencies because vite config has changed
+[2026-03-14T15:24:38.510Z] 
+[2026-03-14T15:24:38.511Z] VITE v7.1.9  ready in 406 ms
+[2026-03-14T15:24:38.512Z] 
+[2026-03-14T15:24:38.513Z] ➜  Local:   http://localhost:5173/
+[2026-03-14T15:24:38.514Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-14T15:24:45.594Z] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[2026-03-14T16:53:23.378Z] Dev server process group stopped
+[2026-03-14T16:53:23.380Z] ELIFECYCLE  Command failed.
+[2026-03-14T16:53:23.610Z] Dev server exited with code -15
+[2026-03-14T16:53:26.615Z] Starting dev server with command: pnpm run dev
+[2026-03-14T16:53:27.669Z] 
+[2026-03-14T16:53:27.670Z] > renta-facil-tpymes@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T16:53:27.671Z] > vite --host
+[2026-03-14T16:53:27.671Z] 
+[2026-03-14T16:53:28.760Z] 12:53:28 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-03-14T16:53:28.783Z] 
+[2026-03-14T16:53:28.784Z] VITE v7.3.1  ready in 1069 ms
+[2026-03-14T16:53:28.784Z] 
+[2026-03-14T16:53:28.785Z] ➜  Local:   http://localhost:5173/
+[2026-03-14T16:53:28.786Z] ➜  Network: http://169.254.0.21:5173/
+[2026-03-14T18:20:06.906Z] 2:20:06 PM [vite] (client) page reload index.html
+[2026-03-14T18:20:07.227Z] 2:20:07 PM [vite] (client) hmr update /src/App.tsx, /src/index.css
+[2026-03-14T18:20:07.234Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ui/button.tsx
+[2026-03-14T18:20:07.235Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ui/card.tsx
+[2026-03-14T18:20:07.235Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ui/checkbox.tsx
+[2026-03-14T18:20:07.236Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ui/dialog.tsx
+[2026-03-14T18:20:07.245Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ui/input.tsx
+[2026-03-14T18:20:07.246Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ui/label.tsx
+[2026-03-14T18:20:07.247Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ui/radio-group.tsx
+[2026-03-14T18:20:07.249Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ui/switch.tsx
+[2026-03-14T18:20:07.252Z] 2:20:07 PM [vite] (client) hmr update /src/components/ui/tooltip.tsx, /src/index.css
+[2026-03-14T18:20:07.253Z] 2:20:07 PM [vite] (client) hmr update /src/index.css, /src/components/ErrorBoundary.tsx, /src/components/ui/tooltip.tsx, /src/components/ui/button.tsx, /src/components/ui/card.tsx, /src/components/ui/label.tsx, /src/components/ui/radio-group.tsx, /src/components/ui/switch.tsx, /src/components/ui/select.tsx, /src/components/ui/input.tsx, /src/components/ui/checkbox.tsx, /src/components/ui/dialog.tsx
+[2026-03-14T18:20:07.254Z] 2:20:07 PM [vite] vite.config.ts changed, restarting server...
+[2026-03-14T18:20:07.340Z] 2:20:07 PM [vite] (client) Re-optimizing dependencies because vite config has changed
+[2026-03-14T18:20:07.356Z] 2:20:07 PM [vite] server restarted.
+[2026-03-14T18:26:08.791Z] Dev server process group stopped
+[2026-03-14T18:26:08.794Z] ELIFECYCLE  Command failed.
+[2026-03-14T18:26:08.870Z] Dev server exited with code -15
+[2026-03-14T18:26:11.796Z] Starting dev server with command: pnpm run dev
+[2026-03-14T18:26:12.210Z] 
+[2026-03-14T18:26:12.211Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T18:26:12.211Z] > tsx server/index.ts
+[2026-03-14T18:26:12.212Z] 
+[2026-03-14T18:26:14.002Z] 2:26:14 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-03-14T18:26:14.163Z] 2:26:14 PM [express] serving on port 5000
+[2026-03-14T18:26:15.603Z] Error: The following dependencies are imported but could not be resolved:
+[2026-03-14T18:26:15.604Z] 
+[2026-03-14T18:26:15.604Z] @/components/ui/toaster (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.605Z] @/components/ui/tooltip (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.605Z] @/pages/Home (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.606Z] @/pages/Simulador (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.606Z] @/pages/Triage (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.606Z] @/pages/Blog (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.606Z] @/pages/BlogArticle (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.607Z] @/pages/AvisoLegal (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.607Z] @/pages/PoliticaPrivacidad (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.607Z] @/pages/PoliticaCookies (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.608Z] @/pages/NotFound (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:26:15.608Z] 
+[2026-03-14T18:26:15.608Z] Are they installed?
+[2026-03-14T18:26:15.609Z] at <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@1.21.7_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:14849:15)
+[2026-03-14T18:26:15.609Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T18:26:15.609Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@1.21.7_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47014:28)
+[2026-03-14T18:27:15.143Z] Dev server process group stopped
+[2026-03-14T18:27:15.163Z] ELIFECYCLE  Command failed.
+[2026-03-14T18:27:15.196Z] Dev server exited with code -15
+[2026-03-14T18:27:18.148Z] Starting dev server with command: pnpm run dev
+[2026-03-14T18:27:18.602Z] 
+[2026-03-14T18:27:18.603Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T18:27:18.604Z] > tsx server/index.ts
+[2026-03-14T18:27:18.604Z] 
+[2026-03-14T18:27:19.880Z] 2:27:19 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-03-14T18:27:19.901Z] 2:27:19 PM [express] serving on port 5000
+[2026-03-14T18:27:20.337Z] Error: The following dependencies are imported but could not be resolved:
+[2026-03-14T18:27:20.338Z] 
+[2026-03-14T18:27:20.338Z] @/components/ui/toaster (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.338Z] @/components/ui/tooltip (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.339Z] @/pages/Home (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.339Z] @/pages/Simulador (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.339Z] @/pages/Triage (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.339Z] @/pages/Blog (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.340Z] @/pages/BlogArticle (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.340Z] @/pages/AvisoLegal (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.340Z] @/pages/PoliticaPrivacidad (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.341Z] @/pages/PoliticaCookies (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.341Z] @/pages/NotFound (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:20.341Z] 
+[2026-03-14T18:27:20.342Z] Are they installed?
+[2026-03-14T18:27:20.342Z] at <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:14849:15)
+[2026-03-14T18:27:20.342Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T18:27:20.343Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47014:28)
+[2026-03-14T18:27:20.629Z] 2:27:20 PM [vite] (client) Pre-transform error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T18:27:20.630Z] Plugin: vite:import-analysis
+[2026-03-14T18:27:20.631Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T18:27:20.631Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T18:27:20.631Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T18:27:20.632Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T18:27:20.632Z] |                           ^
+[2026-03-14T18:27:20.633Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T18:27:20.633Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T18:27:20.707Z] 2:27:20 PM [vite] Internal server error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T18:27:20.708Z] Plugin: vite:import-analysis
+[2026-03-14T18:27:20.709Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T18:27:20.709Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T18:27:20.709Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T18:27:20.710Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T18:27:20.710Z] |                           ^
+[2026-03-14T18:27:20.710Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T18:27:20.711Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T18:27:20.711Z] at TransformPluginContext._formatLog (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42528:41)
+[2026-03-14T18:27:20.711Z] at TransformPluginContext.error (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42525:16)
+[2026-03-14T18:27:20.712Z] at normalizeUrl (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40504:23)
+[2026-03-14T18:27:20.712Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T18:27:20.712Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40623:37)
+[2026-03-14T18:27:20.712Z] at async Promise.all (index 3)
+[2026-03-14T18:27:20.713Z] at async TransformPluginContext.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40550:7)
+[2026-03-14T18:27:20.713Z] at async EnvironmentPluginContainer.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42323:18)
+[2026-03-14T18:27:20.714Z] at async loadAndTransform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:35739:27)
+[2026-03-14T18:27:20.715Z] at async viteTransformMiddleware (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:37254:24)
+[2026-03-14T18:27:20.721Z] Unable to resolve `@import "tw-animate-css"` from /home/ubuntu/renta-facil-tpymes/client/src
+[2026-03-14T18:27:20.722Z] 2:27:20 PM [vite] Internal server error: [postcss] ENOENT: no such file or directory, open 'tw-animate-css'
+[2026-03-14T18:27:20.722Z] Plugin: vite:css
+[2026-03-14T18:27:20.723Z] File: /home/ubuntu/renta-facil-tpymes/client/src/index.css:undefined:NaN
+[2026-03-14T18:27:20.724Z] at async open (node:internal/fs/promises:638:25)
+[2026-03-14T18:27:20.725Z] at async Object.readFile (node:internal/fs/promises:1242:14)
+[2026-03-14T18:27:20.725Z] at async Object.load (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:43756:25)
+[2026-03-14T18:27:20.726Z] at async loadImportContent (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-C9BXG1mU.js:673:19)
+[2026-03-14T18:27:20.727Z] at async Promise.all (index 0)
+[2026-03-14T18:27:20.727Z] at async resolveImportId (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-C9BXG1mU.js:629:27)
+[2026-03-14T18:27:20.728Z] at async parseStyles$1 (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-C9BXG1mU.js:537:5)
+[2026-03-14T18:27:20.728Z] at async Object.Once (file:///home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-C9BXG1mU.js:794:22)
+[2026-03-14T18:27:20.729Z] at async LazyResult.runAsync (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/postcss@8.5.8/node_modules/postcss/lib/lazy-result.js:293:11)
+[2026-03-14T18:27:20.729Z] at async runPostCSS (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:43853:21)
+[2026-03-14T18:27:20.729Z] 2:27:20 PM [vite] (client) Pre-transform error: [postcss] ENOENT: no such file or directory, open 'tw-animate-css'
+[2026-03-14T18:27:20.730Z] Plugin: vite:css
+[2026-03-14T18:27:20.730Z] File: /home/ubuntu/renta-facil-tpymes/client/src/index.css:undefined:NaN
+[2026-03-14T18:27:21.072Z] 2:27:21 PM [vite] (client) ✨ new dependencies optimized: react-dom/client, wouter, @tanstack/react-query
+[2026-03-14T18:27:37.463Z] Dev server process group stopped
+[2026-03-14T18:27:37.482Z] ELIFECYCLE  Command failed.
+[2026-03-14T18:27:37.522Z] Dev server exited with code -15
+[2026-03-14T18:27:40.468Z] Starting dev server with command: pnpm run dev
+[2026-03-14T18:27:40.889Z] 
+[2026-03-14T18:27:40.889Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T18:27:40.890Z] > tsx server/index.ts
+[2026-03-14T18:27:40.890Z] 
+[2026-03-14T18:27:42.081Z] 2:27:42 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-03-14T18:27:42.098Z] 2:27:42 PM [express] serving on port 5000
+[2026-03-14T18:27:42.472Z] Error: The following dependencies are imported but could not be resolved:
+[2026-03-14T18:27:42.473Z] 
+[2026-03-14T18:27:42.473Z] @/components/ui/toaster (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.474Z] @/components/ui/tooltip (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.474Z] @/pages/Home (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.474Z] @/pages/Simulador (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.475Z] @/pages/Triage (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.475Z] @/pages/Blog (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.475Z] @/pages/BlogArticle (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.476Z] @/pages/AvisoLegal (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.476Z] @/pages/PoliticaPrivacidad (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.476Z] @/pages/PoliticaCookies (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.476Z] @/pages/NotFound (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T18:27:42.477Z] 
+[2026-03-14T18:27:42.477Z] Are they installed?
+[2026-03-14T18:27:42.477Z] at <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:14849:15)
+[2026-03-14T18:27:42.478Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T18:27:42.478Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47014:28)
+[2026-03-14T18:27:42.704Z] 2:27:42 PM [vite] (client) Pre-transform error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T18:27:42.705Z] Plugin: vite:import-analysis
+[2026-03-14T18:27:42.705Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T18:27:42.706Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T18:27:42.706Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T18:27:42.706Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T18:27:42.707Z] |                           ^
+[2026-03-14T18:27:42.707Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T18:27:42.707Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T18:27:42.728Z] 2:27:42 PM [vite] Internal server error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T18:27:42.729Z] Plugin: vite:import-analysis
+[2026-03-14T18:27:42.730Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T18:27:42.730Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T18:27:42.731Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T18:27:42.732Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T18:27:42.732Z] |                           ^
+[2026-03-14T18:27:42.732Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T18:27:42.733Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T18:27:42.733Z] at TransformPluginContext._formatLog (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42528:41)
+[2026-03-14T18:27:42.734Z] at TransformPluginContext.error (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42525:16)
+[2026-03-14T18:27:42.734Z] at normalizeUrl (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40504:23)
+[2026-03-14T18:27:42.735Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T18:27:42.735Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40623:37)
+[2026-03-14T18:27:42.736Z] at async Promise.all (index 3)
+[2026-03-14T18:27:42.736Z] at async TransformPluginContext.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40550:7)
+[2026-03-14T18:27:42.736Z] at async EnvironmentPluginContainer.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42323:18)
+[2026-03-14T18:27:42.737Z] at async loadAndTransform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:35739:27)
+[2026-03-14T18:27:42.737Z] at async viteTransformMiddleware (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:37254:24)
+[2026-03-14T18:27:43.167Z] 2:27:43 PM [vite] (client) ✨ new dependencies optimized: react-dom/client, wouter, @tanstack/react-query
+[2026-03-14T19:50:15.662Z] Dev server process group stopped
+[2026-03-14T19:50:15.684Z] ELIFECYCLE  Command failed.
+[2026-03-14T19:50:15.712Z] Dev server exited with code -15
+[2026-03-14T19:50:18.667Z] Starting dev server with command: pnpm run dev
+[2026-03-14T19:50:19.072Z] 
+[2026-03-14T19:50:19.073Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T19:50:19.073Z] > tsx server/index.ts
+[2026-03-14T19:50:19.074Z] 
+[2026-03-14T19:50:20.253Z] 3:50:20 PM [express] serving on port 5000
+[2026-03-14T19:50:20.705Z] Error: The following dependencies are imported but could not be resolved:
+[2026-03-14T19:50:20.707Z] 
+[2026-03-14T19:50:20.707Z] @/components/ui/toaster (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.708Z] @/components/ui/tooltip (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.708Z] @/pages/Home (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.709Z] @/pages/Simulador (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.710Z] @/pages/Triage (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.711Z] @/pages/Blog (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.712Z] @/pages/BlogArticle (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.712Z] @/pages/AvisoLegal (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.713Z] @/pages/PoliticaPrivacidad (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.713Z] @/pages/PoliticaCookies (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.713Z] @/pages/NotFound (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:50:20.714Z] 
+[2026-03-14T19:50:20.717Z] Are they installed?
+[2026-03-14T19:50:20.718Z] at <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:14849:15)
+[2026-03-14T19:50:20.720Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T19:50:20.721Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47014:28)
+[2026-03-14T19:50:20.965Z] 3:50:20 PM [vite] (client) Pre-transform error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:50:20.966Z] Plugin: vite:import-analysis
+[2026-03-14T19:50:20.967Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:50:20.967Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:50:20.967Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:50:20.968Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T19:50:20.968Z] |                           ^
+[2026-03-14T19:50:20.968Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:50:20.969Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:50:20.986Z] 3:50:20 PM [vite] Internal server error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:50:20.987Z] Plugin: vite:import-analysis
+[2026-03-14T19:50:20.987Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:50:20.988Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:50:20.988Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:50:20.988Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T19:50:20.989Z] |                           ^
+[2026-03-14T19:50:20.989Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:50:20.989Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:50:20.990Z] at TransformPluginContext._formatLog (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42528:41)
+[2026-03-14T19:50:20.990Z] at TransformPluginContext.error (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42525:16)
+[2026-03-14T19:50:20.990Z] at normalizeUrl (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40504:23)
+[2026-03-14T19:50:20.991Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T19:50:20.991Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40623:37)
+[2026-03-14T19:50:20.991Z] at async Promise.all (index 3)
+[2026-03-14T19:50:20.992Z] at async TransformPluginContext.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40550:7)
+[2026-03-14T19:50:20.993Z] at async EnvironmentPluginContainer.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42323:18)
+[2026-03-14T19:50:20.993Z] at async loadAndTransform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:35739:27)
+[2026-03-14T19:50:20.994Z] at async viteTransformMiddleware (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:37254:24)
+[2026-03-14T19:50:21.410Z] 3:50:21 PM [vite] (client) ✨ new dependencies optimized: react-dom/client, wouter, @tanstack/react-query
