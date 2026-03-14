@@ -1,20 +1,30 @@
-import { Switch, Route, Router } from "wouter";
-import { useHashLocation } from "wouter/use-hash-location";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import LandingPage from "@/pages/landing";
-import FormularioPage from "@/pages/formulario";
-import DashboardPage from "@/pages/dashboard";
-import NotFound from "@/pages/not-found";
+import Home from "@/pages/Home";
+import Simulador from "@/pages/Simulador";
+import Triage from "@/pages/Triage";
+import Blog from "@/pages/Blog";
+import BlogArticle from "@/pages/BlogArticle";
+import AvisoLegal from "@/pages/AvisoLegal";
+import PoliticaPrivacidad from "@/pages/PoliticaPrivacidad";
+import PoliticaCookies from "@/pages/PoliticaCookies";
+import NotFound from "@/pages/NotFound";
 
 function AppRouter() {
   return (
     <Switch>
-      <Route path="/" component={LandingPage} />
-      <Route path="/formulario" component={FormularioPage} />
-      <Route path="/dashboard" component={DashboardPage} />
+      <Route path="/" component={Home} />
+      <Route path="/simulador" component={Simulador} />
+      <Route path="/empezar" component={Triage} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/blog/:slug" component={BlogArticle} />
+      <Route path="/aviso-legal" component={AvisoLegal} />
+      <Route path="/privacidad" component={PoliticaPrivacidad} />
+      <Route path="/cookies" component={PoliticaCookies} />
+      <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -25,9 +35,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <Router hook={useHashLocation}>
-          <AppRouter />
-        </Router>
+        <AppRouter />
       </TooltipProvider>
     </QueryClientProvider>
   );
