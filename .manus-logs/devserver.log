@@ -651,3 +651,181 @@
 [2026-03-14T19:50:20.993Z] at async loadAndTransform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:35739:27)
 [2026-03-14T19:50:20.994Z] at async viteTransformMiddleware (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:37254:24)
 [2026-03-14T19:50:21.410Z] 3:50:21 PM [vite] (client) ✨ new dependencies optimized: react-dom/client, wouter, @tanstack/react-query
+[2026-03-14T19:51:30.033Z] 3:51:30 PM [vite] Internal server error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:51:30.034Z] Plugin: vite:import-analysis
+[2026-03-14T19:51:30.034Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:51:30.035Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:51:30.035Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:51:30.035Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T19:51:30.035Z] |                           ^
+[2026-03-14T19:51:30.036Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:51:30.036Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:51:30.038Z] at TransformPluginContext._formatLog (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42528:41)
+[2026-03-14T19:51:30.039Z] at TransformPluginContext.error (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42525:16)
+[2026-03-14T19:51:30.039Z] at normalizeUrl (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40504:23)
+[2026-03-14T19:51:30.040Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T19:51:30.041Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40623:37)
+[2026-03-14T19:51:30.044Z] at async Promise.all (index 3)
+[2026-03-14T19:51:30.046Z] at async TransformPluginContext.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40550:7)
+[2026-03-14T19:51:30.046Z] at async EnvironmentPluginContainer.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42323:18)
+[2026-03-14T19:51:30.048Z] at async loadAndTransform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:35739:27)
+[2026-03-14T19:51:30.049Z] at async viteTransformMiddleware (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:37254:24)
+[2026-03-14T19:51:51.737Z] Dev server process group stopped
+[2026-03-14T19:51:51.757Z] ELIFECYCLE  Command failed.
+[2026-03-14T19:51:51.787Z] Dev server exited with code -15
+[2026-03-14T19:51:54.743Z] Starting dev server with command: pnpm run dev
+[2026-03-14T19:51:55.154Z] 
+[2026-03-14T19:51:55.155Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T19:51:55.155Z] > tsx server/index.ts
+[2026-03-14T19:51:55.156Z] 
+[2026-03-14T19:51:56.329Z] 3:51:56 PM [express] serving on port 5000
+[2026-03-14T19:51:56.675Z] Error: The following dependencies are imported but could not be resolved:
+[2026-03-14T19:51:56.676Z] 
+[2026-03-14T19:51:56.676Z] @/components/ui/toaster (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.676Z] @/components/ui/tooltip (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.677Z] @/pages/Home (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.677Z] @/pages/Simulador (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.677Z] @/pages/Triage (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.678Z] @/pages/Blog (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.678Z] @/pages/BlogArticle (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.678Z] @/pages/AvisoLegal (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.679Z] @/pages/PoliticaPrivacidad (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.679Z] @/pages/PoliticaCookies (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.679Z] @/pages/NotFound (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:51:56.680Z] 
+[2026-03-14T19:51:56.680Z] Are they installed?
+[2026-03-14T19:51:56.680Z] at <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:14849:15)
+[2026-03-14T19:51:56.680Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T19:51:56.681Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47014:28)
+[2026-03-14T19:51:56.999Z] 3:51:56 PM [vite] (client) Pre-transform error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:51:57.000Z] Plugin: vite:import-analysis
+[2026-03-14T19:51:57.001Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:51:57.001Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:51:57.002Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:51:57.002Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T19:51:57.002Z] |                           ^
+[2026-03-14T19:51:57.003Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:51:57.003Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:51:57.017Z] 3:51:57 PM [vite] Internal server error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:51:57.018Z] Plugin: vite:import-analysis
+[2026-03-14T19:51:57.019Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:51:57.019Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:51:57.020Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:51:57.020Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T19:51:57.020Z] |                           ^
+[2026-03-14T19:51:57.021Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:51:57.021Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:51:57.022Z] at TransformPluginContext._formatLog (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42528:41)
+[2026-03-14T19:51:57.022Z] at TransformPluginContext.error (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42525:16)
+[2026-03-14T19:51:57.022Z] at normalizeUrl (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40504:23)
+[2026-03-14T19:51:57.023Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T19:51:57.023Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40623:37)
+[2026-03-14T19:51:57.023Z] at async Promise.all (index 3)
+[2026-03-14T19:51:57.024Z] at async TransformPluginContext.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40550:7)
+[2026-03-14T19:51:57.024Z] at async EnvironmentPluginContainer.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42323:18)
+[2026-03-14T19:51:57.026Z] at async loadAndTransform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:35739:27)
+[2026-03-14T19:51:57.028Z] at async viteTransformMiddleware (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:37254:24)
+[2026-03-14T19:51:57.444Z] 3:51:57 PM [vite] (client) ✨ new dependencies optimized: react-dom/client, wouter, @tanstack/react-query
+[2026-03-14T19:53:04.959Z] Dev server process group stopped
+[2026-03-14T19:53:04.978Z] ELIFECYCLE  Command failed.
+[2026-03-14T19:53:04.989Z] Dev server exited with code -15
+[2026-03-14T19:53:07.964Z] Starting dev server with command: pnpm run dev
+[2026-03-14T19:53:08.362Z] 
+[2026-03-14T19:53:08.363Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T19:53:08.363Z] > tsx server/index.ts
+[2026-03-14T19:53:08.364Z] 
+[2026-03-14T19:53:09.527Z] 3:53:09 PM [express] serving on port 5000
+[2026-03-14T19:53:09.875Z] Error: The following dependencies are imported but could not be resolved:
+[2026-03-14T19:53:09.876Z] 
+[2026-03-14T19:53:09.877Z] @/components/ui/toaster (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.877Z] @/components/ui/tooltip (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.878Z] @/pages/Home (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.878Z] @/pages/Simulador (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.879Z] @/pages/Triage (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.879Z] @/pages/Blog (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.879Z] @/pages/BlogArticle (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.880Z] @/pages/AvisoLegal (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.880Z] @/pages/PoliticaPrivacidad (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.880Z] @/pages/PoliticaCookies (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.881Z] @/pages/NotFound (imported by /home/ubuntu/renta-facil-tpymes/client/src/App.tsx)
+[2026-03-14T19:53:09.881Z] 
+[2026-03-14T19:53:09.881Z] Are they installed?
+[2026-03-14T19:53:09.882Z] at <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:14849:15)
+[2026-03-14T19:53:09.882Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T19:53:09.883Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47014:28)
+[2026-03-14T19:53:10.206Z] 3:53:10 PM [vite] (client) Pre-transform error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:53:10.207Z] Plugin: vite:import-analysis
+[2026-03-14T19:53:10.208Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:53:10.208Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:53:10.209Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:53:10.209Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T19:53:10.210Z] |                           ^
+[2026-03-14T19:53:10.210Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:53:10.211Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:53:10.223Z] 3:53:10 PM [vite] Internal server error: Failed to resolve import "@/components/ui/toaster" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:53:10.225Z] Plugin: vite:import-analysis
+[2026-03-14T19:53:10.226Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:53:10.226Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:53:10.227Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:53:10.227Z] 4  |  import { Toaster } from "@/components/ui/toaster";
+[2026-03-14T19:53:10.228Z] |                           ^
+[2026-03-14T19:53:10.228Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:53:10.229Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:53:10.231Z] at TransformPluginContext._formatLog (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42528:41)
+[2026-03-14T19:53:10.233Z] at TransformPluginContext.error (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42525:16)
+[2026-03-14T19:53:10.235Z] at normalizeUrl (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40504:23)
+[2026-03-14T19:53:10.236Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T19:53:10.236Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40623:37)
+[2026-03-14T19:53:10.237Z] at async Promise.all (index 3)
+[2026-03-14T19:53:10.238Z] at async TransformPluginContext.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40550:7)
+[2026-03-14T19:53:10.239Z] at async EnvironmentPluginContainer.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42323:18)
+[2026-03-14T19:53:10.239Z] at async loadAndTransform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:35739:27)
+[2026-03-14T19:53:10.239Z] at async viteTransformMiddleware (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:37254:24)
+[2026-03-14T19:53:10.652Z] 3:53:10 PM [vite] (client) ✨ new dependencies optimized: react-dom/client, wouter, @tanstack/react-query
+[2026-03-14T19:53:56.800Z] 3:53:56 PM [vite] (client) page reload src/App.tsx
+[2026-03-14T19:54:04.463Z] Dev server process group stopped
+[2026-03-14T19:54:04.482Z] ELIFECYCLE  Command failed.
+[2026-03-14T19:54:04.507Z] Dev server exited with code -15
+[2026-03-14T19:54:07.468Z] Starting dev server with command: pnpm run dev
+[2026-03-14T19:54:07.859Z] 
+[2026-03-14T19:54:07.860Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T19:54:07.861Z] > tsx server/index.ts
+[2026-03-14T19:54:07.861Z] 
+[2026-03-14T19:54:08.946Z] 3:54:08 PM [express] serving on port 5000
+[2026-03-14T19:54:10.056Z] 3:54:10 PM [vite] Internal server error: Failed to resolve import "@/components/ui/sonner" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:54:10.057Z] Plugin: vite:import-analysis
+[2026-03-14T19:54:10.058Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:54:10.058Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:54:10.058Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:54:10.059Z] 4  |  import { Toaster } from "@/components/ui/sonner";
+[2026-03-14T19:54:10.059Z] |                           ^
+[2026-03-14T19:54:10.059Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:54:10.060Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:54:10.060Z] at TransformPluginContext._formatLog (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42528:41)
+[2026-03-14T19:54:10.060Z] at TransformPluginContext.error (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42525:16)
+[2026-03-14T19:54:10.061Z] at normalizeUrl (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40504:23)
+[2026-03-14T19:54:10.061Z] at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2026-03-14T19:54:10.062Z] at async <anonymous> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40623:37)
+[2026-03-14T19:54:10.062Z] at async Promise.all (index 3)
+[2026-03-14T19:54:10.062Z] at async TransformPluginContext.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:40550:7)
+[2026-03-14T19:54:10.063Z] at async EnvironmentPluginContainer.transform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:42323:18)
+[2026-03-14T19:54:10.063Z] at async loadAndTransform (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/vite@6.4.1_@types+node@22.19.15_jiti@2.6.1_lightningcss@1.31.1_tsx@4.21.0/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:35739:27)
+[2026-03-14T19:54:10.064Z] 3:54:10 PM [vite] (client) Pre-transform error: Failed to resolve import "@/components/ui/sonner" from "client/src/App.tsx". Does the file exist?
+[2026-03-14T19:54:10.064Z] Plugin: vite:import-analysis
+[2026-03-14T19:54:10.065Z] File: /home/ubuntu/renta-facil-tpymes/client/src/App.tsx:4:24
+[2026-03-14T19:54:10.065Z] 2  |  import { queryClient } from "./lib/queryClient";
+[2026-03-14T19:54:10.066Z] 3  |  import { QueryClientProvider } from "@tanstack/react-query";
+[2026-03-14T19:54:10.066Z] 4  |  import { Toaster } from "@/components/ui/sonner";
+[2026-03-14T19:54:10.066Z] |                           ^
+[2026-03-14T19:54:10.067Z] 5  |  import { TooltipProvider } from "@/components/ui/tooltip";
+[2026-03-14T19:54:10.067Z] 6  |  import Home from "@/pages/Home";
+[2026-03-14T19:55:25.808Z] Dev server process group stopped
+[2026-03-14T19:55:25.827Z] ELIFECYCLE  Command failed.
+[2026-03-14T19:55:25.868Z] Dev server exited with code -15
+[2026-03-14T19:55:28.813Z] Starting dev server with command: pnpm run dev
+[2026-03-14T19:55:29.263Z] 
+[2026-03-14T19:55:29.264Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T19:55:29.264Z] > tsx server/index.ts
+[2026-03-14T19:55:29.264Z] 
+[2026-03-14T19:55:30.624Z] 3:55:30 PM [vite] (client) Re-optimizing dependencies because vite config has changed
+[2026-03-14T19:55:30.647Z] 3:55:30 PM [express] serving on port 5000
