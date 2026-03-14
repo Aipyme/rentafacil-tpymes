@@ -23,6 +23,15 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "deducciones-madrid-2025",
+    title: "Deducciones en Madrid 2025: todas las que puedes aplicar en tu renta",
+    excerpt: "La Comunidad de Madrid ofrece los tipos impositivos más bajos de España y deducciones exclusivas por alquiler, gastos educativos, acogimiento y más. Te explicamos cada una con importes y requisitos.",
+    category: "Deducciones",
+    readTime: "7 min",
+    date: "2025-03-20",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-deducciones-madrid_2b654191.jpg",
+  },
+  {
     slug: "estoy-obligado-declarar-renta-2025",
     title: "¿Estoy obligado a hacer la declaración de la renta en 2025?",
     excerpt: "Descubre los límites de ingresos, las excepciones y los casos especiales que determinan si debes presentar tu declaración del IRPF este año. Con los nuevos límites actualizados para la campaña 2025.",

@@ -14,6 +14,110 @@ import { useSEO } from "@/hooks/useSEO";
 
 // Contenido completo de cada artículo
 const ARTICLE_CONTENT: Record<string, string> = {
+  "deducciones-madrid-2025": `
+## Deducciones en la Comunidad de Madrid 2025: la guía definitiva
+
+La Comunidad de Madrid es la región con los **tipos impositivos más bajos de España**. Su tipo máximo autonómico es del 20,50%, frente al 25,50% de Valencia o el 25,50% de Cataluña. Pero además de los tramos favorables, Madrid ofrece **deducciones autonómicas exclusivas** que muchos contribuyentes desconocen.
+
+En este artículo te explicamos cada deducción con sus importes, requisitos y cómo aplicarlas correctamente.
+
+### 1. Deducción por alquiler de vivienda habitual
+
+Si eres menor de 35 años y vives de alquiler en Madrid, puedes deducirte el **30% del alquiler pagado**, con un máximo de **1.000€ al año**.
+
+| Requisito | Detalle |
+|---|---|
+| Edad | Menor de 35 años |
+| Base imponible máxima | 25.620€ (individual) / 36.200€ (conjunta) |
+| Porcentaje | 30% del alquiler pagado |
+| Máximo | 1.000€ anuales |
+
+> **Consejo:** Asegúrate de que el contrato de alquiler esté registrado en la fianza de la Comunidad de Madrid. Sin este registro, Hacienda puede rechazar la deducción.
+
+### 2. Deducción por gastos educativos
+
+Una de las deducciones más generosas de Madrid. Puedes deducirte gastos de escolaridad, enseñanza de idiomas y uniformes de tus hijos.
+
+| Concepto | Porcentaje | Máximo por hijo |
+|---|---|---|
+| Escolaridad | 15% | 400€ |
+| Enseñanza de idiomas | 10% | 400€ |
+| Uniformes | 5% | 400€ |
+
+- Se aplica a hijos en **educación infantil, primaria, ESO, bachillerato y FP**
+- Los gastos de comedor escolar **no son deducibles**
+- Incluye academias de idiomas extraescolares
+
+### 3. Deducción por cuidado de hijos menores de 3 años
+
+Para familias con hijos pequeños, Madrid ofrece una deducción del **20% de las cuotas de Seguridad Social** del empleado del hogar, con un máximo de **400€ al año**.
+
+- El hijo debe ser menor de 3 años
+- Ambos progenitores deben trabajar
+- El empleado debe estar dado de alta en el Régimen Especial de Empleados del Hogar
+
+### 4. Deducción por acogimiento familiar de menores
+
+Si acoges a un menor en tu hogar, puedes deducirte:
+
+| Tipo de acogimiento | Importe |
+|---|---|
+| Primer menor acogido | 600€ |
+| Segundo menor acogido | 750€ |
+| Tercer menor y sucesivos | 900€ |
+
+### 5. Deducción por nacimiento o adopción
+
+Por cada hijo nacido o adoptado en el ejercicio, puedes deducirte **600€**. Esta deducción es compatible con las deducciones estatales por maternidad.
+
+### 6. Deducción por familias con dos o más descendientes e ingresos reducidos
+
+Si tienes dos o más hijos y tu base imponible no supera los 24.000€ (individual), puedes deducirte **10% de la cuota íntegra autonómica**.
+
+### 7. Deducción por inversión en empresas de nueva creación (Business Angels)
+
+Madrid incentiva la inversión en startups con una deducción del **30% de las cantidades invertidas**, con un máximo de **6.000€**.
+
+| Requisito | Detalle |
+|---|---|
+| Tipo de empresa | Nueva creación (< 3 años) |
+| Participación máxima | 40% del capital |
+| Permanencia mínima | 3 años |
+| Deducción | 30% de la inversión |
+| Máximo | 6.000€ |
+
+### 8. Deducción por donativos
+
+Las donaciones a fundaciones y ONGs registradas en Madrid tienen una deducción del **15%**, sin límite máximo.
+
+### Tramos IRPF de Madrid 2025: los más bajos de España
+
+Además de las deducciones, Madrid tiene los tramos autonómicos más favorables:
+
+| Base liquidable | Tipo autonómico | Tipo estatal | Tipo total |
+|---|---|---|---|
+| Hasta 13.362€ | 8,50% | 9,50% | 18,00% |
+| 13.362 - 18.572€ | 10,70% | 12,00% | 22,70% |
+| 18.572 - 35.200€ | 12,80% | 15,00% | 27,80% |
+| 35.200 - 57.320€ | 17,40% | 18,50% | 35,90% |
+| Más de 57.320€ | 20,50% | 22,50% | 43,00% |
+
+Compara el tipo máximo de Madrid (43%) con el de Cataluña (50%) o Valencia (54%). La diferencia puede suponer **miles de euros** en rentas altas.
+
+### ¿Cómo aplicar estas deducciones correctamente?
+
+1. **Verifica tu residencia fiscal**: Debes haber vivido en Madrid más de 183 días del año
+2. **Reúne la documentación**: Contratos de alquiler, facturas de colegio, certificados de donaciones
+3. **Usa nuestro simulador**: Calcula automáticamente todas las deducciones madrileñas que te corresponden
+4. **Consulta con un asesor**: Nuestro equipo conoce cada particularidad de la normativa madrileña
+
+> **¿Quieres ver todas las deducciones de Madrid en detalle?** Visita nuestra [página especializada en la Comunidad de Madrid](/madrid) con información completa sobre cada deducción y los tramos IRPF autonómicos.
+
+### Conclusión
+
+La Comunidad de Madrid es, fiscalmente, una de las regiones más favorables de España. Entre los tipos bajos y las deducciones autonómicas, un contribuyente medio puede ahorrarse entre **200€ y 1.500€** respecto a otras comunidades. No dejes dinero sobre la mesa: aplica todas las deducciones que te corresponden.
+  `,
+
   "estoy-obligado-declarar-renta-2025": `
 ## ¿Quién está obligado a declarar en 2025?
 
