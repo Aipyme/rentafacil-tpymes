@@ -19,6 +19,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    allowedHosts: "all",
     fs: {
       strict: true,
       allow: [path.resolve(import.meta.dirname)],

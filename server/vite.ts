@@ -27,9 +27,18 @@ export async function setupVite(app: Express, server: any) {
 
   const baseConfig = loadedConfig?.config || {};
 
+  // Override server.allowedHosts to allow all hosts (needed for proxy access)
+  if (baseConfig.server) {
+    baseConfig.server.allowedHosts = true as any;
+  }
+
   const vite = await createViteServer(
     mergeConfig(baseConfig, {
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        allowedHosts: true as any,
+        hmr: { server },
+      },
       appType: "spa",
     })
   );

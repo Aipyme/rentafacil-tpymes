@@ -829,3 +829,51 @@
 [2026-03-14T19:55:29.264Z] 
 [2026-03-14T19:55:30.624Z] 3:55:30 PM [vite] (client) Re-optimizing dependencies because vite config has changed
 [2026-03-14T19:55:30.647Z] 3:55:30 PM [express] serving on port 5000
+[2026-03-14T21:25:55.300Z] 5:25:55 PM [vite] (client) hmr update /src/App.tsx, /src/index.css
+[2026-03-14T21:26:05.696Z] Dev server process group stopped
+[2026-03-14T21:26:05.718Z] ELIFECYCLE  Command failed.
+[2026-03-14T21:26:05.729Z] Dev server exited with code -15
+[2026-03-14T21:26:08.703Z] Starting dev server with command: pnpm run dev
+[2026-03-14T21:26:09.104Z] 
+[2026-03-14T21:26:09.105Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T21:26:09.105Z] > tsx server/index.ts
+[2026-03-14T21:26:09.106Z] 
+[2026-03-14T21:26:10.343Z] 5:26:10 PM [express] serving on port 5000
+[2026-03-14T21:27:48.023Z] 5:27:48 PM [vite] (client) hmr update /src/App.tsx, /src/index.css
+[2026-03-14T21:28:46.954Z] 5:28:46 PM [vite] (client) hmr update /src/components/ui/sonner.tsx, /src/index.css
+[2026-03-14T21:28:51.036Z] Dev server process group stopped
+[2026-03-14T21:28:51.056Z] ELIFECYCLE  Command failed.
+[2026-03-14T21:28:51.083Z] Dev server exited with code -15
+[2026-03-14T21:28:54.041Z] Starting dev server with command: pnpm run dev
+[2026-03-14T21:28:54.451Z] 
+[2026-03-14T21:28:54.452Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T21:28:54.453Z] > tsx server/index.ts
+[2026-03-14T21:28:54.453Z] 
+[2026-03-14T21:28:55.693Z] 5:28:55 PM [express] serving on port 5000
+[2026-03-14T21:29:24.529Z] Dev server process group stopped
+[2026-03-14T21:29:24.547Z] ELIFECYCLE  Command failed.
+[2026-03-14T21:29:24.574Z] Dev server exited with code -15
+[2026-03-14T21:29:27.533Z] Starting dev server with command: pnpm run dev
+[2026-03-14T21:29:27.923Z] 
+[2026-03-14T21:29:27.924Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T21:29:27.924Z] > tsx server/index.ts
+[2026-03-14T21:29:27.925Z] 
+[2026-03-14T21:29:29.242Z] 5:29:29 PM [express] serving on port 5000
+[2026-03-14T21:29:55.256Z] Dev server process group stopped
+[2026-03-14T21:29:55.277Z] ELIFECYCLE  Command failed.
+[2026-03-14T21:29:55.303Z] Dev server exited with code -15
+[2026-03-14T21:29:58.260Z] Starting dev server with command: pnpm run dev
+[2026-03-14T21:29:58.660Z] 
+[2026-03-14T21:29:58.661Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T21:29:58.661Z] > tsx server/index.ts
+[2026-03-14T21:29:58.662Z] 
+[2026-03-14T21:30:00.077Z] 5:30:00 PM [express] serving on port 5000
+[2026-03-14T21:41:29.993Z] Dev server process group stopped
+[2026-03-14T21:41:30.012Z] ELIFECYCLE  Command failed.
+[2026-03-14T21:41:30.040Z] Dev server exited with code -15
+[2026-03-14T21:41:32.996Z] Starting dev server with command: pnpm run dev
+[2026-03-14T21:41:33.424Z] 
+[2026-03-14T21:41:33.425Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-14T21:41:33.426Z] > tsx server/index.ts
+[2026-03-14T21:41:33.426Z] 
+[2026-03-14T21:41:34.831Z] 5:41:34 PM [express] serving on port 5000

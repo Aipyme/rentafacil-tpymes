@@ -12,6 +12,8 @@ import AvisoLegal from "@/pages/AvisoLegal";
 import PoliticaPrivacidad from "@/pages/PoliticaPrivacidad";
 import PoliticaCookies from "@/pages/PoliticaCookies";
 import NotFound from "@/pages/NotFound";
+import DemoAlfredo from "@/pages/DemoAlfredo";
+import Andalucia from "@/pages/Andalucia";
 
 function AppRouter() {
   return (
@@ -24,6 +26,8 @@ function AppRouter() {
       <Route path="/aviso-legal" component={AvisoLegal} />
       <Route path="/privacidad" component={PoliticaPrivacidad} />
       <Route path="/cookies" component={PoliticaCookies} />
+      <Route path="/demo-alfredo" component={DemoAlfredo} />
+      <Route path="/andalucia" component={Andalucia} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
