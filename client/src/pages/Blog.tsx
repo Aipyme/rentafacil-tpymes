@@ -29,7 +29,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Obligaciones",
     readTime: "5 min",
     date: "2025-03-15",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-obligacion-declarar_42640c5c.png",
   },
   {
     slug: "deducciones-autonomicas-2025-guia-completa",
@@ -38,7 +38,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Deducciones",
     readTime: "8 min",
     date: "2025-03-10",
-    image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=600&h=400&fit=crop",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-deducciones-autonomicas_d7e0807f.png",
   },
   {
     slug: "dos-pagadores-declaracion-renta",
@@ -47,7 +47,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Situaciones",
     readTime: "6 min",
     date: "2025-03-05",
-    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&h=400&fit=crop",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-dos-pagadores_141bd376.png",
   },
   {
     slug: "hipoteca-antes-2013-deduccion",
@@ -56,7 +56,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Deducciones",
     readTime: "4 min",
     date: "2025-02-28",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&h=400&fit=crop",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-hipoteca_e5df8700.png",
   },
   {
     slug: "plan-pensiones-reduccion-irpf",
@@ -65,7 +65,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Deducciones",
     readTime: "5 min",
     date: "2025-02-20",
-    image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&h=400&fit=crop",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-plan-pensiones_b38167a8.png",
   },
   {
     slug: "declaracion-conjunta-individual-que-conviene",
@@ -74,7 +74,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Situaciones",
     readTime: "6 min",
     date: "2025-02-15",
-    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=400&fit=crop",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-conjunta-individual_0a75a878.png",
   },
   {
     slug: "errores-comunes-declaracion-renta",
@@ -83,7 +83,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Consejos",
     readTime: "7 min",
     date: "2025-02-10",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-errores-comunes_83a5c011.png",
   },
   {
     slug: "vehiculo-electrico-deduccion-2025",
@@ -92,7 +92,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Deducciones",
     readTime: "4 min",
     date: "2025-02-05",
-    image: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=600&h=400&fit=crop",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-vehiculo-electrico_05afea3c.png",
   },
 ];
 
