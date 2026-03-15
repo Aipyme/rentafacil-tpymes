@@ -70,7 +70,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <Link href="/empezar">
             <Button className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-6 shadow-lg shadow-emerald-200/50 transition-all hover:shadow-emerald-300/50 hover:-translate-y-0.5">
-              Hacer mi renta
+              Empezar
             </Button>
           </Link>
         </div>
@@ -124,7 +124,7 @@ export default function Navbar() {
               </Link>
               <Link href="/empezar" onClick={() => setIsOpen(false)}>
                 <Button className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold">
-                  Hacer mi renta
+                  Empezar
                 </Button>
               </Link>
             </div>

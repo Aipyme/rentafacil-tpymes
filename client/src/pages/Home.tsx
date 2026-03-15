@@ -90,7 +90,7 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
                 <Clock className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-xs font-medium text-white/80">
-                  Campaña Renta 2025 — Desde el 8 de abril
+                  Renta 2025 — Campaña abril 2026
                 </span>
               </div>
 
@@ -342,115 +342,52 @@ export default function Home() {
 
       {/* ===== PRECIOS ===== */}
       <section id="precios" className="py-16 lg:py-24 bg-[#f7f5f2]">
-        <div className="container">
+        <div className="container max-w-3xl">
           <FadeUp>
-            <div className="text-center mb-12">
+            <div className="text-center">
               <span className="inline-block text-xs font-semibold text-[#059669] uppercase tracking-widest mb-3">
                 Precios
               </span>
-              <h2 className="font-['DM_Sans'] text-3xl lg:text-4xl font-bold text-[#1a365d] mb-4">
-                Transparentes y sin sorpresas
+              <h2 className="font-['DM_Sans'] text-3xl lg:text-4xl font-bold text-[#1a365d] mb-5">
+                Precio ajustado a tu caso
               </h2>
-              <p className="text-gray-500 max-w-xl mx-auto">
-                Precio fijo. Sin letra pequeña. Solo pagas si presentamos tu declaración.
+              <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
+                No todas las declaraciones son iguales. Por eso primero analizamos tu situación y, antes de empezar, te mostramos un precio cerrado según la complejidad de tu caso.
               </p>
             </div>
           </FadeUp>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              {
-                name: "Renta Simple",
-                price: "49",
-                desc: "1 pagador, sin inmuebles ni inversiones",
-                features: [
-                  "Simulación gratuita",
-                  "Recogida automática de datos",
-                  "Revisión por asesor",
-                  "Presentación ante AEAT",
-                  "Soporte por email",
-                ],
-                cta: "Empezar",
-                popular: false,
-              },
-              {
-                name: "Renta Estándar",
-                price: "69",
-                desc: "2 pagadores, inmuebles o deducciones especiales",
-                features: [
-                  "Todo lo de Renta Simple",
-                  "Análisis de deducciones autonómicas",
-                  "Optimización fiscal avanzada",
-                  "Soporte prioritario",
-                  "Informe fiscal personalizado",
-                ],
-                cta: "Empezar",
-                popular: true,
-              },
-              {
-                name: "Renta Premium",
-                price: "99",
-                desc: "Casos complejos, inversiones, alquileres",
-                features: [
-                  "Todo lo de Renta Estándar",
-                  "Asesor fiscal dedicado",
-                  "Consulta telefónica incluida",
-                  "Planificación fiscal futura",
-                  "Revisión de años anteriores",
-                ],
-                cta: "Empezar",
-                popular: false,
-              },
-            ].map((plan, i) => (
-              <FadeUp key={i} delay={i * 0.15}>
-                <Card
-                  className={`border-0 h-full relative overflow-hidden ${
-                    plan.popular
-                      ? "shadow-2xl shadow-emerald-200/40 ring-2 ring-[#059669]"
-                      : "shadow-lg shadow-gray-200/50"
-                  } bg-white`}
-                >
-                  {plan.popular && (
-                    <div className="absolute top-0 right-0 bg-[#059669] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-bl-lg">
-                      Popular
-                    </div>
-                  )}
-                  <CardContent className="p-8">
-                    <h3 className="font-['DM_Sans'] font-bold text-[#1a365d] text-lg mb-1">
-                      {plan.name}
-                    </h3>
-                    <p className="text-xs text-gray-400 mb-4">{plan.desc}</p>
-                    <div className="flex items-baseline gap-1 mb-6">
-                      <span className="font-['DM_Sans'] text-4xl font-bold text-[#1a365d]">
-                        €{plan.price}
-                      </span>
-                      <span className="text-sm text-gray-400">/declaración</span>
-                    </div>
-                    <ul className="space-y-3 mb-8">
-                      {plan.features.map((f, j) => (
-                        <li key={j} className="flex items-start gap-2.5 text-sm text-gray-600">
-                          <CheckCircle2 className="w-4 h-4 text-[#059669] mt-0.5 shrink-0" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link href="/empezar">
+          <FadeUp delay={0.15}>
+            <Card className="border-0 shadow-xl shadow-gray-200/50 bg-white overflow-hidden">
+              <CardContent className="p-8 md:p-10">
+                <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+                  <div className="flex-1 space-y-4">
+                    {[
+                      { text: "Precio cerrado antes de empezar" },
+                      { text: "Sin sorpresas" },
+                      { text: "Sin compromiso inicial" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-[#059669] shrink-0" />
+                        <span className="text-[#1a365d] font-medium">{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="shrink-0">
+                    <Link href="/simulador">
                       <Button
-                        className={`w-full font-semibold h-11 ${
-                          plan.popular
-                            ? "bg-[#059669] hover:bg-[#047857] text-white shadow-lg shadow-emerald-200/50"
-                            : "bg-[#1a365d] hover:bg-[#1a365d]/90 text-white"
-                        }`}
+                        size="lg"
+                        className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-8 h-13 text-base shadow-xl shadow-emerald-200/50 transition-all hover:-translate-y-0.5 w-full md:w-auto"
                       >
-                        {plan.cta}
-                        <ChevronRight className="w-4 h-4 ml-1" />
+                        <Calculator className="w-4 h-4 mr-2" />
+                        Simula gratis y descubre tu precio
                       </Button>
                     </Link>
-                  </CardContent>
-                </Card>
-              </FadeUp>
-            ))}
-          </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </FadeUp>
         </div>
       </section>
 
