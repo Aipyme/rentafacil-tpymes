@@ -23,6 +23,33 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "deducciones-andalucia-2025",
+    title: "Deducciones en Andalucía 2025: ahorra en tu renta con estas ventajas fiscales",
+    excerpt: "Andalucía ofrece deducciones exclusivas por alquiler joven, ayuda doméstica, adopción internacional y más. Descubre todas las que puedes aplicar en tu declaración y cuánto puedes recuperar.",
+    category: "Deducciones",
+    readTime: "7 min",
+    date: "2025-03-22",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-deducciones-andalucia_658e6f29.jpg",
+  },
+  {
+    slug: "deducciones-cataluna-2025",
+    title: "Deducciones en Cataluña 2025: guía completa para tu declaración",
+    excerpt: "Cataluña tiene deducciones propias por alquiler, nacimiento, donaciones lingüísticas e inversión en startups. Te explicamos cada una con importes, requisitos y cómo no dejar dinero sobre la mesa.",
+    category: "Deducciones",
+    readTime: "7 min",
+    date: "2025-03-21",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-deducciones-cataluna_3722c79b.jpg",
+  },
+  {
+    slug: "deducciones-valencia-2025",
+    title: "Deducciones en Valencia 2025: todas las ventajas fiscales de la Comunitat",
+    excerpt: "La Comunitat Valenciana ofrece deducciones generosas por alquiler, material escolar, conciliación familiar y eficiencia energética. Conoce cada deducción y maximiza tu devolución.",
+    category: "Deducciones",
+    readTime: "7 min",
+    date: "2025-03-21",
+    image: "https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/blog-deducciones-valencia_427667a5.jpg",
+  },
+  {
     slug: "deducciones-madrid-2025",
     title: "Deducciones en Madrid 2025: todas las que puedes aplicar en tu renta",
     excerpt: "La Comunidad de Madrid ofrece los tipos impositivos más bajos de España y deducciones exclusivas por alquiler, gastos educativos, acogimiento y más. Te explicamos cada una con importes y requisitos.",

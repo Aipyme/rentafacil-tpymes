@@ -14,6 +14,332 @@ import { useSEO } from "@/hooks/useSEO";
 
 // Contenido completo de cada artículo
 const ARTICLE_CONTENT: Record<string, string> = {
+  "deducciones-andalucia-2025": `
+## Deducciones en Andalucía 2025: la guía completa
+
+Andalucía es la comunidad autónoma más poblada de España y cuenta con un **régimen fiscal propio** que incluye deducciones exclusivas en el IRPF. Muchos contribuyentes andaluces desconocen estas ventajas y pierden cientos de euros cada año.
+
+En este artículo te explicamos cada deducción autonómica andaluza con sus importes, requisitos y cómo aplicarlas correctamente en tu declaración de la renta 2025.
+
+### 1. Deducción por alquiler de vivienda habitual
+
+Si eres menor de 35 años y vives de alquiler en Andalucía, puedes deducirte el **15% del alquiler pagado**, con un máximo de **500€ al año**.
+
+| Requisito | Detalle |
+|---|---|
+| Edad | Menor de 35 años |
+| Base imponible máxima | 19.000€ (individual) / 24.000€ (conjunta) |
+| Porcentaje | 15% del alquiler pagado |
+| Máximo | 500€ anuales |
+
+> **Consejo:** Conserva todos los recibos de alquiler y asegúrate de que el contrato está depositado en la fianza de la Junta de Andalucía.
+
+### 2. Deducción por inversión en vivienda protegida
+
+Si has adquirido una vivienda protegida en Andalucía, puedes deducirte el **2% del precio de adquisición** (sin incluir impuestos).
+
+- La vivienda debe tener calificación definitiva de protegida
+- Debe ser tu vivienda habitual
+- Compatible con la deducción estatal por hipoteca (si aplica)
+
+### 3. Deducción por ayuda doméstica
+
+Para contribuyentes que contratan empleados del hogar, Andalucía ofrece una deducción del **15% de las cotizaciones a la Seguridad Social**, con un máximo de **250€ al año**.
+
+| Requisito | Detalle |
+|---|---|
+| Tipo de contrato | Empleado del hogar dado de alta en SS |
+| Porcentaje | 15% de las cotizaciones |
+| Máximo | 250€ anuales |
+| Condición | Ambos cónyuges deben trabajar (si matrimonio) |
+
+### 4. Deducción por adopción internacional
+
+Por cada adopción internacional formalizada en el ejercicio, puedes deducirte **600€**. Esta deducción es compatible con las deducciones estatales por maternidad.
+
+### 5. Deducción para madres o padres de familia monoparental
+
+Las familias monoparentales con hijos a cargo pueden deducirse **100€ anuales**. Es una deducción fija que no depende de la renta.
+
+### 6. Deducción por discapacidad
+
+Los contribuyentes con discapacidad reconocida tienen derecho a deducciones según el grado:
+
+| Grado de discapacidad | Importe |
+|---|---|
+| 33% o superior | 100€ |
+| 65% o superior | 150€ |
+| Necesidad de ayuda de terceros | 100€ adicionales |
+
+### 7. Deducción por donativos
+
+Las donaciones a fundaciones andaluzas y entidades de interés social tienen una deducción del **10%** del importe donado.
+
+### 8. Deducción por inversión en empresas de nueva creación
+
+Andalucía incentiva la inversión en startups con una deducción del **20% de las cantidades invertidas**, con un máximo de **4.000€**.
+
+| Requisito | Detalle |
+|---|---|
+| Tipo de empresa | Nueva creación (< 3 años) |
+| Sede social | En Andalucía |
+| Participación máxima | 40% del capital |
+| Deducción | 20% de la inversión |
+| Máximo | 4.000€ |
+
+### Tramos IRPF de Andalucía 2025
+
+Los tramos autonómicos andaluces son:
+
+| Base liquidable | Tipo autonómico | Tipo estatal | Tipo total |
+|---|---|---|---|
+| Hasta 13.362€ | 9,50% | 9,50% | 19,00% |
+| 13.362 - 21.320€ | 12,00% | 12,00% | 24,00% |
+| 21.320 - 35.200€ | 15,00% | 15,00% | 30,00% |
+| 35.200 - 60.000€ | 18,50% | 18,50% | 37,00% |
+| 60.000 - 120.000€ | 22,50% | 22,50% | 45,00% |
+| Más de 120.000€ | 24,50% | 24,50% | 49,00% |
+
+### ¿Cómo aplicar estas deducciones correctamente?
+
+1. **Verifica tu residencia fiscal**: Debes haber vivido en Andalucía más de 183 días del año
+2. **Reúne la documentación**: Contratos de alquiler, certificados de discapacidad, facturas
+3. **Usa nuestro simulador**: Calcula automáticamente todas las deducciones andaluzas
+4. **Consulta con un asesor**: Nuestro equipo conoce cada particularidad de la normativa andaluza
+
+> **¿Quieres ver todas las deducciones de Andalucía en detalle?** Visita nuestra [página especializada en Andalucía](/andalucia) con información completa sobre cada deducción y los tramos IRPF autonómicos.
+
+### Conclusión
+
+Andalucía ofrece un abanico de deducciones que, bien aplicadas, pueden suponer un ahorro de **100€ a 600€** en tu declaración. No dejes dinero sobre la mesa: revisa cada deducción y asegúrate de aplicar todas las que te corresponden.
+  `,
+
+  "deducciones-cataluna-2025": `
+## Deducciones en Cataluña 2025: la guía completa
+
+Cataluña tiene un régimen fiscal con **tramos autonómicos más elevados** que la media española, pero también ofrece **deducciones propias** que pueden compensar significativamente la factura fiscal. Muchos contribuyentes catalanes desconocen estas ventajas.
+
+En este artículo te explicamos cada deducción autonómica catalana con sus importes, requisitos y cómo aplicarlas en tu declaración de la renta 2025.
+
+### 1. Deducción por alquiler de vivienda habitual
+
+Si vives de alquiler en Cataluña, puedes deducirte el **10% del alquiler pagado**, con un máximo de **300€ al año** (600€ en tributación conjunta).
+
+| Requisito | Detalle |
+|---|---|
+| Edad | Cualquier edad |
+| Base imponible máxima | 20.000€ (individual) / 30.000€ (conjunta) |
+| Porcentaje | 10% del alquiler pagado |
+| Máximo | 300€ (individual) / 600€ (conjunta) |
+
+> **Importante:** El contrato de alquiler debe estar depositado en el INCASÒL (Institut Català del Sòl). Sin este depósito, la deducción puede ser rechazada.
+
+### 2. Deducción por nacimiento o adopción
+
+Por cada hijo nacido o adoptado en el ejercicio, puedes deducirte **150€**. Esta cantidad se incrementa en caso de parto múltiple.
+
+| Situación | Importe |
+|---|---|
+| Nacimiento o adopción | 150€ por hijo |
+| Parto o adopción múltiple | 150€ adicionales por cada hijo a partir del segundo |
+
+### 3. Deducción por donaciones a entidades de fomento del catalán
+
+Las donaciones a entidades que promueven el uso de la lengua catalana tienen una deducción del **15%** del importe donado.
+
+- Las entidades deben estar reconocidas por la Generalitat
+- No hay límite máximo de deducción
+- Compatible con la deducción estatal por donativos
+
+### 4. Deducción por rehabilitación de vivienda habitual
+
+Si has realizado obras de rehabilitación en tu vivienda habitual, puedes deducirte el **1,5% del importe invertido**.
+
+| Requisito | Detalle |
+|---|---|
+| Tipo de obras | Rehabilitación de vivienda habitual |
+| Porcentaje | 1,5% del coste |
+| Condición | Obras que mejoren la habitabilidad o eficiencia |
+
+### 5. Deducción por inversión en empresas de nueva creación (Business Angels)
+
+Cataluña incentiva la inversión en startups con una deducción del **30% de las cantidades invertidas**, con un máximo de **6.000€**.
+
+| Requisito | Detalle |
+|---|---|
+| Tipo de empresa | Nueva creación (< 3 años) |
+| Sede social | En Cataluña |
+| Participación máxima | 35% del capital |
+| Permanencia mínima | 3 años |
+| Deducción | 30% de la inversión |
+| Máximo | 6.000€ |
+
+### 6. Deducción por donativos a entidades medioambientales
+
+Las donaciones a entidades dedicadas a la protección del medio ambiente en Cataluña tienen una deducción del **15%**.
+
+### 7. Deducción para contribuyentes viudos
+
+Los contribuyentes viudos con hijos a cargo pueden deducirse **150€ anuales**.
+
+### 8. Deducción por intereses de préstamos para estudios
+
+Los intereses pagados por préstamos destinados a estudios de máster y doctorado tienen una deducción del **100%**, con un máximo de **300€ al año**.
+
+| Requisito | Detalle |
+|---|---|
+| Tipo de estudios | Máster o doctorado |
+| Porcentaje | 100% de los intereses |
+| Máximo | 300€ anuales |
+
+### Tramos IRPF de Cataluña 2025
+
+Cataluña tiene los tramos autonómicos más progresivos de España:
+
+| Base liquidable | Tipo autonómico | Tipo estatal | Tipo total |
+|---|---|---|---|
+| Hasta 12.450€ | 10,50% | 9,50% | 20,00% |
+| 12.450 - 17.707€ | 12,00% | 12,00% | 24,00% |
+| 17.707 - 21.000€ | 14,00% | 15,00% | 29,00% |
+| 21.000 - 33.007€ | 15,00% | 15,00% | 30,00% |
+| 33.007 - 53.407€ | 18,80% | 18,50% | 37,30% |
+| 53.407 - 90.000€ | 21,50% | 22,50% | 44,00% |
+| 90.000 - 120.000€ | 23,50% | 22,50% | 46,00% |
+| Más de 120.000€ | 25,50% | 24,50% | 50,00% |
+
+El tipo máximo en Cataluña (50%) es significativamente superior al de Madrid (43%). Para rentas altas, la diferencia puede suponer **miles de euros**, lo que hace aún más importante aprovechar todas las deducciones disponibles.
+
+### ¿Cómo aplicar estas deducciones correctamente?
+
+1. **Verifica tu residencia fiscal**: Debes haber vivido en Cataluña más de 183 días del año
+2. **Reúne la documentación**: Contratos de alquiler, certificados de donaciones, facturas de obras
+3. **Usa nuestro simulador**: Calcula automáticamente todas las deducciones catalanas
+4. **Consulta con un asesor**: Nuestro equipo conoce cada particularidad de la normativa catalana
+
+> **¿Quieres ver todas las deducciones de Cataluña en detalle?** Visita nuestra [página especializada en Cataluña](/cataluna) con información completa sobre cada deducción y los tramos IRPF autonómicos.
+
+### Conclusión
+
+Aunque Cataluña tiene tipos impositivos elevados, las deducciones autonómicas pueden suponer un ahorro de **150€ a 1.000€** si se aplican correctamente. Especialmente relevantes son las deducciones por inversión en startups (hasta 6.000€) y por alquiler. No dejes dinero sobre la mesa.
+  `,
+
+  "deducciones-valencia-2025": `
+## Deducciones en la Comunitat Valenciana 2025: la guía completa
+
+La Comunitat Valenciana ofrece un amplio catálogo de **deducciones autonómicas** que cubren desde el alquiler de vivienda hasta la conciliación familiar, pasando por el material escolar y la eficiencia energética. Muchos contribuyentes valencianos desconocen estas ventajas.
+
+En este artículo te explicamos cada deducción con sus importes, requisitos y cómo aplicarlas en tu declaración de la renta 2025.
+
+### 1. Deducción por alquiler de vivienda habitual
+
+La Comunitat Valenciana tiene una de las deducciones por alquiler más generosas de España: el **20% del alquiler pagado**, con un máximo de **700€ al año**.
+
+| Requisito | Detalle |
+|---|---|
+| Edad | Menor de 35 años, o discapacidad ≥33% |
+| Base imponible máxima | 25.000€ (individual) / 40.000€ (conjunta) |
+| Porcentaje | 20% del alquiler pagado |
+| Máximo | 700€ anuales |
+
+> **Dato clave:** Si tienes más de 35 años pero tu contrato es anterior a 2015, también puedes aplicar esta deducción bajo el régimen transitorio.
+
+### 2. Deducción por material escolar
+
+Por cada hijo en edad escolar, puedes deducirte **100€ por hijo** para material escolar.
+
+| Requisito | Detalle |
+|---|---|
+| Edad del hijo | En educación primaria o ESO |
+| Importe | 100€ por hijo |
+| Base imponible máxima | 25.000€ (individual) / 40.000€ (conjunta) |
+
+### 3. Deducción por nacimiento, adopción o acogimiento
+
+Por cada hijo nacido, adoptado o acogido en el ejercicio:
+
+| Situación | Importe |
+|---|---|
+| Primer hijo | 270€ |
+| Segundo hijo | 270€ |
+| Tercer hijo y sucesivos | 270€ |
+| Parto o adopción múltiple | 224€ adicionales por cada hijo |
+| Hijo con discapacidad ≥33% | 224€ adicionales |
+
+### 4. Deducción por conciliación del trabajo con la vida familiar
+
+Una deducción exclusiva de Valencia: **418€** para madres (o padres en caso de familia monoparental) con hijos menores de 3 años que trabajen fuera del hogar.
+
+| Requisito | Detalle |
+|---|---|
+| Hijo menor de | 3 años |
+| Condición | Madre trabajadora por cuenta ajena o propia |
+| Importe | 418€ |
+| Base imponible máxima | 25.000€ (individual) |
+
+### 5. Deducción por familia numerosa
+
+Las familias numerosas tienen deducciones adicionales:
+
+| Categoría | Importe |
+|---|---|
+| Familia numerosa general | 300€ |
+| Familia numerosa especial | 600€ |
+
+### 6. Deducción por obras de eficiencia energética
+
+Si has realizado obras para mejorar la eficiencia energética de tu vivienda, puedes deducirte el **20% del coste**, con un máximo de **700€**.
+
+| Requisito | Detalle |
+|---|---|
+| Tipo de obras | Mejora de eficiencia energética |
+| Porcentaje | 20% del coste |
+| Máximo | 700€ |
+| Condición | Vivienda habitual |
+
+### 7. Deducción por donativos medioambientales
+
+Las donaciones a entidades dedicadas a la defensa del medio ambiente en la Comunitat Valenciana tienen una deducción del **20%**.
+
+### 8. Deducción por discapacidad
+
+Los contribuyentes con discapacidad reconocida tienen derecho a deducciones según el grado:
+
+| Grado de discapacidad | Importe |
+|---|---|
+| 33% o superior | 179€ |
+| 65% o superior | 358€ |
+
+### Tramos IRPF de la Comunitat Valenciana 2025
+
+Valencia tiene tramos autonómicos progresivos:
+
+| Base liquidable | Tipo autonómico | Tipo estatal | Tipo total |
+|---|---|---|---|
+| Hasta 12.450€ | 10,00% | 9,50% | 19,50% |
+| 12.450 - 17.707€ | 11,00% | 12,00% | 23,00% |
+| 17.707 - 33.007€ | 13,90% | 15,00% | 28,90% |
+| 33.007 - 53.407€ | 18,00% | 18,50% | 36,50% |
+| 53.407 - 80.000€ | 23,50% | 22,50% | 46,00% |
+| 80.000 - 120.000€ | 24,50% | 22,50% | 47,00% |
+| 120.000 - 175.000€ | 25,00% | 24,50% | 49,50% |
+| Más de 175.000€ | 29,50% | 24,50% | 54,00% |
+
+El tipo máximo en Valencia (54%) es el más alto de España. Esto hace especialmente importante aprovechar todas las deducciones disponibles para reducir la factura fiscal.
+
+### ¿Cómo aplicar estas deducciones correctamente?
+
+1. **Verifica tu residencia fiscal**: Debes haber vivido en la Comunitat Valenciana más de 183 días del año
+2. **Reúne la documentación**: Contratos de alquiler, facturas de material escolar, certificados de eficiencia energética
+3. **Usa nuestro simulador**: Calcula automáticamente todas las deducciones valencianas
+4. **Consulta con un asesor**: Nuestro equipo conoce cada particularidad de la normativa valenciana
+
+> **¿Quieres ver todas las deducciones de Valencia en detalle?** Visita nuestra [página especializada en la Comunitat Valenciana](/valencia) con información completa sobre cada deducción y los tramos IRPF autonómicos.
+
+### Conclusión
+
+La Comunitat Valenciana ofrece deducciones muy generosas, especialmente en alquiler (hasta 700€), conciliación familiar (418€) y material escolar (100€/hijo). Un contribuyente medio con hijos puede ahorrarse entre **300€ y 1.500€** si aplica todas las deducciones correctamente. No dejes dinero sobre la mesa.
+  `,
+
   "deducciones-madrid-2025": `
 ## Deducciones en la Comunidad de Madrid 2025: la guía definitiva
 
