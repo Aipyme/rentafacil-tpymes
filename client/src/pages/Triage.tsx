@@ -142,9 +142,9 @@ function getComplejidad(data: TriageData): "simple" | "medio" | "complejo" | "no
 
 function getPrecio(complejidad: string): string {
   switch (complejidad) {
-    case "simple": return "49€";
-    case "medio": return "69€";
-    case "complejo": return "99€";
+    case "simple": return "Según caso";
+    case "medio": return "Según caso";
+    case "complejo": return "Según caso";
     default: return "—";
   }
 }
@@ -307,7 +307,7 @@ export default function Triage() {
         expedienteId,
         complejidad,
         plan: complejidad === 'simple' ? 'Renta Simple' : complejidad === 'medio' ? 'Renta Estándar' : complejidad === 'complejo' ? 'Renta Premium' : 'Consulta Especializada',
-        precio: complejidad === 'simple' ? '49€' : complejidad === 'medio' ? '69€' : complejidad === 'complejo' ? '99€' : 'A consultar',
+        precio: 'Según complejidad',
         deduccionesDetectadas: deducciones,
         documentosNecesarios: documentos,
         fechaRegistro: new Date().toISOString(),
@@ -1124,11 +1124,11 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                       {complejidad !== "no_apto" && (
                         <div className="bg-gradient-to-br from-[#1a365d] to-[#2d4a7a] rounded-2xl p-6 text-white">
                           <div className="text-center mb-4">
-                            <p className="text-white/60 text-sm mb-1">Precio del servicio</p>
-                            <p className="font-['DM_Sans'] text-5xl font-bold mb-1">
-                              {getPrecio(complejidad)}
+                            <p className="text-white/60 text-sm mb-1">Tu servicio recomendado</p>
+                            <p className="font-['DM_Sans'] text-3xl font-bold mb-1">
+                              {getPlan(complejidad)}
                             </p>
-                            <p className="text-white/40 text-xs">por declaración, IVA incluido</p>
+                            <p className="text-white/40 text-xs">Precio cerrado antes de empezar</p>
                           </div>
                           <div className="space-y-2">
                             {[

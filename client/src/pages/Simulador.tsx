@@ -594,10 +594,10 @@ export default function Simulador() {
                                 : "complejo"}
                             </strong>
                             {resultado.complejidad === "simple"
-                              ? " — ideal para nuestro servicio Renta Simple (49€)"
+                              ? " — ideal para nuestro servicio de renta simplificada"
                               : resultado.complejidad === "medio"
-                              ? " — recomendamos Renta Estándar (69€)"
-                              : " — recomendamos Renta Premium con asesor dedicado (99€)"}
+                              ? " — te recomendamos nuestro servicio con optimización fiscal"
+                              : " — te recomendamos nuestro servicio premium con asesor dedicado"}
                           </span>
                         </div>
 

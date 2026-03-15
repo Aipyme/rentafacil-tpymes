@@ -392,8 +392,8 @@ export default function Valencia() {
             <span className="text-emerald">Haz tu renta con expertos en la Comunitat Valenciana.</span>
           </h2>
           <p className="text-xl text-white/60 mb-10">
-            Desde 49€. Asesores que conocen cada deducción valenciana.
-            Simulador gratuito para ver cuánto te devuelven.
+            Asesores que conocen cada deducción valenciana.
+            Simulador gratuito para ver cuánto te devuelven. Precio cerrado antes de empezar.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

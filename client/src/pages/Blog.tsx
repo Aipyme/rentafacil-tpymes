@@ -355,7 +355,7 @@ export default function Blog() {
               ¿Prefieres que un experto haga tu renta?
             </h2>
             <p className="text-blue-200 mb-6 max-w-xl mx-auto">
-              Nuestros asesores fiscales se encargan de todo. Desde 49€, con revisión de deducciones incluida.
+              Nuestros asesores fiscales se encargan de todo. Con revisión de deducciones incluida y precio cerrado antes de empezar.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/simulador">

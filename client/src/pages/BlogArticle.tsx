@@ -726,7 +726,7 @@ Como hemos visto, la elección incorrecta puede costar entre 200€ y 1.500€. 
 
 Hacienda permite pagar el 60% en junio y el 40% en noviembre **sin intereses**. Muchos contribuyentes no lo saben y pagan todo de golpe, generando problemas de liquidez.
 
-> **Solución:** Un asesor fiscal profesional revisa todos estos puntos. Con Renta Fácil TPymes, nuestros expertos verifican cada deducción aplicable y optimizan tu declaración. Desde 49€.
+> **Solución:** Un asesor fiscal profesional revisa todos estos puntos. Con Renta Fácil TPymes, nuestros expertos verifican cada deducción aplicable y optimizan tu declaración.
   `,
 
   "vehiculo-electrico-deduccion-2025": `
@@ -923,7 +923,7 @@ export default function BlogArticle() {
               </Link>
               <Link href="/empezar">
                 <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#059669] text-white font-semibold rounded-xl text-sm hover:bg-[#047857] transition-colors">
-                  Hacer mi renta desde 49€
+                  Empezar mi renta
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>
