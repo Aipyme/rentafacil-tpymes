@@ -891,3 +891,6 @@
 [2026-03-15T07:45:32.590Z] 3:45:32 AM [vite] (client) hmr update /src/App.tsx, /src/index.css, /src/pages/BlogArticle.tsx
 [2026-03-15T07:46:54.828Z] 3:46:54 AM [vite] (client) hmr update /src/pages/BlogArticle.tsx, /src/index.css
 [2026-03-15T07:49:32.034Z] 3:49:32 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css
+[2026-03-15T07:53:38.720Z] 3:53:38 AM [vite] (client) hmr update /src/pages/Blog.tsx, /src/index.css
+[2026-03-15T07:53:39.045Z] 3:53:39 AM [vite] (client) hmr invalidate /src/pages/Blog.tsx Could not Fast Refresh ("BLOG_POSTS" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-03-15T07:53:39.046Z] 3:53:39 AM [vite] (client) hmr update /src/App.tsx, /src/index.css, /src/pages/BlogArticle.tsx
