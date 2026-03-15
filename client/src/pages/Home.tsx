@@ -2,6 +2,7 @@
  * Design: Fintech Institucional
  * Palette: Navy #1a365d, Emerald #059669, Warm gray #f7f5f2
  * Typography: DM Sans (headings) + Source Sans 3 (body)
+ * Tone: Claro, honesto, sin venta agresiva
  */
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
@@ -11,8 +12,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   Shield, Clock, Users, TrendingUp, CheckCircle2,
-  ArrowRight, Calculator, FileText, UserCheck, Zap,
-  Phone, Mail, ChevronRight, MapPin
+  ArrowRight, Calculator, FileText, UserCheck, Search,
+  ChevronRight, MapPin, Eye, DollarSign, Layers,
+  Target, Lightbulb
 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
@@ -61,7 +63,7 @@ function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 export default function Home() {
   useSEO({
     title: "Renta Fácil TPymes — Haz tu declaración de la renta sin complicaciones",
-    description: "Descubre en 2 minutos cuánto te devuelve Hacienda. Simulador gratuito de IRPF 2025 + gestión completa de tu declaración con el respaldo de más de 600 profesionales de Ayuda T Pymes.",
+    description: "Haz tu declaración de la renta de forma fácil, clara y sin perder tiempo. Analizamos tu caso, detectamos la complejidad y te mostramos el camino más adecuado para gestionarla con seguridad.",
     canonical: "/",
   });
   return (
@@ -70,7 +72,6 @@ export default function Home() {
 
       {/* ===== HERO ===== */}
       <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
-        {/* Background */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -81,7 +82,6 @@ export default function Home() {
 
         <div className="container relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left: Copy */}
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
@@ -95,14 +95,14 @@ export default function Home() {
               </div>
 
               <h1 className="font-['DM_Sans'] text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-white leading-[1.1] tracking-tight mb-6">
-                Descubre en 2 minutos{" "}
-                <span className="text-emerald-400">cuánto te devuelve</span>{" "}
-                Hacienda
+                Haz tu declaración de la renta{" "}
+                <span className="text-emerald-400">de forma fácil, clara</span>{" "}
+                y sin perder tiempo
               </h1>
 
               <p className="text-lg text-white/70 leading-relaxed mb-8 max-w-lg">
-                Simulador gratuito + gestión completa de tu declaración. 
-                Con el respaldo de más de 600 profesionales de Ayuda T Pymes.
+                Analizamos tu caso, detectamos si tu declaración es sencilla o necesita
+                revisión, y te mostramos el camino más adecuado para gestionarla con seguridad.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
@@ -112,38 +112,27 @@ export default function Home() {
                     className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-8 h-12 text-base shadow-xl shadow-emerald-900/30 transition-all hover:-translate-y-0.5 w-full sm:w-auto"
                   >
                     <Calculator className="w-4 h-4 mr-2" />
-                    Simular gratis
-                  </Button>
-                </Link>
-                <Link href="/empezar">
-                  <Button
-                    size="lg"
-                    className="bg-white/15 backdrop-blur-sm border border-white/25 text-white hover:bg-white/25 font-semibold px-8 h-12 text-base w-full sm:w-auto transition-all"
-                  >
-                    Hacer mi renta
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    Simula gratis y descubre tu precio
                   </Button>
                 </Link>
               </div>
 
-              {/* Trust badges */}
               <div className="flex items-center gap-6 mt-10 pt-8 border-t border-white/10">
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs text-white/50">Datos protegidos</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs text-white/50">+20.000 clientes</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs text-white/50">Análisis previo sin compromiso</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs text-white/50">Alianza BBVA</span>
+                  <span className="text-xs text-white/50">Precio cerrado antes de empezar</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs text-white/50 hidden sm:inline">Revisión humana cuando hace falta</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Right: Quick Preview Card */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
@@ -193,8 +182,24 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== BLOQUE CONFIANZA ===== */}
+      <section className="py-14 lg:py-20 bg-[#f7f5f2]">
+        <div className="container max-w-3xl text-center">
+          <FadeUp>
+            <h2 className="font-['DM_Sans'] text-2xl lg:text-3xl font-bold text-[#1a365d] mb-4">
+              Un proceso más claro desde el principio
+            </h2>
+            <p className="text-gray-500 text-lg leading-relaxed">
+              No todas las declaraciones son iguales.
+              Por eso primero analizamos tu situación y después te indicamos la mejor forma
+              de gestionarla, con un precio claro antes de empezar.
+            </p>
+          </FadeUp>
+        </div>
+      </section>
+
       {/* ===== CÓMO FUNCIONA ===== */}
-      <section id="como-funciona" className="py-16 lg:py-24 bg-[#f7f5f2]">
+      <section id="como-funciona" className="py-16 lg:py-24 bg-white">
         <div className="container">
           <FadeUp>
             <div className="text-center mb-12 lg:mb-16">
@@ -202,51 +207,54 @@ export default function Home() {
                 Proceso
               </span>
               <h2 className="font-['DM_Sans'] text-3xl lg:text-4xl font-bold text-[#1a365d] mb-4">
-                Tu renta en 3 pasos simples
+                Cómo funciona
               </h2>
-              <p className="text-gray-500 max-w-2xl mx-auto">
-                Hemos simplificado el proceso al máximo. Tú pones los datos, 
-                nosotros nos encargamos de todo lo demás.
-              </p>
             </div>
           </FadeUp>
 
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 step: "01",
                 icon: FileText,
-                title: "Comprueba tu caso",
-                desc: "Responde unas preguntas rápidas. En 2 minutos sabemos si tu renta es simple y cuánto podrías recuperar.",
+                title: "Rellenas tu simulación",
+                desc: "Respondes unas preguntas sencillas sobre tu situación personal y fiscal.",
                 color: "bg-[#1a365d]",
               },
               {
                 step: "02",
-                icon: Calculator,
-                title: "Sube tu documentación",
-                desc: "Te decimos exactamente qué documentos necesitas. Súbelos y nuestro sistema los procesa automáticamente.",
+                icon: Search,
+                title: "Analizamos tu caso",
+                desc: "Nuestro sistema detecta el nivel de complejidad de tu declaración y revisa si hay aspectos que requieren más atención.",
                 color: "bg-[#059669]",
               },
               {
                 step: "03",
-                icon: UserCheck,
-                title: "Un experto revisa y presenta",
-                desc: "Un asesor fiscal profesional revisa tu declaración, la optimiza y la presenta ante la AEAT.",
+                icon: Eye,
+                title: "Te mostramos el siguiente paso",
+                desc: "Te indicamos la mejor vía para gestionarla y el precio exacto antes de que decidas seguir.",
                 color: "bg-[#1a365d]",
               },
+              {
+                step: "04",
+                icon: UserCheck,
+                title: "Gestionamos tu renta",
+                desc: "Si continúas, tu caso sigue el flujo adecuado: resolución directa cuando es sencillo, revisión especializada cuando hace falta.",
+                color: "bg-[#059669]",
+              },
             ].map((item, i) => (
-              <FadeUp key={i} delay={i * 0.15}>
+              <FadeUp key={i} delay={i * 0.1}>
                 <Card className="border-0 shadow-lg shadow-gray-200/50 hover:shadow-xl transition-shadow h-full bg-white">
-                  <CardContent className="p-8">
-                    <div className="flex items-start justify-between mb-6">
-                      <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center`}>
+                  <CardContent className="p-7">
+                    <div className="flex items-start justify-between mb-5">
+                      <div className={`w-11 h-11 rounded-xl ${item.color} flex items-center justify-center`}>
                         <item.icon className="w-5 h-5 text-white" />
                       </div>
-                      <span className="font-['DM_Sans'] text-5xl font-bold text-gray-100">
+                      <span className="font-['DM_Sans'] text-4xl font-bold text-gray-100">
                         {item.step}
                       </span>
                     </div>
-                    <h3 className="font-['DM_Sans'] text-xl font-bold text-[#1a365d] mb-3">
+                    <h3 className="font-['DM_Sans'] text-lg font-bold text-[#1a365d] mb-2">
                       {item.title}
                     </h3>
                     <p className="text-gray-500 text-sm leading-relaxed">
@@ -257,28 +265,73 @@ export default function Home() {
               </FadeUp>
             ))}
           </div>
-
-          <FadeUp delay={0.4}>
-            <div className="text-center mt-10">
-              <Link href="/empezar">
-                <Button className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-8 h-12 shadow-lg shadow-emerald-200/50">
-                  Empezar ahora
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          </FadeUp>
         </div>
       </section>
 
-      {/* ===== POR QUÉ NOSOTROS ===== */}
+      {/* ===== POR QUÉ ES DIFERENTE ===== */}
+      <section className="py-16 lg:py-24 bg-[#f7f5f2]">
+        <div className="container">
+          <FadeUp>
+            <div className="text-center mb-12 lg:mb-16">
+              <span className="inline-block text-xs font-semibold text-[#059669] uppercase tracking-widest mb-3">
+                Diferente
+              </span>
+              <h2 className="font-['DM_Sans'] text-3xl lg:text-4xl font-bold text-[#1a365d] mb-4">
+                No es solo una gestoría
+              </h2>
+              <p className="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed">
+                En lugar de tratar todos los casos igual, analizamos primero tu situación
+                para que el proceso sea más claro, más eficiente y más ajustado a lo que realmente necesitas.
+              </p>
+            </div>
+          </FadeUp>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {[
+              {
+                icon: Search,
+                title: "Análisis previo",
+                desc: "Antes de empezar, evaluamos tu caso para no hacerte perder tiempo.",
+              },
+              {
+                icon: DollarSign,
+                title: "Precio claro",
+                desc: "Sabes cuánto cuesta antes de continuar.",
+              },
+              {
+                icon: Layers,
+                title: "Gestión adecuada según tu caso",
+                desc: "Las declaraciones sencillas siguen una vía más ágil. Las más complejas reciben revisión cuando de verdad hace falta.",
+              },
+            ].map((item, i) => (
+              <FadeUp key={i} delay={i * 0.12}>
+                <Card className="border-0 shadow-lg shadow-gray-200/50 h-full bg-white">
+                  <CardContent className="p-8 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-5">
+                      <item.icon className="w-6 h-6 text-[#059669]" />
+                    </div>
+                    <h3 className="font-['DM_Sans'] text-lg font-bold text-[#1a365d] mb-3">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </CardContent>
+                </Card>
+              </FadeUp>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== PARA QUIÉN ES ===== */}
       <section className="py-16 lg:py-24 bg-white">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <FadeUp>
               <img
                 src="https://d2xsxph8kpxj0f.cloudfront.net/310519663338874301/9cYuQahZqTNwQkcjbW6hjA/trust-section-TwVGpinYHUgi8fYwEqW7Pv.webp"
-                alt="Oficina profesional"
+                alt="Persona gestionando su renta"
                 className="rounded-2xl shadow-2xl shadow-gray-200/50 w-full"
               />
             </FadeUp>
@@ -286,55 +339,46 @@ export default function Home() {
             <div>
               <FadeUp>
                 <span className="inline-block text-xs font-semibold text-[#059669] uppercase tracking-widest mb-3">
-                  Ventajas
+                  Para ti
                 </span>
-                <h2 className="font-['DM_Sans'] text-3xl lg:text-4xl font-bold text-[#1a365d] mb-6">
-                  Automatización con respaldo humano real
+                <h2 className="font-['DM_Sans'] text-3xl lg:text-4xl font-bold text-[#1a365d] mb-5">
+                  ¿Para quién es este servicio?
                 </h2>
                 <p className="text-gray-500 mb-8 leading-relaxed">
-                  A diferencia de otras plataformas, no te dejamos solo con un algoritmo. 
-                  Cada declaración es revisada por un asesor fiscal profesional de nuestro equipo.
+                  Este servicio está pensado para personas que quieren resolver su declaración
+                  de la renta con más claridad, menos fricción y un proceso bien guiado desde el inicio.
                 </p>
               </FadeUp>
 
-              <div className="space-y-5">
-                {[
-                  {
-                    icon: Zap,
-                    title: "Tecnología + Humano",
-                    desc: "IA para el análisis rápido, asesor humano para la revisión final.",
-                  },
-                  {
-                    icon: Shield,
-                    title: "Máxima seguridad",
-                    desc: "Tus datos están protegidos con encriptación de nivel bancario.",
-                  },
-                  {
-                    icon: TrendingUp,
-                    title: "Optimización fiscal",
-                    desc: "Encontramos deducciones autonómicas y estatales que el borrador de Hacienda no incluye automáticamente.",
-                  },
-                  {
-                    icon: Phone,
-                    title: "Soporte real",
-                    desc: "Si tienes dudas, un profesional te atiende. Nada de chatbots.",
-                  },
-                ].map((item, i) => (
-                  <FadeUp key={i} delay={i * 0.1}>
-                    <div className="flex gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
-                        <item.icon className="w-5 h-5 text-[#059669]" />
-                      </div>
-                      <div>
-                        <h4 className="font-['DM_Sans'] font-semibold text-[#1a365d] mb-1">
-                          {item.title}
-                        </h4>
-                        <p className="text-sm text-gray-500">{item.desc}</p>
-                      </div>
+              <FadeUp delay={0.15}>
+                <p className="font-['DM_Sans'] font-semibold text-[#1a365d] mb-4">
+                  Ideal si:
+                </p>
+                <div className="space-y-4">
+                  {[
+                    "Quieres saber rápidamente si tu caso es sencillo o no",
+                    "No quieres empezar sin saber cuánto te va a costar",
+                    "Buscas una forma más clara de gestionar tu renta",
+                    "Valoras tener apoyo cuando tu caso lo necesita",
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-[#059669] mt-0.5 shrink-0" />
+                      <span className="text-gray-600">{item}</span>
                     </div>
-                  </FadeUp>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </FadeUp>
+
+              <FadeUp delay={0.3}>
+                <div className="mt-8">
+                  <Link href="/simulador">
+                    <Button className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-8 h-12 shadow-lg shadow-emerald-200/50">
+                      <Calculator className="w-4 h-4 mr-2" />
+                      Simula gratis y descubre tu precio
+                    </Button>
+                  </Link>
+                </div>
+              </FadeUp>
             </div>
           </div>
         </div>
@@ -352,7 +396,8 @@ export default function Home() {
                 Precio ajustado a tu caso
               </h2>
               <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-                No todas las declaraciones son iguales. Por eso primero analizamos tu situación y, antes de empezar, te mostramos un precio cerrado según la complejidad de tu caso.
+                No todas las declaraciones son iguales. Por eso, primero analizamos tu situación
+                y, antes de empezar, te mostramos un precio cerrado según la complejidad de tu caso.
               </p>
             </div>
           </FadeUp>
@@ -451,7 +496,6 @@ export default function Home() {
               <FadeUp key={i} delay={i * 0.1}>
                 <Link href={region.href}>
                   <Card className="border-0 shadow-lg shadow-gray-200/50 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer h-full bg-white group overflow-hidden">
-                    {/* Gradient top bar */}
                     <div className={`h-1.5 bg-gradient-to-r ${region.color}`} />
                     <CardContent className="p-6">
                       <div className={`w-10 h-10 rounded-lg ${region.iconBg} flex items-center justify-center mb-4`}>
@@ -485,6 +529,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== BLOQUE TRANQUILIDAD ===== */}
+      <section className="py-14 lg:py-20 bg-[#f7f5f2]">
+        <div className="container max-w-3xl text-center">
+          <FadeUp>
+            <Lightbulb className="w-8 h-8 text-[#059669] mx-auto mb-4" />
+            <h2 className="font-['DM_Sans'] text-2xl lg:text-3xl font-bold text-[#1a365d] mb-4">
+              Más claridad. Menos dudas. Mejor desde el principio.
+            </h2>
+            <p className="text-gray-500 text-lg leading-relaxed">
+              La mayoría de los problemas en este tipo de servicios empiezan cuando nadie
+              distingue bien entre un caso sencillo y uno complejo. Aquí el proceso empieza
+              justo al revés: primero analizamos, luego te orientamos, y solo después decides continuar.
+            </p>
+          </FadeUp>
+        </div>
+      </section>
+
       {/* ===== CTA FINAL ===== */}
       <section className="py-16 lg:py-24 bg-[#1a365d] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -493,32 +554,25 @@ export default function Home() {
         </div>
         <div className="container relative z-10 text-center">
           <FadeUp>
-            <h2 className="font-['DM_Sans'] text-3xl lg:text-5xl font-bold text-white mb-6 max-w-2xl mx-auto leading-tight">
-              ¿Listo para recuperar lo que es tuyo?
+            <h2 className="font-['DM_Sans'] text-3xl lg:text-5xl font-bold text-white mb-6 max-w-3xl mx-auto leading-tight">
+              Descubre en minutos cómo gestionar tu renta y cuánto te costará
             </h2>
             <p className="text-white/60 text-lg mb-8 max-w-xl mx-auto">
-              La campaña de la Renta 2025 empieza el 8 de abril. 
-              Comprueba gratis cuánto te devuelven.
+              Haz la simulación gratuita y te diremos cuál es la mejor vía para tu caso,
+              con un precio claro antes de empezar.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/simulador">
-                <Button
-                  size="lg"
-                  className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-10 h-13 text-base shadow-xl shadow-emerald-900/30 w-full sm:w-auto"
-                >
-                  <Calculator className="w-4 h-4 mr-2" />
-                  Simular gratis
-                </Button>
-              </Link>
-              <Link href="/empezar">
-                <Button
-                  size="lg"
-                  className="bg-white/15 backdrop-blur-sm border border-white/25 text-white hover:bg-white/25 font-semibold px-10 h-13 text-base w-full sm:w-auto transition-all"
-                >
-                  Contratar servicio
-                </Button>
-              </Link>
-            </div>
+            <Link href="/simulador">
+              <Button
+                size="lg"
+                className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-10 h-13 text-base shadow-xl shadow-emerald-900/30"
+              >
+                <Calculator className="w-4 h-4 mr-2" />
+                Simular mi renta gratis
+              </Button>
+            </Link>
+            <p className="text-white/40 text-sm mt-4">
+              Sin compromiso inicial · Precio claro antes de seguir
+            </p>
           </FadeUp>
         </div>
       </section>
@@ -534,24 +588,28 @@ export default function Home() {
           <div className="space-y-4">
             {[
               {
-                q: "¿Quién revisa mi declaración?",
-                a: "Un asesor fiscal profesional de Ayuda T Pymes, con experiencia desde 2008. No es solo un algoritmo: hay una persona real detrás.",
+                q: "¿La simulación es gratuita?",
+                a: "Sí. Puedes completar la simulación sin compromiso para que analicemos tu caso y te indiquemos el siguiente paso.",
               },
               {
-                q: "¿Qué pasa si mi caso es complejo?",
-                a: "Nuestro sistema de triage detecta automáticamente los casos complejos y los deriva a un asesor especializado. Te informamos antes de cobrar nada.",
+                q: "¿Cuándo sabré cuánto cuesta?",
+                a: "Antes de empezar. Al finalizar la simulación te mostraremos el precio exacto según la complejidad de tu declaración.",
               },
               {
-                q: "¿Cuándo empieza la campaña de la Renta 2025?",
-                a: "La presentación online comienza el 8 de abril de 2026 y finaliza el 30 de junio de 2026. Puedes empezar a preparar tu documentación desde ya.",
+                q: "¿Todas las rentas cuestan lo mismo?",
+                a: "No. Cada caso es diferente, por eso primero analizamos tu situación antes de fijar un precio.",
               },
               {
-                q: "¿Es seguro subir mis documentos?",
-                a: "Absolutamente. Utilizamos encriptación de nivel bancario y cumplimos con el RGPD. Tus datos nunca se comparten con terceros.",
+                q: "¿Qué pasa si mi caso es más complejo?",
+                a: "Si tu declaración requiere una revisión más específica, te indicaremos la vía adecuada para gestionarla correctamente.",
               },
               {
-                q: "¿Puedo hacer la declaración conjunta?",
-                a: "Sí. Nuestro sistema analiza si te conviene más la declaración individual o conjunta y te recomienda la opción más favorable.",
+                q: "¿Tengo que pagar para saber si me interesa?",
+                a: "No. Primero simulas, ves el precio y entiendes el siguiente paso. Después decides.",
+              },
+              {
+                q: "¿Qué necesito para empezar?",
+                a: "Solo completar la simulación con tu información básica. Si decides continuar, ya te indicaremos qué documentación hace falta.",
               },
             ].map((faq, i) => (
               <FadeUp key={i} delay={i * 0.05}>

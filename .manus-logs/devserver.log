@@ -906,3 +906,4 @@
 [2026-03-15T09:19:16.643Z] 5:19:16 AM [vite] (client) hmr update /src/pages/Andalucia.tsx, /src/index.css
 [2026-03-15T09:19:25.921Z] 5:19:25 AM [vite] (client) hmr update /src/pages/Cataluna.tsx, /src/index.css
 [2026-03-15T09:19:36.377Z] 5:19:36 AM [vite] (client) hmr update /src/pages/Valencia.tsx, /src/index.css
+[2026-03-15T10:21:55.803Z] 6:21:55 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css
