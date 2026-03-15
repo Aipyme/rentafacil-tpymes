@@ -157,11 +157,11 @@ export default function Home() {
                   className="w-full max-w-sm mx-auto rounded-xl"
                 />
                 <div className="mt-6 text-center">
-                  <p className="text-white/60 text-sm mb-2">Devolución media estimada</p>
-                  <p className="font-['DM_Sans'] text-4xl font-bold text-emerald-400">
-                    <AnimatedNumber value={1847} prefix="€" />
+                  <p className="text-white/60 text-sm mb-2">Descubre cuánto puedes recuperar</p>
+                  <p className="font-['DM_Sans'] text-3xl font-bold text-emerald-400">
+                    Simula gratis en 2 min
                   </p>
-                  <p className="text-white/40 text-xs mt-1">Basado en rentas simples procesadas</p>
+                  <p className="text-white/40 text-xs mt-1">Sin compromiso · Sin coste</p>
                 </div>
               </div>
             </motion.div>
@@ -176,7 +176,7 @@ export default function Home() {
             {[
               { value: 600, suffix: "+", label: "Profesionales", icon: Users },
               { value: 20000, suffix: "+", label: "Clientes confían", icon: Shield },
-              { value: 15, suffix: " años", label: "De experiencia", icon: TrendingUp },
+              { value: 18, suffix: " años", label: "Desde 2008", icon: TrendingUp },
               { value: 98, suffix: "%", label: "Satisfacción", icon: CheckCircle2 },
             ].map((stat, i) => (
               <FadeUp key={i} delay={i * 0.1}>
@@ -312,7 +312,7 @@ export default function Home() {
                   {
                     icon: TrendingUp,
                     title: "Optimización fiscal",
-                    desc: "Encontramos deducciones que quizás no conocías. De media, +€340 extra.",
+                    desc: "Encontramos deducciones autonómicas y estatales que el borrador de Hacienda no incluye automáticamente.",
                   },
                   {
                     icon: Phone,
@@ -598,7 +598,7 @@ export default function Home() {
             {[
               {
                 q: "¿Quién revisa mi declaración?",
-                a: "Un asesor fiscal profesional de Ayuda T Pymes, con más de 15 años de experiencia. No es solo un algoritmo: hay una persona real detrás.",
+                a: "Un asesor fiscal profesional de Ayuda T Pymes, con experiencia desde 2008. No es solo un algoritmo: hay una persona real detrás.",
               },
               {
                 q: "¿Qué pasa si mi caso es complejo?",
