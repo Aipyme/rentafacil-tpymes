@@ -166,7 +166,7 @@ export default function Cataluna() {
             </h1>
 
             <p className="text-xl md:text-2xl text-white/70 max-w-3xl leading-relaxed mb-8">
-              Conocemos cada deducción de la Generalitat. Nuestros asesores te ayudan a optimizar tu declaración en Catalunya.
+              Cada comunidad tiene sus propias deducciones y tramos. Analizamos tu caso con la normativa catalana para que sepas exactamente qué te corresponde.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -288,29 +288,28 @@ export default function Cataluna() {
       <Section className="py-20 bg-warm-gray">
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-navy mb-4">
-            ¿Por qué hacer tu renta con nosotros en Catalunya?
+            ¿Por qué gestionar tu renta aquí?
           </h2>
           <p className="text-lg text-gray-600 mb-12 max-w-2xl">
-            No somos una app genérica. Somos asesores fiscales que conocen
-            la normativa catalana al detalle.
+            Analizamos primero tu situación para que el proceso sea más claro, más eficiente y ajustado a lo que necesitas.
           </p>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 icon: <Star className="w-8 h-8" />,
-                title: "Asesores especializados en Catalunya",
-                desc: "Nuestro equipo conoce cada deducción autonómica, cada particularidad de la Generalitat. No dejamos dinero sobre la mesa.",
+                title: "Análisis previo de tu caso",
+                desc: "Antes de empezar, evaluamos tu situación para indicarte la mejor forma de gestionar tu declaración en Catalunya.",
               },
               {
                 icon: <Shield className="w-8 h-8" />,
-                title: "Respaldo de +600 profesionales",
-                desc: "Ayuda T Pymes tiene más de 20.000 clientes y 600 profesionales. Tu declaración está en buenas manos.",
+                title: "Precio claro antes de empezar",
+                desc: "Sabes cuánto cuesta antes de continuar. Sin sorpresas ni compromisos hasta que tú decidas.",
               },
               {
                 icon: <Calculator className="w-8 h-8" />,
-                title: "Simulador con tramos catalanes",
-                desc: "Nuestro simulador calcula con los tramos autonómicos reales de Catalunya, no con aproximaciones genéricas.",
+                title: "Gestión adecuada según tu caso",
+                desc: "Las declaraciones sencillas siguen una vía ágil. Las más complejas reciben revisión cuando de verdad hace falta.",
               },
             ].map((item, i) => (
               <div key={i} className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
@@ -375,13 +374,12 @@ export default function Cataluna() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <Landmark className="w-12 h-12 text-yellow-400 mx-auto mb-6" />
           <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6">
-            No dejes dinero sobre la mesa.
+            Descubre cómo gestionar tu renta
             <br />
-            <span className="text-emerald">Haz tu renta con expertos en Catalunya.</span>
+            <span className="text-emerald">con la normativa catalana</span>
           </h2>
           <p className="text-xl text-white/60 mb-10">
-            Asesores que conocen cada deducción catalana.
-            Simulador gratuito para ver cuánto te devuelven. Precio cerrado antes de empezar.
+            Haz la simulación gratuita y te indicaremos la mejor vía para tu caso, con un precio claro antes de empezar.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -395,7 +393,7 @@ export default function Cataluna() {
               href="/empezar"
               className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-8 rounded-xl transition-colors text-lg border border-white/20"
             >
-              Hacer mi declaración
+              Empezar sin compromiso
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>

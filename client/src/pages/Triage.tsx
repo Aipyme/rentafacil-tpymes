@@ -4,7 +4,7 @@
  * Palette: Navy #1a365d, Emerald #059669, Warm gray #f7f5f2
  * Lógica condicional: preguntas adaptativas según perfil del contribuyente
  */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -296,29 +296,97 @@ export default function Triage() {
   const documentos = getDocumentosNecesarios(data);
 
   const [isSending, setIsSending] = useState(false);
+  const [webhookSent, setWebhookSent] = useState(false);
+
+  // Construir payload mapeado a las columnas del Google Sheet
+  const buildPayload = () => ({
+    // Columnas originales del Sheet (1-35)
+    nombreCompleto: `${data.nombre} ${data.apellidos}`.trim(),
+    nif: data.nif,
+    email: data.email,
+    telefono: data.telefono,
+    comunidadAutonoma: data.comunidadAutonoma,
+    estadoCivil: data.situacionFamiliar === 'con_hijos' ? 'Con hijos a cargo'
+      : data.situacionFamiliar === 'monoparental' ? 'Familia monoparental'
+      : data.situacionFamiliar === 'ascendientes' ? 'Con ascendientes a cargo'
+      : data.situacionFamiliar === 'sin_cargas' ? 'Sin cargas familiares' : data.situacionFamiliar,
+    numHijos: data.numHijos || '0',
+    tipoVivienda: data.tieneInmuebles === 'no' ? 'Sin inmuebles'
+      : data.tieneInmuebles === 'uno' ? 'Un inmueble'
+      : data.tieneInmuebles === 'varios' ? 'Varios inmuebles' : data.tieneInmuebles,
+    hipotecaAnterior2013: data.tieneHipotecaPre2013 === 'si' ? 'TRUE' : 'FALSE',
+    rendimientosTrabajo: data.ingresosAprox === 'menos_22k' ? '18000'
+      : data.ingresosAprox === '22k_35k' ? '28000'
+      : data.ingresosAprox === '35k_60k' ? '45000'
+      : data.ingresosAprox === 'mas_60k' ? '70000' : '',
+    numPagadores: data.numPagadores === '1' ? '1'
+      : data.numPagadores === '2' ? '2'
+      : data.numPagadores === '3_mas' ? '3' : data.numPagadores,
+    tieneOtrosRendimientos: 'FALSE',
+    otrosRendimientosDescripcion: '',
+    tieneInmueblesAlquilados: data.inmuebleAlquilado === 'si' ? 'TRUE' : 'FALSE',
+    tieneInversiones: data.tieneInversiones === 'si' ? 'TRUE' : 'FALSE',
+    tieneActividadEconomica: data.esAutonomo === 'si' ? 'TRUE' : 'FALSE',
+    deduccionesConocidas: deducciones.join(', '),
+    tieneDiscapacidad: data.tieneDiscapacidad === 'si' ? 'TRUE' : 'FALSE',
+    porcentajeDiscapacidad: '0',
+    realizaDonaciones: data.haceDonaciones === 'si' ? 'TRUE' : 'FALSE',
+    tienePlanPensiones: data.aportaPlanPensiones === 'si' ? 'TRUE' : 'FALSE',
+    aceptaPolitica: data.aceptaRGPD ? 'TRUE' : 'FALSE',
+    aceptaTratamiento: data.aceptaRGPD ? 'TRUE' : 'FALSE',
+    estado: 'recibido',
+    tipo: data.tipoContribuyente === 'asalariado' ? 'Asalariado'
+      : data.tipoContribuyente === 'autonomo' ? 'Autónomo'
+      : data.tipoContribuyente === 'pensionista' ? 'Pensionista'
+      : data.tipoContribuyente === 'desempleado' ? 'Desempleado' : data.tipoContribuyente,
+    // Campos extra del resultado
+    expedienteId,
+    complejidad,
+    plan: getPlan(complejidad),
+    precio: 'Según caso',
+    deduccionesDetectadas: deducciones.join(', '),
+    documentosNecesarios: documentos.join(', '),
+    fechaRegistro: new Date().toISOString(),
+  });
+
+  // Enviar datos al webhook automáticamente cuando se llega al paso resultado
+  useEffect(() => {
+    if (currentStep === 'resultado' && !webhookSent) {
+      setWebhookSent(true);
+      const webhookUrl = import.meta.env.VITE_WEBHOOK_N8N || '';
+      if (webhookUrl) {
+        const payload = buildPayload();
+
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+          .then(r => r.text())
+          .then(t => console.log('[WEBHOOK] Respuesta:', t))
+          .catch(e => console.error('[WEBHOOK] Error:', e));
+      }
+    }
+  }, [currentStep, webhookSent]);
 
   const handleSubmit = async () => {
     setIsSending(true);
     try {
       // Enviar al webhook de n8n (configurar URL en variable de entorno)
-      const webhookUrl = import.meta.env.VITE_WEBHOOK_URL || '';
-      const payload = {
-        ...data,
-        expedienteId,
-        complejidad,
-        plan: complejidad === 'simple' ? 'Renta Simple' : complejidad === 'medio' ? 'Renta Estándar' : complejidad === 'complejo' ? 'Renta Premium' : 'Consulta Especializada',
-        precio: 'Según complejidad',
-        deduccionesDetectadas: deducciones,
-        documentosNecesarios: documentos,
-        fechaRegistro: new Date().toISOString(),
-      };
+      const webhookUrl = import.meta.env.VITE_WEBHOOK_N8N || '';
+
+      const payload = buildPayload();
 
       if (webhookUrl) {
-        await fetch(webhookUrl, {
+
+        const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+
+      } else {
+
       }
 
       setSubmitted(true);
@@ -328,7 +396,9 @@ export default function Triage() {
       );
     } catch (err) {
       // Si falla el webhook, registramos igual pero avisamos
-      console.error('Error enviando al webhook:', err);
+      console.error('[DEBUG] Error enviando al webhook:', err);
+      console.error('[DEBUG] Error name:', (err as Error).name);
+      console.error('[DEBUG] Error message:', (err as Error).message);
       setSubmitted(true);
       toast.success(
         `Solicitud ${expedienteId} registrada. Te contactaremos en menos de 24 horas.`,
@@ -388,10 +458,10 @@ ${documentos.map(d => `- ${d}`).join("\n")}
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="font-['DM_Sans'] text-3xl lg:text-4xl font-bold text-[#1a365d] mb-2">
-              Haz tu renta con TPymes
+              Analicemos tu caso
             </h1>
             <p className="text-gray-500">
-              Comprueba en 3 minutos qué tipo de servicio necesitas y qué documentos preparar
+              En 3 minutos sabrás qué tipo de declaración tienes, qué documentos necesitas y cuánto te costaría
             </p>
           </div>
 

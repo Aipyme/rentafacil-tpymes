@@ -907,3 +907,43 @@
 [2026-03-15T09:19:25.921Z] 5:19:25 AM [vite] (client) hmr update /src/pages/Cataluna.tsx, /src/index.css
 [2026-03-15T09:19:36.377Z] 5:19:36 AM [vite] (client) hmr update /src/pages/Valencia.tsx, /src/index.css
 [2026-03-15T10:21:55.803Z] 6:21:55 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css
+[2026-03-15T14:26:19.783Z] Dev server process group stopped
+[2026-03-15T14:26:19.801Z] ELIFECYCLE  Command failed.
+[2026-03-15T14:26:19.816Z] Dev server exited with code -15
+[2026-03-15T14:26:22.787Z] Starting dev server with command: pnpm run dev
+[2026-03-15T14:26:23.136Z] 
+[2026-03-15T14:26:23.137Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-15T14:26:23.138Z] > tsx server/index.ts
+[2026-03-15T14:26:23.138Z] 
+[2026-03-15T14:26:24.484Z] 10:26:24 AM [express] serving on port 5000
+[2026-03-15T14:26:47.390Z] 10:26:47 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-15T14:26:54.302Z] Dev server process group stopped
+[2026-03-15T14:26:54.319Z] ELIFECYCLE  Command failed.
+[2026-03-15T14:26:54.327Z] Dev server exited with code -15
+[2026-03-15T14:26:57.306Z] Starting dev server with command: pnpm run dev
+[2026-03-15T14:26:57.649Z] 
+[2026-03-15T14:26:57.650Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-15T14:26:57.650Z] > tsx server/index.ts
+[2026-03-15T14:26:57.650Z] 
+[2026-03-15T14:26:58.770Z] 10:26:58 AM [express] serving on port 5000
+[2026-03-15T14:27:47.361Z] 10:27:47 AM [vite] (client) hmr update /src/pages/Andalucia.tsx, /src/index.css
+[2026-03-15T14:28:06.245Z] 10:28:06 AM [vite] (client) hmr update /src/pages/Madrid.tsx, /src/index.css
+[2026-03-15T14:28:37.255Z] 10:28:37 AM [vite] (client) hmr update /src/pages/Cataluna.tsx, /src/index.css
+[2026-03-15T14:29:09.854Z] 10:29:09 AM [vite] (client) hmr update /src/pages/Valencia.tsx, /src/index.css
+[2026-03-15T14:29:24.948Z] 10:29:24 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-15T16:42:26.433Z] Dev server process group stopped
+[2026-03-15T16:42:26.455Z] ELIFECYCLE  Command failed.
+[2026-03-15T16:42:26.475Z] Dev server exited with code -15
+[2026-03-15T16:42:29.438Z] Starting dev server with command: pnpm run dev
+[2026-03-15T16:42:29.832Z] 
+[2026-03-15T16:42:29.833Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-15T16:42:29.834Z] > tsx server/index.ts
+[2026-03-15T16:42:29.834Z] 
+[2026-03-15T16:42:31.186Z] 12:42:31 PM [express] serving on port 5000
+[2026-03-15T16:50:05.900Z] 12:50:05 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-15T16:57:38.112Z] 12:57:38 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-15T17:04:40.332Z] 1:04:40 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-15T17:04:53.965Z] 1:04:53 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-15T17:05:07.510Z] 1:05:07 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-16T13:52:13.726Z] 9:52:13 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
+[2026-03-16T15:47:23.602Z] 11:47:23 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css

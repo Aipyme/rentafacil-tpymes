@@ -177,7 +177,7 @@ export default function Madrid() {
             </h1>
 
             <p className="text-xl md:text-2xl text-white/70 max-w-3xl leading-relaxed mb-8">
-              Madrid tiene los tipos autonómicos más bajos de España. Nuestros asesores te ayudan a aprovechar cada deducción madrileña.
+              Cada comunidad tiene sus propias deducciones y tramos. Analizamos tu caso con la normativa madrileña para que sepas exactamente qué te corresponde.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -299,27 +299,27 @@ export default function Madrid() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center">
             <h2 className="font-heading text-3xl md:text-4xl font-bold text-navy mb-4">
-              La forma más fácil de hacer tu Renta en Madrid
+              ¿Por qué gestionar tu renta aquí?
             </h2>
             <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-              Te asignamos un asesor personal que conoce a fondo la normativa fiscal madrileña para maximizar tu ahorro.
+              Analizamos primero tu situación para que el proceso sea más claro, más eficiente y ajustado a lo que necesitas.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
               <CheckCircle className="w-12 h-12 text-emerald mx-auto mb-4" />
-              <h3 className="font-heading text-xl font-bold text-navy mb-2">Asesores especializados en la Comunidad de Madrid</h3>
-              <p className="text-gray-600">Conocen cada deducción y requisito específico para que no pierdas ni un euro.</p>
+              <h3 className="font-heading text-xl font-bold text-navy mb-2">Análisis previo de tu caso</h3>
+              <p className="text-gray-600">Antes de empezar, evaluamos tu situación para indicarte la mejor forma de gestionar tu declaración en Madrid.</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
               <Users className="w-12 h-12 text-emerald mx-auto mb-4" />
-              <h3 className="font-heading text-xl font-bold text-navy mb-2">El respaldo de +600 profesionales</h3>
-              <p className="text-gray-600">Somos la mayor asesoría fiscal online de España, con miles de declaraciones presentadas cada año.</p>
+              <h3 className="font-heading text-xl font-bold text-navy mb-2">Precio claro antes de empezar</h3>
+              <p className="text-gray-600">Sabes cuánto cuesta antes de continuar. Sin sorpresas ni compromisos hasta que tú decidas.</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
               <Calculator className="w-12 h-12 text-emerald mx-auto mb-4" />
-              <h3 className="font-heading text-xl font-bold text-navy mb-2">Simulador con tramos madrileños</h3>
-              <p className="text-gray-600">Calcula el resultado de tu declaración al instante teniendo en cuenta los tipos impositivos de Madrid.</p>
+              <h3 className="font-heading text-xl font-bold text-navy mb-2">Gestión adecuada según tu caso</h3>
+              <p className="text-gray-600">Las declaraciones sencillas siguen una vía ágil. Las más complejas reciben revisión cuando de verdad hace falta.</p>
             </div>
           </div>
         </div>
@@ -376,10 +376,10 @@ export default function Madrid() {
           >
             <Calculator className="w-16 h-16 text-emerald mx-auto mb-6" />
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">
-              Haz tu renta con expertos en Madrid.
+              Descubre cómo gestionar tu renta con la normativa madrileña
             </h2>
             <p className="text-xl text-white/70 max-w-2xl mx-auto mb-8">
-              Calcula gratis el resultado de tu declaración o déjala en manos de nuestros asesores fiscales.
+              Haz la simulación gratuita y te indicaremos la mejor vía para tu caso, con un precio claro antes de empezar.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -392,7 +392,7 @@ export default function Madrid() {
                 href="/empezar"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-8 rounded-xl transition-colors text-lg border border-white/20"
               >
-                Contratar asesor
+                Empezar sin compromiso
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
