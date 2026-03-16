@@ -62,8 +62,8 @@ function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 
 export default function Home() {
   useSEO({
-    title: "Renta Fácil TPymes — Haz tu declaración de la renta sin complicaciones",
-    description: "Haz tu declaración de la renta de forma fácil, clara y sin perder tiempo. Analizamos tu caso, detectamos la complejidad y te mostramos el camino más adecuado para gestionarla con seguridad.",
+    title: "Declaración de la Renta 2025 | Renta Fácil TPymes",
+    description: "Haz tu declaración de la renta de forma fácil y sin perder tiempo. Analizamos tu caso y te guiamos paso a paso con seguridad.",
     canonical: "/",
   });
   return (
