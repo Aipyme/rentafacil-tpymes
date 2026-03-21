@@ -948,3 +948,174 @@
 [2026-03-16T13:52:13.726Z] 9:52:13 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
 [2026-03-16T15:47:23.602Z] 11:47:23 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css
 [2026-03-16T16:16:50.986Z] 12:16:50 PM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css
+[2026-03-16T16:18:40.445Z] Dev server process group stopped
+[2026-03-16T16:18:40.464Z] ELIFECYCLE  Command failed.
+[2026-03-16T16:18:40.490Z] Dev server exited with code -15
+[2026-03-16T16:18:43.450Z] Starting dev server with command: pnpm run dev
+[2026-03-16T16:18:44.292Z] 
+[2026-03-16T16:18:44.293Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-16T16:18:44.293Z] > tsx server/index.ts
+[2026-03-16T16:18:44.294Z] 
+[2026-03-16T16:18:45.640Z] 12:18:45 PM [express] serving on port 5000
+[2026-03-18T17:20:53.555Z] Starting dev server with command: pnpm run dev
+[2026-03-18T17:20:53.942Z] 
+[2026-03-18T17:20:53.943Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-18T17:20:53.944Z] > tsx server/index.ts
+[2026-03-18T17:20:53.944Z] 
+[2026-03-18T17:20:55.468Z] node:events:502
+[2026-03-18T17:20:55.468Z] throw er; // Unhandled 'error' event
+[2026-03-18T17:20:55.469Z] ^
+[2026-03-18T17:20:55.469Z] 
+[2026-03-18T17:20:55.469Z] Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[2026-03-18T17:20:55.470Z] at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+[2026-03-18T17:20:55.470Z] at listenInCluster (node:net:1994:12)
+[2026-03-18T17:20:55.470Z] at node:net:2203:7
+[2026-03-18T17:20:55.471Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2026-03-18T17:20:55.471Z] Emitted 'error' event on Server instance at:
+[2026-03-18T17:20:55.472Z] at emitErrorNT (node:net:1973:8)
+[2026-03-18T17:20:55.472Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+[2026-03-18T17:20:55.472Z] code: 'EADDRINUSE',
+[2026-03-18T17:20:55.472Z] errno: -98,
+[2026-03-18T17:20:55.472Z] syscall: 'listen',
+[2026-03-18T17:20:55.473Z] address: '0.0.0.0',
+[2026-03-18T17:20:55.473Z] port: 5000
+[2026-03-18T17:20:55.473Z] }
+[2026-03-18T17:20:55.473Z] 
+[2026-03-18T17:20:55.474Z] Node.js v22.13.0
+[2026-03-18T17:20:55.526Z] ELIFECYCLE  Command failed with exit code 1.
+[2026-03-18T17:20:55.710Z] Dev server exited with code 1
+[2026-03-18T17:21:05.863Z] Starting dev server with command: pnpm run dev
+[2026-03-18T17:21:06.210Z] 
+[2026-03-18T17:21:06.211Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-18T17:21:06.211Z] > tsx server/index.ts
+[2026-03-18T17:21:06.212Z] 
+[2026-03-18T17:21:07.323Z] node:events:502
+[2026-03-18T17:21:07.323Z] throw er; // Unhandled 'error' event
+[2026-03-18T17:21:07.324Z] ^
+[2026-03-18T17:21:07.324Z] 
+[2026-03-18T17:21:07.324Z] Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[2026-03-18T17:21:07.325Z] at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+[2026-03-18T17:21:07.325Z] at listenInCluster (node:net:1994:12)
+[2026-03-18T17:21:07.325Z] at node:net:2203:7
+[2026-03-18T17:21:07.325Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2026-03-18T17:21:07.326Z] Emitted 'error' event on Server instance at:
+[2026-03-18T17:21:07.326Z] at emitErrorNT (node:net:1973:8)
+[2026-03-18T17:21:07.326Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+[2026-03-18T17:21:07.326Z] code: 'EADDRINUSE',
+[2026-03-18T17:21:07.326Z] errno: -98,
+[2026-03-18T17:21:07.327Z] syscall: 'listen',
+[2026-03-18T17:21:07.327Z] address: '0.0.0.0',
+[2026-03-18T17:21:07.327Z] port: 5000
+[2026-03-18T17:21:07.327Z] }
+[2026-03-18T17:21:07.327Z] 
+[2026-03-18T17:21:07.328Z] Node.js v22.13.0
+[2026-03-18T17:21:07.371Z] ELIFECYCLE  Command failed with exit code 1.
+[2026-03-18T17:21:07.391Z] Dev server exited with code 1
+[2026-03-19T13:26:18.477Z] Starting dev server with command: pnpm run dev
+[2026-03-19T13:26:18.845Z] 
+[2026-03-19T13:26:18.846Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-19T13:26:18.846Z] > tsx server/index.ts
+[2026-03-19T13:26:18.847Z] 
+[2026-03-19T13:26:20.234Z] node:events:502
+[2026-03-19T13:26:20.235Z] throw er; // Unhandled 'error' event
+[2026-03-19T13:26:20.235Z] ^
+[2026-03-19T13:26:20.236Z] 
+[2026-03-19T13:26:20.236Z] Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[2026-03-19T13:26:20.237Z] at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+[2026-03-19T13:26:20.237Z] at listenInCluster (node:net:1994:12)
+[2026-03-19T13:26:20.238Z] at node:net:2203:7
+[2026-03-19T13:26:20.238Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2026-03-19T13:26:20.239Z] Emitted 'error' event on Server instance at:
+[2026-03-19T13:26:20.239Z] at emitErrorNT (node:net:1973:8)
+[2026-03-19T13:26:20.239Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+[2026-03-19T13:26:20.240Z] code: 'EADDRINUSE',
+[2026-03-19T13:26:20.240Z] errno: -98,
+[2026-03-19T13:26:20.240Z] syscall: 'listen',
+[2026-03-19T13:26:20.241Z] address: '0.0.0.0',
+[2026-03-19T13:26:20.241Z] port: 5000
+[2026-03-19T13:26:20.241Z] }
+[2026-03-19T13:26:20.241Z] 
+[2026-03-19T13:26:20.242Z] Node.js v22.13.0
+[2026-03-19T13:26:20.295Z] ELIFECYCLE  Command failed with exit code 1.
+[2026-03-19T13:26:20.317Z] Dev server exited with code 1
+[2026-03-19T13:26:37.759Z] Starting dev server with command: pnpm run dev
+[2026-03-19T13:26:38.198Z] 
+[2026-03-19T13:26:38.199Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-19T13:26:38.199Z] > tsx server/index.ts
+[2026-03-19T13:26:38.199Z] 
+[2026-03-19T13:26:39.523Z] node:events:502
+[2026-03-19T13:26:39.524Z] throw er; // Unhandled 'error' event
+[2026-03-19T13:26:39.524Z] ^
+[2026-03-19T13:26:39.525Z] 
+[2026-03-19T13:26:39.525Z] Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[2026-03-19T13:26:39.525Z] at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+[2026-03-19T13:26:39.526Z] at listenInCluster (node:net:1994:12)
+[2026-03-19T13:26:39.526Z] at node:net:2203:7
+[2026-03-19T13:26:39.526Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2026-03-19T13:26:39.526Z] Emitted 'error' event on Server instance at:
+[2026-03-19T13:26:39.527Z] at emitErrorNT (node:net:1973:8)
+[2026-03-19T13:26:39.527Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+[2026-03-19T13:26:39.527Z] code: 'EADDRINUSE',
+[2026-03-19T13:26:39.527Z] errno: -98,
+[2026-03-19T13:26:39.528Z] syscall: 'listen',
+[2026-03-19T13:26:39.528Z] address: '0.0.0.0',
+[2026-03-19T13:26:39.528Z] port: 5000
+[2026-03-19T13:26:39.528Z] }
+[2026-03-19T13:26:39.528Z] 
+[2026-03-19T13:26:39.529Z] Node.js v22.13.0
+[2026-03-19T13:26:39.579Z] ELIFECYCLE  Command failed with exit code 1.
+[2026-03-19T13:26:39.602Z] Dev server exited with code 1
+[2026-03-20T07:44:49.276Z] Starting dev server with command: pnpm run dev
+[2026-03-20T07:44:49.628Z] 
+[2026-03-20T07:44:49.629Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-20T07:44:49.629Z] > tsx server/index.ts
+[2026-03-20T07:44:49.630Z] 
+[2026-03-20T07:44:50.924Z] node:events:502
+[2026-03-20T07:44:50.925Z] throw er; // Unhandled 'error' event
+[2026-03-20T07:44:50.925Z] ^
+[2026-03-20T07:44:50.925Z] 
+[2026-03-20T07:44:50.926Z] Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[2026-03-20T07:44:50.926Z] at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+[2026-03-20T07:44:50.926Z] at listenInCluster (node:net:1994:12)
+[2026-03-20T07:44:50.927Z] at node:net:2203:7
+[2026-03-20T07:44:50.927Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2026-03-20T07:44:50.927Z] Emitted 'error' event on Server instance at:
+[2026-03-20T07:44:50.927Z] at emitErrorNT (node:net:1973:8)
+[2026-03-20T07:44:50.928Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+[2026-03-20T07:44:50.928Z] code: 'EADDRINUSE',
+[2026-03-20T07:44:50.928Z] errno: -98,
+[2026-03-20T07:44:50.928Z] syscall: 'listen',
+[2026-03-20T07:44:50.929Z] address: '0.0.0.0',
+[2026-03-20T07:44:50.929Z] port: 5000
+[2026-03-20T07:44:50.929Z] }
+[2026-03-20T07:44:50.929Z] 
+[2026-03-20T07:44:50.930Z] Node.js v22.13.0
+[2026-03-20T07:44:50.973Z] ELIFECYCLE  Command failed with exit code 1.
+[2026-03-20T07:44:50.992Z] Dev server exited with code 1
+[2026-03-20T17:01:42.960Z] Starting dev server with command: pnpm run dev
+[2026-03-20T17:01:43.343Z] 
+[2026-03-20T17:01:43.344Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-20T17:01:43.344Z] > tsx server/index.ts
+[2026-03-20T17:01:43.344Z] 
+[2026-03-20T17:01:44.996Z] node:events:502
+[2026-03-20T17:01:45.022Z] throw er; // Unhandled 'error' event
+[2026-03-20T17:01:45.023Z] ^
+[2026-03-20T17:01:45.024Z] 
+[2026-03-20T17:01:45.024Z] Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+[2026-03-20T17:01:45.025Z] at Server.setupListenHandle [as _listen2] (node:net:1937:16)
+[2026-03-20T17:01:45.026Z] at listenInCluster (node:net:1994:12)
+[2026-03-20T17:01:45.026Z] at node:net:2203:7
+[2026-03-20T17:01:45.026Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2026-03-20T17:01:45.027Z] Emitted 'error' event on Server instance at:
+[2026-03-20T17:01:45.029Z] at emitErrorNT (node:net:1973:8)
+[2026-03-20T17:01:45.029Z] at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+[2026-03-20T17:01:45.030Z] code: 'EADDRINUSE',
+[2026-03-20T17:01:45.030Z] errno: -98,
+[2026-03-20T17:01:45.031Z] syscall: 'listen',
+[2026-03-20T17:01:45.032Z] address: '0.0.0.0',
+[2026-03-20T17:01:45.034Z] port: 5000
+[2026-03-20T17:01:45.035Z] }
+[2026-03-20T17:01:45.039Z] 
+[2026-03-20T17:01:45.040Z] Node.js v22.13.0
+[2026-03-20T17:01:45.048Z] ELIFECYCLE  Command failed with exit code 1.
+[2026-03-20T17:01:45.075Z] Dev server exited with code 1

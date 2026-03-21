@@ -108,7 +108,7 @@ export default function DemoAlfredo() {
             </h1>
             <p className="text-xl md:text-2xl text-white/70 max-w-3xl leading-relaxed">
               Alfredo, cada campaña de renta tus clientes te piden ayuda.
-              No puedes dedicar asesores a declaraciones de 30-40€.
+              No puedes dedicar asesores a gestionar rentas de particulares.
               Los pierdes. Aquí está la solución.
             </p>
           </motion.div>
@@ -150,7 +150,7 @@ export default function DemoAlfredo() {
                 <Clock className="w-6 h-6 text-red-500" />
               </div>
               <p className="text-4xl font-heading font-bold text-navy mb-2">45 min</p>
-              <p className="text-gray-600">de asesor por declaración = inviable a 30-40€</p>
+              <p className="text-gray-600">de asesor por declaración = inviable con el precio de mercado</p>
             </div>
             <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
               <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center mb-4">
@@ -191,7 +191,7 @@ export default function DemoAlfredo() {
                   "Asesor revisa todo desde cero (45 min)",
                   "Asesor presenta la declaración",
                   "Coste: ~25€ de tiempo de asesor",
-                  "Precio: 30-40€ → margen ridículo",
+                  "Precio de mercado → margen ridículo",
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -213,7 +213,7 @@ export default function DemoAlfredo() {
                   { text: "IA genera borrador de declaración pre-revisado", tag: "Auto" },
                   { text: "Asesor revisa y valida (10-15 min, no 45)", tag: "Humano" },
                   { text: "Coste real: ~8€ por declaración", tag: "x3 menos" },
-                  { text: "Precio: 49-99€ → margen del 75-85%", tag: "x10 más" },
+                  { text: "Precio cerrado según complejidad → margen del 75-85%", tag: "x10 más" },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-full bg-emerald flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -277,7 +277,6 @@ export default function DemoAlfredo() {
                 <tr className="border-b border-white/10">
                   <th className="px-6 py-4 text-white/50 font-medium text-sm">Escenario</th>
                   <th className="px-6 py-4 text-white/50 font-medium text-sm">Declaraciones</th>
-                  <th className="px-6 py-4 text-white/50 font-medium text-sm">Ticket medio</th>
                   <th className="px-6 py-4 text-white/50 font-medium text-sm">Facturación</th>
                   <th className="px-6 py-4 text-white/50 font-medium text-sm">Beneficio</th>
                 </tr>
@@ -286,21 +285,18 @@ export default function DemoAlfredo() {
                 <tr className="border-b border-white/5">
                   <td className="px-6 py-4 text-white/70">Conservador</td>
                   <td className="px-6 py-4 text-white">1.500</td>
-                  <td className="px-6 py-4 text-white">58€</td>
                   <td className="px-6 py-4 text-white">87.000€</td>
                   <td className="px-6 py-4 text-emerald font-bold">70.500€</td>
                 </tr>
                 <tr className="border-b border-white/5 bg-emerald/10">
                   <td className="px-6 py-4 text-emerald font-bold">Moderado</td>
                   <td className="px-6 py-4 text-white font-bold">3.000</td>
-                  <td className="px-6 py-4 text-white font-bold">65€</td>
                   <td className="px-6 py-4 text-white font-bold">196.200€</td>
                   <td className="px-6 py-4 text-emerald font-bold">163.500€</td>
                 </tr>
                 <tr>
                   <td className="px-6 py-4 text-white/70">Optimista</td>
                   <td className="px-6 py-4 text-white">5.000</td>
-                  <td className="px-6 py-4 text-white">72€</td>
                   <td className="px-6 py-4 text-white">360.000€</td>
                   <td className="px-6 py-4 text-emerald font-bold">306.000€</td>
                 </tr>
@@ -414,7 +410,7 @@ export default function DemoAlfredo() {
 
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-2">
             {[
-              { step: "Renta", price: "49-99€", desc: "Entrada de bajo coste" },
+              { step: "Renta", price: "Precio cerrado", desc: "Entrada de bajo coste" },
               { step: "Fiscal trimestral", price: "50-80€/mes", desc: "Autónomos que descubres" },
               { step: "Contabilidad", price: "100-200€/mes", desc: "Pymes que captas" },
               { step: "Laboral", price: "150-300€/mes", desc: "Nóminas y seguros" },
@@ -481,7 +477,7 @@ export default function DemoAlfredo() {
                   "1-2 asesores fiscales para revisión (parcial)",
                   "Subdominio bajo ayudatpymes.es (ej: renta.ayudatpymes.es)",
                   "Logo y branding oficial de T Pymes",
-                  "Validación de precios finales (49/69/99€)",
+                  "Validación de precios finales con vuestro equipo",
                   "Canal de WhatsApp Business",
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
