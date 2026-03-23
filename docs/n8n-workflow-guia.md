@@ -232,3 +232,94 @@ Accede al panel de Manus → Settings → Secrets y añade:
 3. **Google Sheet** → Comprueba que se añade la fila con las columnas L y M rellenas
 4. **Panel del Asesor** → Accede a `/panel-asesor` y verifica que aparece el caso con los datos de la empresa
 5. **Marcar completado** → Haz clic en "Marcar como completado" y verifica que el estado cambia en el Sheet
+
+---
+
+## 8. Workflow de n8n — Notificación por email "Revisión pendiente"
+
+Cuando el asesor cambia el estado de un caso a **"Revisión pendiente"** desde el Panel, la web envía automáticamente este payload al webhook de n8n:
+
+```json
+{
+  "action": "notificar_revision_pendiente",
+  "casoId": "RF2503-A1B2",
+  "nombreCliente": "María García López",
+  "emailCliente": "maria@ejemplo.com",
+  "nifCliente": "12345678A",
+  "asesorAsignado": "Carlos Martínez",
+  "notasAsesor": "Tiene inmuebles alquilados, revisar modelo 100",
+  "comunidad": "Andalucía",
+  "complejidad": "complejo",
+  "timestamp": "2026-03-23T15:30:00.000Z"
+}
+```
+
+### Configuración en n8n
+
+En el mismo webhook que ya tienes (el de `update_estado`), añade una nueva rama en el nodo IF:
+
+**Nodo IF — Añadir condición para notificación:**
+
+```
+Condición 1: $json.action === "update_estado"     → Rama: Actualizar estado en Sheet
+Condición 2: $json.action === "notificar_revision_pendiente"  → Rama: Enviar email
+Condición 3 (default): nuevo caso                 → Rama: Escribir fila en Sheet
+```
+
+**Nodo Email (rama notificación):**
+
+Puedes usar el nodo **Send Email** de n8n (Gmail, SMTP, Brevo, etc.) con esta plantilla:
+
+- **Para:** `{{ $json.asesorAsignado }}@tudominio.com` (o un email fijo del equipo)
+- **Asunto:** `⚠️ Revisión pendiente: {{ $json.nombreCliente }} ({{ $json.casoId }})`
+- **Cuerpo HTML:**
+
+```html
+<h2>Caso requiere revisión</h2>
+<p>El caso <strong>{{ $json.casoId }}</strong> ha sido marcado como <strong>Revisión pendiente</strong>.</p>
+
+<table>
+  <tr><td><strong>Cliente:</strong></td><td>{{ $json.nombreCliente }}</td></tr>
+  <tr><td><strong>NIF:</strong></td><td>{{ $json.nifCliente }}</td></tr>
+  <tr><td><strong>Email cliente:</strong></td><td>{{ $json.emailCliente }}</td></tr>
+  <tr><td><strong>Comunidad:</strong></td><td>{{ $json.comunidad }}</td></tr>
+  <tr><td><strong>Complejidad:</strong></td><td>{{ $json.complejidad }}</td></tr>
+  <tr><td><strong>Asesor asignado:</strong></td><td>{{ $json.asesorAsignado }}</td></tr>
+  <tr><td><strong>Notas del asesor:</strong></td><td>{{ $json.notasAsesor }}</td></tr>
+  <tr><td><strong>Fecha:</strong></td><td>{{ $json.timestamp }}</td></tr>
+</table>
+
+<p><a href="https://rentafacil-9cyuqahz.manus.space/panel-asesor">Abrir Panel del Asesor →</a></p>
+```
+
+### Flujo completo actualizado
+
+```
+Panel del Asesor cambia estado a "Revisión pendiente"
+        ↓
+Web envía POST al webhook n8n con action=notificar_revision_pendiente
+        ↓
+n8n IF: detecta la acción
+        ↓
+n8n Send Email → asesor responsable recibe el email
+        ↓
+n8n Respond to Webhook → confirma éxito a la web
+        ↓
+Panel muestra toast: "Notificación enviada al asesor por email"
+```
+
+> **Nota:** Si n8n no está configurado o el webhook falla, el cambio de estado se guarda igualmente en el Sheet. La notificación es un paso adicional, no bloquea el flujo principal.
+
+---
+
+## 9. Resumen de acciones disponibles en el webhook
+
+El webhook de n8n recibe todos los eventos de la web. Usa el campo `action` para distinguirlos:
+
+| `action` | Cuándo se dispara | Qué hace n8n |
+|----------|-------------------|--------------|
+| *(sin action)* | Cliente completa el formulario | Escribe nueva fila en el Sheet |
+| `update_estado` | Asesor cambia el estado desde el panel | Actualiza columna `estado` en el Sheet |
+| `update_gestion` | Asesor guarda cambios de gestión | Actualiza columnas BA-BJ en el Sheet |
+| `notificar_revision_pendiente` | Estado cambia a "Revisión pendiente" | Envía email de alerta al asesor |
+| `read_cases` (GET) | Panel carga los casos | Devuelve filas del Sheet (solo si no hay API Key directa) |

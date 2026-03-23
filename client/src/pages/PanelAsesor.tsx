@@ -132,7 +132,9 @@ export default function PanelAsesor() {
   // Filtros
   const [filtroEstado, setFiltroEstado] = useState("todos");
   const [filtroPrioridad, setFiltroPrioridad] = useState("todas");
+  const [filtroAsesor, setFiltroAsesor] = useState("todos");
   const [busqueda, setBusqueda] = useState("");
+  const [busquedaNif, setBusquedaNif] = useState("");
   const [busquedaEmpresa, setBusquedaEmpresa] = useState("");
 
   // Caso seleccionado
@@ -180,6 +182,25 @@ export default function PanelAsesor() {
     { enabled: !!panelToken, refetchOnWindowFocus: false }
   );
 
+  // Cargar lista de asesores para el filtro
+  const { data: asesoresData } = trpc.casos.listarAsesores.useQuery(
+    undefined,
+    { enabled: !!panelToken, refetchOnWindowFocus: false }
+  );
+  const asesores = asesoresData?.asesores ?? [];
+
+  // Notificación por email al pasar a Revisión pendiente
+  const notificarRevisionMutation = trpc.casos.notificarRevisionPendiente.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Notificación enviada al asesor por email");
+      } else {
+        toast.warning(`Cambio guardado, pero no se pudo enviar email: ${data.error}`);
+      }
+    },
+    onError: () => toast.warning("Cambio guardado, pero no se pudo enviar la notificación"),
+  });
+
   // Mutación de gestión
   const updateGestionMutation = trpc.casos.updateGestion.useMutation({
     onSuccess: (data) => {
@@ -199,13 +220,20 @@ export default function PanelAsesor() {
     let lista = casosData?.casos ?? [];
     if (filtroEstado !== "todos") lista = lista.filter(c => c.estado === filtroEstado);
     if (filtroPrioridad !== "todas") lista = lista.filter(c => c.prioridad === filtroPrioridad);
+    if (filtroAsesor !== "todos") lista = lista.filter(c => c.asesorAsignado === filtroAsesor);
     if (busqueda) {
       const q = busqueda.toLowerCase();
       lista = lista.filter(c =>
         c.nombre.toLowerCase().includes(q) ||
-        c.nif.toLowerCase().includes(q) ||
         c.email.toLowerCase().includes(q) ||
         c.id.toLowerCase().includes(q)
+      );
+    }
+    if (busquedaNif) {
+      const q = busquedaNif.toLowerCase().replace(/[\s-]/g, "");
+      lista = lista.filter(c =>
+        c.nif.toLowerCase().replace(/[\s-]/g, "").includes(q) ||
+        (c.nifPagador ?? "").toLowerCase().replace(/[\s-]/g, "").includes(q)
       );
     }
     if (busquedaEmpresa) {
@@ -216,7 +244,7 @@ export default function PanelAsesor() {
       );
     }
     return lista;
-  }, [casosData, filtroEstado, filtroPrioridad, busqueda, busquedaEmpresa]);
+  }, [casosData, filtroEstado, filtroPrioridad, filtroAsesor, busqueda, busquedaNif, busquedaEmpresa]);
 
   // Indicador de fuente de datos
   const fuente = useMemo(() => {
@@ -246,11 +274,13 @@ export default function PanelAsesor() {
 
   const guardarEdicion = () => {
     if (!casoSeleccionado) return;
+    const estadoAnterior = casoSeleccionado.estado;
+    const nuevoEstado = camposEdit.estado;
     updateGestionMutation.mutate({
       casoId: casoSeleccionado.id,
       rowIndex: casoSeleccionado.rowIndex,
       campos: {
-        estado: camposEdit.estado as typeof ESTADOS[number] | undefined,
+        estado: nuevoEstado as typeof ESTADOS[number] | undefined,
         prioridad: camposEdit.prioridad as typeof PRIORIDADES[number] | undefined,
         asesorAsignado: camposEdit.asesorAsignado,
         notasAsesor: camposEdit.notasAsesor,
@@ -263,6 +293,19 @@ export default function PanelAsesor() {
         observaciones: camposEdit.observaciones,
       },
     });
+    // Disparar notificación por email si el estado cambia a "Revisión pendiente"
+    if (nuevoEstado === "Revisión pendiente" && estadoAnterior !== "Revisión pendiente") {
+      notificarRevisionMutation.mutate({
+        casoId: casoSeleccionado.id,
+        nombreCliente: casoSeleccionado.nombre,
+        emailCliente: casoSeleccionado.email,
+        nifCliente: casoSeleccionado.nif,
+        asesorAsignado: camposEdit.asesorAsignado ?? casoSeleccionado.asesorAsignado,
+        notasAsesor: camposEdit.notasAsesor ?? casoSeleccionado.notasAsesor,
+        comunidad: casoSeleccionado.comunidad,
+        complejidad: casoSeleccionado.complejidad,
+      });
+    }
   };
 
   // Toggle documento recibido
@@ -455,10 +498,20 @@ export default function PanelAsesor() {
                   {PRIORIDADES.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
+              {/* Filtro por asesor */}
+              <select
+                value={filtroAsesor}
+                onChange={e => setFiltroAsesor(e.target.value)}
+                className="w-full text-xs border border-gray-200 rounded px-1.5 py-1 text-gray-600 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              >
+                <option value="todos">Todos los asesores</option>
+                {asesores.map(a => <option key={a} value={a}>{a}</option>)}
+              </select>
+              {/* Buscador por nombre/email */}
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Buscar nombre, NIF, email..."
+                  placeholder="Buscar nombre, email..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
                   className="w-full text-xs border border-gray-200 rounded-lg px-3 py-1.5 pl-7 focus:outline-none focus:ring-1 focus:ring-teal-500"
@@ -466,6 +519,25 @@ export default function PanelAsesor() {
                 <svg className="absolute left-2 top-2 w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
+                {busqueda && (
+                  <button onClick={() => setBusqueda("")} className="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600 text-sm">×</button>
+                )}
+              </div>
+              {/* Buscador por NIF */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Buscar por NIF/CIF..."
+                  value={busquedaNif}
+                  onChange={e => setBusquedaNif(e.target.value)}
+                  className="w-full text-xs border border-gray-200 rounded-lg px-3 py-1.5 pl-7 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                />
+                <svg className="absolute left-2 top-2 w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                </svg>
+                {busquedaNif && (
+                  <button onClick={() => setBusquedaNif("")} className="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600 text-sm">×</button>
+                )}
               </div>
               <div className="relative">
                 <input

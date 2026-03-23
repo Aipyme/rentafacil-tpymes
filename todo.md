@@ -52,3 +52,11 @@
 - [x] Panel: vista tabla alternativa con todas las columnas de gestión
 - [x] Panel: filtro por prioridad en el sidebar
 - [x] Panel: ordenación automática por prioridad (Alta primero) y fecha
+
+## Mejoras panel - filtros y notificaciones
+- [x] Filtro por asesor asignado en el sidebar del panel (desplegable dinámico con asesores reales del Sheet)
+- [x] Buscador por NIF/CIF del cliente en el sidebar del panel (busca NIF cliente y NIF pagador)
+- [x] Botón exportar CSV mejorado (exporta casos filtrados con 28 columnas)
+- [x] Notificación por email cuando un caso pasa a estado "Revisión pendiente" (via n8n webhook)
+- [x] Backend: tRPC mutation notificarRevisionPendiente + listarAsesores
+- [x] Documentación n8n actualizada con sección 8 (notificaciones) y sección 9 (tabla de acciones)

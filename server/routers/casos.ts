@@ -368,4 +368,74 @@ export const casosRouter = router({
         return { success: false, error: e instanceof Error ? e.message : String(e) };
       }
     }),
+
+  /**
+   * Notificar al asesor responsable por email cuando un caso pasa a "Revisión pendiente"
+   * Dispara un webhook de n8n que envía el email.
+   */
+  notificarRevisionPendiente: publicProcedure
+    .input(z.object({
+      casoId: z.string(),
+      nombreCliente: z.string(),
+      emailCliente: z.string(),
+      nifCliente: z.string(),
+      asesorAsignado: z.string().optional(),
+      notasAsesor: z.string().optional(),
+      comunidad: z.string().optional(),
+      complejidad: z.string().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      if (!ENV.n8nWebhookUrl) {
+        // Sin n8n, usamos notifyOwner como fallback
+        return { success: false, error: "n8n webhook no configurado" };
+      }
+
+      try {
+        const response = await fetch(ENV.n8nWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "notificar_revision_pendiente",
+            casoId: input.casoId,
+            nombreCliente: input.nombreCliente,
+            emailCliente: input.emailCliente,
+            nifCliente: input.nifCliente,
+            asesorAsignado: input.asesorAsignado ?? "Sin asignar",
+            notasAsesor: input.notasAsesor ?? "",
+            comunidad: input.comunidad ?? "",
+            complejidad: input.complejidad ?? "",
+            timestamp: new Date().toISOString(),
+          }),
+        });
+
+        if (!response.ok) {
+          return { success: false, error: `Error ${response.status}` };
+        }
+
+        return { success: true };
+      } catch (e) {
+        return { success: false, error: e instanceof Error ? e.message : String(e) };
+      }
+    }),
+
+  /**
+   * Obtener lista de asesores únicos del Sheet (para el filtro)
+   */
+  listarAsesores: publicProcedure
+    .query(async () => {
+      if (!ENV.googleSheetsApiKey || !ENV.googleSheetsId) {
+        return { asesores: [] as string[] };
+      }
+      try {
+        const casos = await leerDesdeGoogleSheetsDirecto();
+        const asesores = Array.from(new Set(
+          casos
+            .map(c => c.asesorAsignado ?? "")
+            .filter(Boolean)
+        )).sort();
+        return { asesores };
+      } catch {
+        return { asesores: [] as string[] };
+      }
+    }),
 });
