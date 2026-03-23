@@ -1153,3 +1153,13 @@
 [2026-03-23T16:16:13.783Z] Server running on http://localhost:3000/
 [2026-03-23T16:19:46.838Z] 12:19:46 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=LfREOaaSokdzVw4XDNKDZ
 [2026-03-23T16:22:05.100Z] 12:22:05 PM [vite] (client) page reload public/__manus__/version.json
+[2026-03-23T16:35:47.188Z] Dev server process group stopped
+[2026-03-23T16:35:47.218Z] Dev server exited with code -15
+[2026-03-23T16:35:50.226Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-23T16:35:52.339Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T16:35:52.730Z] Server running on http://localhost:3000/
+[2026-03-23T16:37:14.881Z] Dev server process group stopped
+[2026-03-23T16:37:14.918Z] Dev server exited with code -15
+[2026-03-23T16:37:17.914Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-23T16:37:19.455Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T16:37:19.604Z] Server running on http://localhost:3000/

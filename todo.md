@@ -25,3 +25,10 @@
 - [ ] Configurar GOOGLE_SHEETS_ID en Secretos del panel de Manus
 - [ ] Añadir columnas L (nombreEmpresa) y M (nifPagador) al Google Sheet existente
 - [ ] Actualizar workflow de n8n para mapear los nuevos campos al Sheet
+
+## Sesión actual
+- [x] Configurar GOOGLE_SHEETS_API_KEY en Secretos del panel de Manus
+- [x] Configurar GOOGLE_SHEETS_ID en Secretos del panel de Manus
+- [x] Corregir scripts de build/start en package.json (fix deploy)
+- [ ] Añadir columnas AA (nombreEmpresa) y AB (nifPagador) al Google Sheet existente
+- [ ] Actualizar documentación del nodo Set de n8n con los nuevos campos
