@@ -33,3 +33,9 @@
 - [x] Añadir columnas AY (nombreEmpresa) y AZ (nifPagador) al Google Sheet existente
 - [x] Actualizar backend para leer rango A:BZ y mapear columnas reales del Sheet
 - [x] Verificar lectura correcta del Sheet con los nuevos campos
+
+## Urgente - Seguridad y mejoras Panel Asesor
+- [x] Proteger /panel-asesor con contraseña (PANEL_PASSWORD) - token diario, expira cada 24h
+- [x] Pantalla de login básica en el frontend del panel con botón Salir
+- [x] Filtro de búsqueda por empresa pagadora en el sidebar del panel
+- [x] Botón exportar tabla a CSV (incluye: ID, Nombre, NIF, Email, Teléfono, Empresa, NIF Pagador, Estado)

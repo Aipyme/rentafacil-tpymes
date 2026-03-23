@@ -1170,3 +1170,20 @@
 [2026-03-23T17:00:56.074Z] 1:00:56 PM [tsx] change in ./server/routers/casos.ts Restarting...
 [2026-03-23T17:00:57.547Z] c[OAuth] Initialized with baseURL: https://api.manus.im
 [2026-03-23T17:00:57.709Z] Server running on http://localhost:3000/
+[2026-03-23T17:13:57.559Z] Dev server process group stopped
+[2026-03-23T17:13:57.585Z] Dev server exited with code -15
+[2026-03-23T17:14:00.591Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-23T17:14:02.260Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T17:14:02.432Z] Server running on http://localhost:3000/
+[2026-03-23T17:14:15.475Z] 1:14:15 PM [tsx] change in ./server/_core/env.ts Restarting...
+[2026-03-23T17:14:17.145Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T17:14:17.308Z] Server running on http://localhost:3000/
+[2026-03-23T17:14:38.364Z] 1:14:38 PM [tsx] change in ./server/routers.ts Restarting...
+[2026-03-23T17:14:39.854Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T17:14:40.005Z] Server running on http://localhost:3000/
+[2026-03-23T17:15:56.951Z] 1:15:56 PM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=0MSBvW8drqMq3vZCYfK40
+[2026-03-23T17:16:13.654Z] 1:16:13 PM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=0MSBvW8drqMq3vZCYfK40
+[2026-03-23T17:16:42.277Z] 1:16:42 PM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=0MSBvW8drqMq3vZCYfK40
+[2026-03-23T17:17:06.604Z] 1:17:06 PM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=0MSBvW8drqMq3vZCYfK40
+[2026-03-23T17:17:18.022Z] 1:17:18 PM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=0MSBvW8drqMq3vZCYfK40
+[2026-03-23T17:18:15.067Z] 1:18:15 PM [vite] (client) page reload public/__manus__/version.json

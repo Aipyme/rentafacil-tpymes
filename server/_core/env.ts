@@ -12,4 +12,6 @@ export const ENV = {
   // Google Sheets API key for direct access (optional)
   googleSheetsApiKey: process.env.GOOGLE_SHEETS_API_KEY ?? "",
   googleSheetsId: process.env.GOOGLE_SHEETS_ID ?? "",
+  // Panel del Asesor password protection
+  panelPassword: process.env.PANEL_PASSWORD ?? "",
 };

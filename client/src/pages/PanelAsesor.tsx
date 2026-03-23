@@ -7,10 +7,111 @@
  * - XML generation and download
  */
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { descargarXML, DatosDeclaracion, Pagador } from "@/lib/generadorXML";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+
+// ─────────────────────────────────────────────
+// Pantalla de login del panel
+// ─────────────────────────────────────────────
+
+function PanelLogin({ onSuccess }: { onSuccess: (token: string) => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const loginMutation = trpc.panel.login.useMutation({
+    onSuccess: (result) => {
+      if (result.success && result.token) {
+        sessionStorage.setItem("panel_token", result.token);
+        onSuccess(result.token);
+      } else {
+        setError("Contraseña incorrecta. Inténtalo de nuevo.");
+        setPassword("");
+        inputRef.current?.focus();
+      }
+    },
+    onError: () => {
+      setError("Error de conexión. Inténtalo de nuevo.");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!password.trim()) return;
+    setError("");
+    loginMutation.mutate({ password });
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8 w-full max-w-sm">
+        <div className="text-center mb-6">
+          <div className="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="text-white text-lg font-bold">RF</span>
+          </div>
+          <h1 className="text-lg font-semibold text-gray-900">Panel del Asesor</h1>
+          <p className="text-sm text-gray-500 mt-1">Renta Fácil TPymes — Acceso restringido</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Contraseña de acceso</label>
+            <input
+              ref={inputRef}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoFocus
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+          {error && (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
+          )}
+          <button
+            type="submit"
+            disabled={loginMutation.isPending || !password.trim()}
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loginMutation.isPending ? "Verificando..." : "Acceder al panel"}
+          </button>
+        </form>
+        <p className="text-xs text-gray-400 text-center mt-4">
+          Acceso exclusivo para asesores de Renta Fácil TPymes
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Función de exportar a CSV
+// ─────────────────────────────────────────────
+
+function exportarCSV(casos: CasoSimple[]) {
+  const cabeceras = [
+    "ID", "Nombre", "NIF", "Email", "Teléfono", "Comunidad",
+    "Situación", "Ingresos", "Num. Pagadores", "Empresa Pagadora",
+    "NIF Pagador", "Estado", "Fecha"
+  ];
+  const filas = casos.map(c => [
+    c.id, c.nombre, c.nif, c.email, c.telefono ?? "",
+    c.comunidad, c.situacion, c.ingresos, c.numPagadores ?? "1",
+    c.nombreEmpresa ?? "", c.nifPagador ?? "", c.estado, c.fecha
+  ]);
+  const csv = [cabeceras, ...filas]
+    .map(fila => fila.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `casos_renta_${new Date().toISOString().split("T")[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 // ─────────────────────────────────────────────
 // Tipos internos
@@ -63,10 +164,52 @@ const CCAA_CODIGO: Record<string, string> = {
 // ─────────────────────────────────────────────
 
 export default function PanelAsesor() {
+  // ─── Autenticación del panel ───
+  const [panelToken, setPanelToken] = useState<string | null>(() => {
+    return sessionStorage.getItem("panel_token");
+  });
+  const [tokenVerificado, setTokenVerificado] = useState(false);
+
+  // Verificar token al cargar
+  const verifyQuery = trpc.panel.verify.useQuery(
+    { token: panelToken ?? "" },
+    { enabled: !!panelToken, retry: false }
+  );
+
+  useEffect(() => {
+    if (!panelToken) {
+      setTokenVerificado(true); // No hay token → mostrar login
+      return;
+    }
+    if (verifyQuery.data !== undefined) {
+      if (!verifyQuery.data.valid) {
+        // Token inválido o expirado → limpiar y mostrar login
+        sessionStorage.removeItem("panel_token");
+        setPanelToken(null);
+      }
+      setTokenVerificado(true);
+    }
+  }, [verifyQuery.data, panelToken]);
+
+  // Mostrar login si no hay token válido
+  if (!tokenVerificado) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!panelToken || (verifyQuery.data && !verifyQuery.data.valid)) {
+    return <PanelLogin onSuccess={(token) => { setPanelToken(token); setTokenVerificado(true); }} />;
+  }
+
+  // ─── Panel principal ───
   const [casoSeleccionado, setCasoSeleccionado] = useState<CasoSimple | null>(null);
   const [tab, setTab] = useState<"datos" | "xml">("datos");
   const [busqueda, setBusqueda] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("todos");
+  const [busquedaEmpresa, setBusquedaEmpresa] = useState("");
   
   // Cargar casos desde Google Sheets via tRPC
   const { data: casosData, isLoading, error: queryError, refetch } = trpc.casos.list.useQuery(
@@ -87,7 +230,17 @@ export default function PanelAsesor() {
     onError: () => toast.error("Error al actualizar el estado"),
   });
 
-  const casos = useMemo(() => casosData?.casos ?? [], [casosData]);
+  const casosRaw = useMemo(() => casosData?.casos ?? [], [casosData]);
+
+  // Filtro adicional por empresa (client-side sobre los casos ya cargados)
+  const casos = useMemo(() => {
+    if (!busquedaEmpresa.trim()) return casosRaw;
+    const q = busquedaEmpresa.toLowerCase();
+    return casosRaw.filter(c =>
+      (c.nombreEmpresa ?? "").toLowerCase().includes(q) ||
+      (c.nifPagador ?? "").toLowerCase().includes(q)
+    );
+  }, [casosRaw, busquedaEmpresa]);
   
   // Formulario de datos fiscales
   const [form, setForm] = useState({
@@ -257,6 +410,17 @@ export default function PanelAsesor() {
           >
             ↻ Actualizar
           </button>
+          <button
+            onClick={() => {
+              sessionStorage.removeItem("panel_token");
+              setPanelToken(null);
+              setTokenVerificado(true);
+            }}
+            className="text-xs text-gray-500 hover:text-red-600 border border-gray-200 px-2 py-1 rounded transition-colors"
+            title="Cerrar sesión del panel"
+          >
+            Salir
+          </button>
           <span className="bg-teal-50 text-teal-700 text-xs px-2 py-1 rounded font-medium">
             Generador XML v1.0
           </span>
@@ -269,19 +433,34 @@ export default function PanelAsesor() {
           <div className="p-4 border-b border-gray-100 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                Casos ({casosData?.total ?? 0})
+                Casos ({casos.length}{casosData?.total && casos.length !== casosData.total ? `/${casosData.total}` : ""})
               </h2>
-              <select
-                value={filtroEstado}
-                onChange={(e) => setFiltroEstado(e.target.value)}
-                className="text-xs border border-gray-200 rounded px-1.5 py-1 text-gray-600 focus:outline-none focus:ring-1 focus:ring-teal-500"
-              >
-                <option value="todos">Todos</option>
-                <option value="Pendiente">Pendiente</option>
-                <option value="En proceso">En proceso</option>
-                <option value="Completado">Completado</option>
-              </select>
+              <div className="flex items-center gap-1">
+                <select
+                  value={filtroEstado}
+                  onChange={(e) => setFiltroEstado(e.target.value)}
+                  className="text-xs border border-gray-200 rounded px-1.5 py-1 text-gray-600 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                >
+                  <option value="todos">Todos</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="En proceso">En proceso</option>
+                  <option value="Completado">Completado</option>
+                </select>
+                {/* Botón exportar CSV */}
+                <button
+                  onClick={() => {
+                    if (casos.length === 0) { toast.error("No hay casos para exportar"); return; }
+                    exportarCSV(casos);
+                    toast.success(`CSV exportado: ${casos.length} casos`);
+                  }}
+                  title="Exportar tabla a CSV"
+                  className="text-xs border border-gray-200 rounded px-1.5 py-1 text-gray-500 hover:text-teal-600 hover:border-teal-300 transition-colors"
+                >
+                  ↓ CSV
+                </button>
+              </div>
             </div>
+            {/* Búsqueda por nombre o NIF */}
             <div className="relative">
               <input
                 type="text"
@@ -293,6 +472,27 @@ export default function PanelAsesor() {
               <svg className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
+            </div>
+            {/* Búsqueda por empresa pagadora */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Filtrar por empresa..."
+                value={busquedaEmpresa}
+                onChange={(e) => setBusquedaEmpresa(e.target.value)}
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 pl-8 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              <svg className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              {busquedaEmpresa && (
+                <button
+                  onClick={() => setBusquedaEmpresa("")}
+                  className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600"
+                >
+                  ×
+                </button>
+              )}
             </div>
           </div>
           
