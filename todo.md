@@ -39,3 +39,16 @@
 - [x] Pantalla de login básica en el frontend del panel con botón Salir
 - [x] Filtro de búsqueda por empresa pagadora en el sidebar del panel
 - [x] Botón exportar tabla a CSV (incluye: ID, Nombre, NIF, Email, Teléfono, Empresa, NIF Pagador, Estado)
+
+## Columnas de gestión y mejoras del panel
+- [x] Añadir columnas de gestión al Sheet: BA-BJ (prioridad, asesorAsignado, notasAsesor, documentosRecibidos, fechaContacto, fechaRevision, resultadoFinal, importeResultado, fechaPresentacion, observaciones)
+- [x] Actualizar backend para leer rango A:BJ y mapear las 10 nuevas columnas de gestión
+- [x] Panel: notas internas editables por el asesor
+- [x] Panel: selector de prioridad (Alta/Media/Baja) con indicador visual de color
+- [x] Panel: campo de asesor asignado
+- [x] Panel: checklist de documentos recibidos (9 tipos predefinidos + campo libre)
+- [x] Panel: campos de fecha de contacto, revisión y presentación
+- [x] Panel: estado ampliado con 6 opciones (incl. Revisión pendiente, Documentación pendiente)
+- [x] Panel: vista tabla alternativa con todas las columnas de gestión
+- [x] Panel: filtro por prioridad en el sidebar
+- [x] Panel: ordenación automática por prioridad (Alta primero) y fecha

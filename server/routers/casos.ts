@@ -1,9 +1,14 @@
 /**
  * Router de casos para el Panel del Asesor
- * 
- * Lee los casos del Google Sheet via:
- * 1. API directa de Google Sheets (si GOOGLE_SHEETS_API_KEY y GOOGLE_SHEETS_ID están configurados)
- * 2. Webhook de n8n como intermediario (si VITE_WEBHOOK_N8N está configurado)
+ *
+ * Lee los casos del Google Sheet via API directa (GOOGLE_SHEETS_API_KEY + GOOGLE_SHEETS_ID)
+ * con fallback a webhook de n8n.
+ *
+ * Columnas de gestión (BA-BJ) — escritura via Service Account o n8n:
+ *   BA: prioridad         BB: asesorAsignado    BC: notasAsesor
+ *   BD: documentosRecibidos  BE: fechaContacto  BF: fechaRevision
+ *   BG: resultadoFinal    BH: importeResultado  BI: fechaPresentacion
+ *   BJ: observaciones
  */
 
 import { z } from "zod";
@@ -22,34 +27,45 @@ export interface CasoGoogleSheets {
   ingresos: string;
   fecha: string;
   estado: string;
-  // Nuevos campos del pagador (añadidos en el formulario ampliado)
+  // Datos del pagador
   nifPagador?: string;
   nombreEmpresa?: string;
   telefono?: string;
   numPagadores?: string;
   tieneInmuebles?: string;
   tieneActividad?: string;
-  // Fila en el sheet (para actualizar estado)
+  // Datos de clasificación IA
+  complejidad?: string;
+  plan?: string;
+  precio?: string;
+  // Columnas de gestión del asesor (BA-BJ)
+  prioridad?: string;
+  asesorAsignado?: string;
+  notasAsesor?: string;
+  documentosRecibidos?: string;
+  fechaContacto?: string;
+  fechaRevision?: string;
+  resultadoFinal?: string;
+  importeResultado?: string;
+  fechaPresentacion?: string;
+  observaciones?: string;
+  // Fila en el sheet (para actualizar)
   rowIndex?: number;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-/**
- * Lee los casos directamente del Google Sheet usando la API de Google Sheets v4
- * Requiere: GOOGLE_SHEETS_API_KEY y GOOGLE_SHEETS_ID
- */
 async function leerDesdeGoogleSheetsDirecto(): Promise<CasoGoogleSheets[]> {
   const apiKey = ENV.googleSheetsApiKey;
   const sheetId = ENV.googleSheetsId;
-  
+
   if (!apiKey || !sheetId) {
     throw new Error("Google Sheets no configurado: falta GOOGLE_SHEETS_API_KEY o GOOGLE_SHEETS_ID");
   }
 
-  // Leer el rango A:BZ de la primera hoja (el sheet tiene 52 columnas)
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:BZ?key=${apiKey}`;
-  
+  // Leer hasta la columna BJ (62 columnas)
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:BJ?key=${apiKey}`;
+
   const response = await fetch(url);
   if (!response.ok) {
     const text = await response.text();
@@ -57,115 +73,136 @@ async function leerDesdeGoogleSheetsDirecto(): Promise<CasoGoogleSheets[]> {
   }
 
   const data = await response.json() as { values?: string[][] };
-  
+
   if (!data.values || data.values.length < 2) {
     return [];
   }
 
-  // Primera fila = cabeceras
   const headers = data.values[0].map((h: string) => h.toLowerCase().trim());
-  
-  // Mapear columnas por nombre
-  const col = (name: string) => headers.indexOf(name);
-  
-  // Columnas del Google Sheet real (nombres exactos tal como están en la fila 1)
-  // Sheet tiene 52 columnas: A-AZ + nombreEmpresa(col51=AY) + nifPagador(col52=AZ)
-  const idCol = col("id_caso") !== -1 ? col("id_caso") : col("expedienteId");
-  const nombreCol = col("nombreCompleto") !== -1 ? col("nombreCompleto") : col("nombre");
-  const emailCol = col("email");
-  const nifCol = col("nif");
-  const comunidadCol = col("comunidadAutonoma") !== -1 ? col("comunidadAutonoma") : col("comunidad");
-  const situacionCol = col("situacionLaboral") !== -1 ? col("situacionLaboral") : col("tipo");
-  const ingresosCol = col("ingresosBrutos") !== -1 ? col("ingresosBrutos") : col("rendimientosTrabajo");
-  const fechaCol = col("timestamp") !== -1 ? col("timestamp") : col("fecha_creacion");
-  const estadoCol = col("estado");
-  const nifPagadorCol = col("nifPagador");   // col 52 — nuevo campo
-  const nombreEmpresaCol = col("nombreEmpresa"); // col 51 — nuevo campo
-  const telefonoCol = col("telefono");
-  const numPagadoresCol = col("numPagadores");
-  const tieneInmueblesCol = col("tieneInmueblesAlquilados") !== -1 ? col("tieneInmueblesAlquilados") : col("tieneInmuebles");
-  const tieneActividadCol = col("tieneActividadEconomica") !== -1 ? col("tieneActividadEconomica") : col("tieneActividad");
+  const col = (name: string) => headers.indexOf(name.toLowerCase());
+
+  // Columnas de datos del formulario
+  const idCol         = col("id_caso") !== -1 ? col("id_caso") : col("expedienteid");
+  const nombreCol     = col("nombrecompleto") !== -1 ? col("nombrecompleto") : col("nombre");
+  const emailCol      = col("email");
+  const nifCol        = col("nif");
+  const comunidadCol  = col("comunidadautonoma") !== -1 ? col("comunidadautonoma") : col("comunidad");
+  const situacionCol  = col("situacionlaboral") !== -1 ? col("situacionlaboral") : col("tipo");
+  const ingresosCol   = col("ingresosBrutos") !== -1 ? col("ingresosBrutos") : col("rendimientostrabajo");
+  const fechaCol      = col("timestamp") !== -1 ? col("timestamp") : col("fecha_creacion");
+  const estadoCol     = col("estado");
+  const nifPagadorCol     = col("nifpagador");
+  const nombreEmpresaCol  = col("nombreempresa");
+  const telefonoCol       = col("telefono");
+  const numPagadoresCol   = col("numpagadores");
+  const tieneInmueblesCol = col("tieneinmueblesalquilados") !== -1 ? col("tieneinmueblesalquilados") : col("tieneinmuebles");
+  const tieneActividadCol = col("tieneactividadeconomica") !== -1 ? col("tieneactividadeconomica") : col("tieneactividad");
+  const complejidadCol    = col("complejidad");
+  const planCol           = col("plan");
+  const precioCol         = col("precio");
+
+  // Columnas de gestión del asesor (BA-BJ)
+  const prioridadCol          = col("prioridad");
+  const asesorAsignadoCol     = col("asesorasignado");
+  const notasAsesorCol        = col("notasasesor");
+  const documentosRecibidosCol = col("documentosrecibidos");
+  const fechaContactoCol      = col("fechacontacto");
+  const fechaRevisionCol      = col("fecharevision");
+  const resultadoFinalCol     = col("resultadofinal");
+  const importeResultadoCol   = col("importeresultado");
+  const fechaPresentacionCol  = col("fechapresentacion");
+  const observacionesCol      = col("observaciones");
 
   const casos: CasoGoogleSheets[] = [];
-  
+
   for (let i = 1; i < data.values.length; i++) {
     const row = data.values[i];
     if (!row || row.length === 0) continue;
-    
+
     const nombre = nombreCol >= 0 ? (row[nombreCol] ?? "") : "";
-    if (!nombre) continue; // Saltar filas vacías
-    
+    if (!nombre) continue;
+
     casos.push({
-      id: idCol >= 0 ? (row[idCol] ?? `RENTA-2025-${i}`) : `RENTA-2025-${i}`,
+      id:        idCol >= 0 ? (row[idCol] ?? `RENTA-2025-${i}`) : `RENTA-2025-${i}`,
       nombre,
-      email: emailCol >= 0 ? (row[emailCol] ?? "") : "",
-      nif: nifCol >= 0 ? (row[nifCol] ?? "") : "",
+      email:     emailCol >= 0 ? (row[emailCol] ?? "") : "",
+      nif:       nifCol >= 0 ? (row[nifCol] ?? "") : "",
       comunidad: comunidadCol >= 0 ? (row[comunidadCol] ?? "") : "",
       situacion: situacionCol >= 0 ? (row[situacionCol] ?? "") : "",
-      ingresos: ingresosCol >= 0 ? (row[ingresosCol] ?? "") : "",
-      fecha: fechaCol >= 0 ? (row[fechaCol] ?? "") : "",
-      estado: estadoCol >= 0 ? (row[estadoCol] ?? "Pendiente") : "Pendiente",
-      nifPagador: nifPagadorCol >= 0 ? (row[nifPagadorCol] ?? "") : "",
+      ingresos:  ingresosCol >= 0 ? (row[ingresosCol] ?? "") : "",
+      fecha:     fechaCol >= 0 ? (row[fechaCol] ?? "") : "",
+      estado:    estadoCol >= 0 ? (row[estadoCol] ?? "Pendiente") : "Pendiente",
+      nifPagador:    nifPagadorCol >= 0 ? (row[nifPagadorCol] ?? "") : "",
       nombreEmpresa: nombreEmpresaCol >= 0 ? (row[nombreEmpresaCol] ?? "") : "",
-      telefono: telefonoCol >= 0 ? (row[telefonoCol] ?? "") : "",
-      numPagadores: numPagadoresCol >= 0 ? (row[numPagadoresCol] ?? "1") : "1",
+      telefono:      telefonoCol >= 0 ? (row[telefonoCol] ?? "") : "",
+      numPagadores:  numPagadoresCol >= 0 ? (row[numPagadoresCol] ?? "1") : "1",
       tieneInmuebles: tieneInmueblesCol >= 0 ? (row[tieneInmueblesCol] ?? "No") : "No",
       tieneActividad: tieneActividadCol >= 0 ? (row[tieneActividadCol] ?? "No") : "No",
-      rowIndex: i + 1, // 1-indexed para la API de Sheets
+      complejidad: complejidadCol >= 0 ? (row[complejidadCol] ?? "") : "",
+      plan:        planCol >= 0 ? (row[planCol] ?? "") : "",
+      precio:      precioCol >= 0 ? (row[precioCol] ?? "") : "",
+      // Columnas de gestión
+      prioridad:          prioridadCol >= 0 ? (row[prioridadCol] ?? "") : "",
+      asesorAsignado:     asesorAsignadoCol >= 0 ? (row[asesorAsignadoCol] ?? "") : "",
+      notasAsesor:        notasAsesorCol >= 0 ? (row[notasAsesorCol] ?? "") : "",
+      documentosRecibidos: documentosRecibidosCol >= 0 ? (row[documentosRecibidosCol] ?? "") : "",
+      fechaContacto:      fechaContactoCol >= 0 ? (row[fechaContactoCol] ?? "") : "",
+      fechaRevision:      fechaRevisionCol >= 0 ? (row[fechaRevisionCol] ?? "") : "",
+      resultadoFinal:     resultadoFinalCol >= 0 ? (row[resultadoFinalCol] ?? "") : "",
+      importeResultado:   importeResultadoCol >= 0 ? (row[importeResultadoCol] ?? "") : "",
+      fechaPresentacion:  fechaPresentacionCol >= 0 ? (row[fechaPresentacionCol] ?? "") : "",
+      observaciones:      observacionesCol >= 0 ? (row[observacionesCol] ?? "") : "",
+      rowIndex: i + 1,
     });
   }
-  
+
   return casos;
 }
 
-/**
- * Lee los casos via webhook de n8n
- * n8n se encarga de leer el Google Sheet y devolver los datos en JSON
- */
 async function leerDesdeN8nWebhook(): Promise<CasoGoogleSheets[]> {
   const webhookUrl = ENV.n8nWebhookUrl;
-  
-  if (!webhookUrl) {
-    throw new Error("n8n webhook no configurado: falta VITE_WEBHOOK_N8N");
-  }
+  if (!webhookUrl) throw new Error("n8n webhook no configurado");
 
-  // Construir URL del webhook de lectura (añadir sufijo /leer-casos si es necesario)
-  // El webhook de n8n puede ser el mismo con un parámetro action=read
-  const url = webhookUrl.includes("?") 
+  const url = webhookUrl.includes("?")
     ? `${webhookUrl}&action=read_cases`
     : `${webhookUrl}?action=read_cases`;
 
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error al leer casos via n8n: ${response.status}`);
-  }
+  const response = await fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } });
+  if (!response.ok) throw new Error(`Error al leer casos via n8n: ${response.status}`);
 
   const data = await response.json();
-  
-  // n8n puede devolver array directo o { casos: [...] }
   const rawCasos = Array.isArray(data) ? data : (data.casos ?? data.data ?? []);
-  
-  return rawCasos.map((item: any, i: number) => ({
-    id: item.id ?? item.expediente ?? `RENTA-2025-${i}`,
-    nombre: item.nombre ?? item["Nombre completo"] ?? "",
-    email: item.email ?? item.Email ?? "",
-    nif: item.nif ?? item.NIF ?? item.DNI ?? "",
+
+  return rawCasos.map((item: Record<string, string>, i: number) => ({
+    id:       item.id ?? item.expediente ?? `RENTA-2025-${i}`,
+    nombre:   item.nombre ?? item["Nombre completo"] ?? "",
+    email:    item.email ?? item.Email ?? "",
+    nif:      item.nif ?? item.NIF ?? item.DNI ?? "",
     comunidad: item.comunidad ?? item.Comunidad ?? "",
     situacion: item.situacion ?? item["Situación laboral"] ?? "",
-    ingresos: item.ingresos ?? item["Tramo de ingresos"] ?? "",
-    fecha: item.fecha ?? item.Fecha ?? "",
-    estado: item.estado ?? item.Estado ?? "Pendiente",
-    nifPagador: item.nifPagador ?? item["NIF Pagador"] ?? item["NIF empresa"] ?? "",
-    nombreEmpresa: item.nombreEmpresa ?? item["Nombre empresa"] ?? item["Empresa pagadora"] ?? "",
-    telefono: item.telefono ?? item.Teléfono ?? "",
-    numPagadores: item.numPagadores ?? item["Número de pagadores"] ?? "1",
-    tieneInmuebles: item.tieneInmuebles ?? item["Inmuebles alquilados"] ?? "No",
-    tieneActividad: item.tieneActividad ?? item["Actividad económica"] ?? "No",
-    rowIndex: item.rowIndex ?? i + 2,
+    ingresos:  item.ingresos ?? item["Tramo de ingresos"] ?? "",
+    fecha:     item.fecha ?? item.Fecha ?? "",
+    estado:    item.estado ?? item.Estado ?? "Pendiente",
+    nifPagador:    item.nifPagador ?? "",
+    nombreEmpresa: item.nombreEmpresa ?? "",
+    telefono:      item.telefono ?? "",
+    numPagadores:  item.numPagadores ?? "1",
+    tieneInmuebles: item.tieneInmuebles ?? "No",
+    tieneActividad: item.tieneActividad ?? "No",
+    complejidad: item.complejidad ?? "",
+    plan:        item.plan ?? "",
+    precio:      item.precio ?? "",
+    prioridad:          item.prioridad ?? "",
+    asesorAsignado:     item.asesorAsignado ?? "",
+    notasAsesor:        item.notasAsesor ?? "",
+    documentosRecibidos: item.documentosRecibidos ?? "",
+    fechaContacto:      item.fechaContacto ?? "",
+    fechaRevision:      item.fechaRevision ?? "",
+    resultadoFinal:     item.resultadoFinal ?? "",
+    importeResultado:   item.importeResultado ?? "",
+    fechaPresentacion:  item.fechaPresentacion ?? "",
+    observaciones:      item.observaciones ?? "",
+    rowIndex: item.rowIndex ? Number(item.rowIndex) : i + 2,
   }));
 }
 
@@ -174,37 +211,36 @@ async function leerDesdeN8nWebhook(): Promise<CasoGoogleSheets[]> {
 export const casosRouter = router({
   /**
    * Obtener todos los casos del Google Sheet
-   * Intenta primero la API directa, luego n8n como fallback
    */
   list: publicProcedure
     .input(z.object({
       filtroEstado: z.string().optional(),
       busqueda: z.string().optional(),
+      filtroPrioridad: z.string().optional(),
+      filtroAsesor: z.string().optional(),
     }).optional())
     .query(async ({ input }) => {
       let casos: CasoGoogleSheets[] = [];
       let fuente: "google_sheets" | "n8n" | "mock" = "mock";
       let error: string | null = null;
 
-      // Intentar Google Sheets directo primero
       if (ENV.googleSheetsApiKey && ENV.googleSheetsId) {
         try {
           casos = await leerDesdeGoogleSheetsDirecto();
           fuente = "google_sheets";
         } catch (e) {
-          error = `Google Sheets directo: ${e instanceof Error ? e.message : String(e)}`;
+          error = `Google Sheets: ${e instanceof Error ? e.message : String(e)}`;
           console.error("[casos.list] Error Google Sheets:", error);
         }
       }
 
-      // Si no hay datos, intentar via n8n
       if (casos.length === 0 && ENV.n8nWebhookUrl) {
         try {
           casos = await leerDesdeN8nWebhook();
           fuente = "n8n";
           error = null;
         } catch (e) {
-          const n8nError = `n8n webhook: ${e instanceof Error ? e.message : String(e)}`;
+          const n8nError = `n8n: ${e instanceof Error ? e.message : String(e)}`;
           console.error("[casos.list] Error n8n:", n8nError);
           error = error ? `${error}; ${n8nError}` : n8nError;
         }
@@ -214,16 +250,30 @@ export const casosRouter = router({
       if (input?.filtroEstado && input.filtroEstado !== "todos") {
         casos = casos.filter(c => c.estado === input.filtroEstado);
       }
-      
+      if (input?.filtroPrioridad && input.filtroPrioridad !== "todas") {
+        casos = casos.filter(c => c.prioridad === input.filtroPrioridad);
+      }
+      if (input?.filtroAsesor && input.filtroAsesor !== "todos") {
+        casos = casos.filter(c => c.asesorAsignado === input.filtroAsesor);
+      }
       if (input?.busqueda) {
         const q = input.busqueda.toLowerCase();
-        casos = casos.filter(c => 
+        casos = casos.filter(c =>
           c.nombre.toLowerCase().includes(q) ||
           c.nif.toLowerCase().includes(q) ||
           c.email.toLowerCase().includes(q) ||
           c.id.toLowerCase().includes(q)
         );
       }
+
+      // Ordenar: Alta prioridad primero, luego por fecha desc
+      casos.sort((a, b) => {
+        const prioridadOrden: Record<string, number> = { "Alta": 0, "Media": 1, "Baja": 2, "": 3 };
+        const pa = prioridadOrden[a.prioridad ?? ""] ?? 3;
+        const pb = prioridadOrden[b.prioridad ?? ""] ?? 3;
+        if (pa !== pb) return pa - pb;
+        return (b.fecha ?? "").localeCompare(a.fecha ?? "");
+      });
 
       return {
         casos,
@@ -235,13 +285,61 @@ export const casosRouter = router({
     }),
 
   /**
-   * Actualizar el estado de un caso en Google Sheets
-   * Usa n8n webhook para escribir de vuelta al sheet
+   * Actualizar campos de gestión de un caso via n8n webhook
+   * (notas, prioridad, asesor, documentos, fechas, resultado, etc.)
+   */
+  updateGestion: publicProcedure
+    .input(z.object({
+      casoId: z.string(),
+      rowIndex: z.number().optional(),
+      campos: z.object({
+        estado: z.enum(["Pendiente", "En proceso", "Completado", "Cancelado", "Revisión pendiente", "Documentación pendiente"]).optional(),
+        prioridad: z.enum(["Alta", "Media", "Baja"]).optional(),
+        asesorAsignado: z.string().optional(),
+        notasAsesor: z.string().optional(),
+        documentosRecibidos: z.string().optional(),
+        fechaContacto: z.string().optional(),
+        fechaRevision: z.string().optional(),
+        resultadoFinal: z.enum(["A devolver", "A ingresar", "Negativo/cero"]).optional(),
+        importeResultado: z.string().optional(),
+        fechaPresentacion: z.string().optional(),
+        observaciones: z.string().optional(),
+      }),
+    }))
+    .mutation(async ({ input }) => {
+      if (!ENV.n8nWebhookUrl) {
+        return { success: false, error: "n8n webhook no configurado — no se puede escribir en el Sheet" };
+      }
+
+      try {
+        const response = await fetch(ENV.n8nWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update_gestion",
+            casoId: input.casoId,
+            rowIndex: input.rowIndex,
+            ...input.campos,
+          }),
+        });
+
+        if (!response.ok) {
+          return { success: false, error: `Error ${response.status}` };
+        }
+
+        return { success: true };
+      } catch (e) {
+        return { success: false, error: e instanceof Error ? e.message : String(e) };
+      }
+    }),
+
+  /**
+   * Actualizar el estado de un caso (shortcut del updateGestion)
    */
   updateEstado: publicProcedure
     .input(z.object({
       casoId: z.string(),
-      nuevoEstado: z.enum(["Pendiente", "En proceso", "Completado", "Cancelado"]),
+      nuevoEstado: z.enum(["Pendiente", "En proceso", "Completado", "Cancelado", "Revisión pendiente", "Documentación pendiente"]),
       rowIndex: z.number().optional(),
     }))
     .mutation(async ({ input }) => {
