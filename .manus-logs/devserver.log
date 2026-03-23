@@ -1127,3 +1127,29 @@
 [2026-03-21T08:38:12.407Z] 4:38:12 AM [express] serving on port 5000
 [2026-03-23T15:59:23.304Z] 11:59:23 AM [vite] (client) hmr update /src/App.tsx, /src/index.css
 [2026-03-23T15:59:51.321Z] 11:59:51 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-23T16:10:24.794Z] Dev server process group stopped
+[2026-03-23T16:10:24.816Z] ELIFECYCLE  Command failed.
+[2026-03-23T16:10:24.840Z] Dev server exited with code -15
+[2026-03-23T16:10:56.756Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-23T16:10:59.086Z] Dev server process group stopped
+[2026-03-23T16:10:59.112Z] Dev server exited with code -15
+[2026-03-23T16:11:02.102Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-23T16:11:03.956Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T16:11:06.096Z] 12:11:06 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-03-23T16:11:06.113Z] Server running on http://localhost:3000/
+[2026-03-23T16:13:28.852Z] 12:13:28 PM [tsx] change in ./vite.config.ts Restarting...
+[2026-03-23T16:13:30.316Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T16:13:30.467Z] Server running on http://localhost:3000/
+[2026-03-23T16:13:37.278Z] Dev server process group stopped
+[2026-03-23T16:13:37.321Z] Dev server exited with code -15
+[2026-03-23T16:13:40.295Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-23T16:13:41.889Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T16:13:42.047Z] Server running on http://localhost:3000/
+[2026-03-23T16:15:15.815Z] 12:15:15 PM [tsx] change in ./server/_core/env.ts Restarting...
+[2026-03-23T16:15:17.416Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T16:15:17.560Z] Server running on http://localhost:3000/
+[2026-03-23T16:16:12.021Z] 12:16:12 PM [tsx] change in ./server/routers.ts Restarting...
+[2026-03-23T16:16:13.623Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-23T16:16:13.783Z] Server running on http://localhost:3000/
+[2026-03-23T16:19:46.838Z] 12:19:46 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=LfREOaaSokdzVw4XDNKDZ
+[2026-03-23T16:22:05.100Z] 12:22:05 PM [vite] (client) page reload public/__manus__/version.json

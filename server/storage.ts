@@ -1,13 +1,11 @@
-// Storage placeholder for compatibility
-export interface IStorage {
-  getDeclarations(): Promise<any[]>;
-  getDeclaration(id: number): Promise<any | undefined>;
-  createDeclaration(data: any): Promise<any>;
-  updateDeclaration(id: number, data: any): Promise<any>;
-  getStats(): Promise<any>;
-}
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 
-class MemStorage implements IStorage {
+// ── Legacy in-memory storage (for backward compatibility with routes.ts) ──────
+class MemStorage {
   private declarations: Map<number, any> = new Map();
   private currentId = 1;
 
@@ -45,3 +43,62 @@ class MemStorage implements IStorage {
 }
 
 export const storage = new MemStorage();
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+// ── S3 client ──────────────────────────────────────────────────────────────
+const BUCKET = process.env.S3_BUCKET ?? "";
+const REGION = process.env.S3_REGION ?? "us-east-1";
+const ENDPOINT = process.env.S3_ENDPOINT;
+const CDN_BASE = process.env.S3_CDN_BASE ?? "";
+
+const s3 = new S3Client({
+  region: REGION,
+  ...(ENDPOINT ? { endpoint: ENDPOINT, forcePathStyle: true } : {}),
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID ?? "",
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? "",
+  },
+});
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+/**
+ * Upload bytes to S3.
+ * Returns the public URL (CDN or direct) and the stored key.
+ */
+export async function storagePut(
+  relKey: string,
+  data: Buffer | Uint8Array | string,
+  contentType = "application/octet-stream"
+): Promise<{ key: string; url: string }> {
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: relKey,
+      Body: data,
+      ContentType: contentType,
+    })
+  );
+
+  const url = CDN_BASE
+    ? `${CDN_BASE.replace(/\/$/, "")}/${relKey}`
+    : `https://${BUCKET}.s3.${REGION}.amazonaws.com/${relKey}`;
+
+  return { key: relKey, url };
+}
+
+/**
+ * Generate a presigned GET URL for a stored key.
+ * Default expiry: 1 hour.
+ */
+export async function storageGet(
+  relKey: string,
+  expiresIn = 3600
+): Promise<{ key: string; url: string }> {
+  const url = await getSignedUrl(
+    s3,
+    new GetObjectCommand({ Bucket: BUCKET, Key: relKey }),
+    { expiresIn }
+  );
+  return { key: relKey, url };
+}

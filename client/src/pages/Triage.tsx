@@ -66,6 +66,10 @@ interface TriageData {
   tieneReferenciaCatastral: string;
   tieneDatosFiscalesAEAT: string;
   aceptaRGPD: boolean;
+  // Datos del pagador principal (empresa)
+  nifPagador: string;
+  nombreEmpresa: string;
+  tieneActividadEconomica: string;
 }
 
 const INITIAL: TriageData = {
@@ -96,6 +100,10 @@ const INITIAL: TriageData = {
   tieneReferenciaCatastral: "",
   tieneDatosFiscalesAEAT: "",
   aceptaRGPD: false,
+  // Datos del pagador principal (empresa)
+  nifPagador: "",
+  nombreEmpresa: "",
+  tieneActividadEconomica: "",
 };
 
 const CCAA = [
@@ -339,6 +347,9 @@ export default function Triage() {
       : data.tipoContribuyente === 'autonomo' ? 'Autónomo'
       : data.tipoContribuyente === 'pensionista' ? 'Pensionista'
       : data.tipoContribuyente === 'desempleado' ? 'Desempleado' : data.tipoContribuyente,
+    // Datos del pagador principal (empresa) — nuevos campos
+    nifPagador: data.nifPagador || '',
+    nombreEmpresa: data.nombreEmpresa || '',
     // Campos extra del resultado
     expedienteId,
     complejidad,
@@ -1113,6 +1124,45 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                               </label>
                             ))}
                           </RadioGroup>
+                        </div>
+
+                        {/* Datos del pagador — nuevos campos */}
+                        <div className="bg-teal-50 rounded-xl p-4 border border-teal-200">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Building2 className="w-4 h-4 text-teal-600" />
+                            <p className="text-sm font-semibold text-teal-800">
+                              Datos de tu empresa pagadora
+                            </p>
+                          </div>
+                          <p className="text-xs text-teal-600 mb-4">
+                            Estos datos nos permiten preparar tu declaración sin pedirte el certificado de retenciones más adelante. Son opcionales ahora, pero muy útiles para el asesor.
+                          </p>
+                          <div className="space-y-3">
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                                Nombre de la empresa pagadora
+                              </Label>
+                              <Input
+                                value={data.nombreEmpresa}
+                                onChange={(e) => update({ nombreEmpresa: e.target.value })}
+                                placeholder="Empresa S.A. / Ej. Mercadona S.A."
+                                className="h-11 bg-white"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                                NIF / CIF de la empresa pagadora
+                              </Label>
+                              <Input
+                                value={data.nifPagador}
+                                onChange={(e) => update({ nifPagador: e.target.value.toUpperCase() })}
+                                placeholder="A12345678 (CIF empresa)"
+                                className="h-11 bg-white uppercase"
+                                maxLength={9}
+                              />
+                              <p className="text-xs text-gray-400 mt-1">Lo encontrarás en tu nómina o en el certificado de retenciones</p>
+                            </div>
+                          </div>
                         </div>
 
                         <div className="bg-gray-50 rounded-xl p-4 space-y-3">

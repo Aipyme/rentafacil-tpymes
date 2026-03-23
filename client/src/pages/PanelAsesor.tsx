@@ -2,14 +2,15 @@
  * Panel del Asesor - Renta Fácil TPymes
  * 
  * Design: Clean professional dashboard
- * - Sidebar navigation with case list
+ * - Sidebar navigation with case list (loaded from Google Sheets via tRPC)
  * - Form to complete fiscal data
  * - XML generation and download
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { descargarXML, DatosDeclaracion, Pagador } from "@/lib/generadorXML";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 
 // ─────────────────────────────────────────────
 // Tipos internos
@@ -25,33 +26,15 @@ interface CasoSimple {
   ingresos: string;
   fecha: string;
   estado: string;
+  // Datos del pagador (del formulario ampliado)
+  nifPagador?: string;
+  nombreEmpresa?: string;
+  telefono?: string;
+  numPagadores?: string;
+  tieneInmuebles?: string;
+  tieneActividad?: string;
+  rowIndex?: number;
 }
-
-// Casos de ejemplo (en producción vendrían del Google Sheet via n8n)
-const CASOS_EJEMPLO: CasoSimple[] = [
-  {
-    id: "RENTA-2025-ABC123",
-    nombre: "Juan García López",
-    email: "juan@example.com",
-    nif: "12345678A",
-    comunidad: "Madrid",
-    situacion: "Asalariado/a",
-    ingresos: "22.000€ - 35.000€",
-    fecha: "21/03/2026",
-    estado: "Pendiente",
-  },
-  {
-    id: "RENTA-2025-DEF456",
-    nombre: "María Fernández Ruiz",
-    email: "maria@example.com",
-    nif: "87654321B",
-    comunidad: "Andalucía",
-    situacion: "Asalariado/a",
-    ingresos: "Menos de 22.000€",
-    fecha: "20/03/2026",
-    estado: "En proceso",
-  },
-];
 
 const CCAA_CODIGO: Record<string, string> = {
   "Andalucía": "01",
@@ -82,6 +65,29 @@ const CCAA_CODIGO: Record<string, string> = {
 export default function PanelAsesor() {
   const [casoSeleccionado, setCasoSeleccionado] = useState<CasoSimple | null>(null);
   const [tab, setTab] = useState<"datos" | "xml">("datos");
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("todos");
+  
+  // Cargar casos desde Google Sheets via tRPC
+  const { data: casosData, isLoading, error: queryError, refetch } = trpc.casos.list.useQuery(
+    { filtroEstado: filtroEstado !== "todos" ? filtroEstado : undefined, busqueda: busqueda || undefined },
+    { refetchInterval: 60_000 } // Recargar cada minuto
+  );
+
+  // Mutación para actualizar estado
+  const updateEstado = trpc.casos.updateEstado.useMutation({
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Estado actualizado en Google Sheets");
+        refetch();
+      } else {
+        toast.error(`Error al actualizar: ${result.error}`);
+      }
+    },
+    onError: () => toast.error("Error al actualizar el estado"),
+  });
+
+  const casos = useMemo(() => casosData?.casos ?? [], [casosData]);
   
   // Formulario de datos fiscales
   const [form, setForm] = useState({
@@ -198,14 +204,33 @@ export default function PanelAsesor() {
     setTab("xml");
   };
 
+  const handleMarcarCompletado = () => {
+    if (!casoSeleccionado) return;
+    updateEstado.mutate({
+      casoId: casoSeleccionado.id,
+      nuevoEstado: "Completado",
+      rowIndex: casoSeleccionado.rowIndex,
+    });
+  };
+
   const estadoColor = (estado: string) => {
     switch (estado) {
       case "Pendiente": return "bg-amber-100 text-amber-700";
       case "En proceso": return "bg-blue-100 text-blue-700";
       case "Completado": return "bg-green-100 text-green-700";
+      case "Cancelado": return "bg-red-100 text-red-700";
       default: return "bg-gray-100 text-gray-600";
     }
   };
+
+  const fuenteLabel = () => {
+    if (!casosData) return null;
+    if (casosData.fuente === "google_sheets") return { text: "Google Sheets directo", color: "text-green-600" };
+    if (casosData.fuente === "n8n") return { text: "via n8n webhook", color: "text-blue-600" };
+    return { text: "Datos de ejemplo", color: "text-amber-600" };
+  };
+
+  const fuente = fuenteLabel();
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -220,21 +245,49 @@ export default function PanelAsesor() {
             <p className="text-xs text-gray-500">Renta Fácil TPymes — Campaña 2024</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Generador XML Modelo 100 IRPF</span>
-          <span className="bg-teal-50 text-teal-700 text-xs px-2 py-1 rounded font-medium">v1.0</span>
+        <div className="flex items-center gap-3">
+          {fuente && (
+            <span className={`text-xs font-medium ${fuente.color}`}>
+              ● {fuente.text}
+            </span>
+          )}
+          <button
+            onClick={() => refetch()}
+            className="text-xs text-gray-500 hover:text-teal-600 border border-gray-200 px-2 py-1 rounded transition-colors"
+          >
+            ↻ Actualizar
+          </button>
+          <span className="bg-teal-50 text-teal-700 text-xs px-2 py-1 rounded font-medium">
+            Generador XML v1.0
+          </span>
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Lista de casos */}
         <aside className="w-72 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-100">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Casos pendientes</h2>
+          <div className="p-4 border-b border-gray-100 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Casos ({casosData?.total ?? 0})
+              </h2>
+              <select
+                value={filtroEstado}
+                onChange={(e) => setFiltroEstado(e.target.value)}
+                className="text-xs border border-gray-200 rounded px-1.5 py-1 text-gray-600 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              >
+                <option value="todos">Todos</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="En proceso">En proceso</option>
+                <option value="Completado">Completado</option>
+              </select>
+            </div>
             <div className="relative">
               <input
                 type="text"
                 placeholder="Buscar por nombre o NIF..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
                 className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 pl-8 focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
               <svg className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -244,7 +297,39 @@ export default function PanelAsesor() {
           </div>
           
           <div className="flex-1 overflow-y-auto">
-            {CASOS_EJEMPLO.map((caso) => (
+            {isLoading && (
+              <div className="p-6 text-center">
+                <div className="w-6 h-6 border-2 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                <p className="text-xs text-gray-400">Cargando casos...</p>
+              </div>
+            )}
+
+            {!isLoading && queryError && (
+              <div className="p-4">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-xs font-medium text-red-700 mb-1">Error al cargar casos</p>
+                  <p className="text-xs text-red-500">{queryError.message}</p>
+                </div>
+              </div>
+            )}
+
+            {!isLoading && !queryError && casosData?.error && (
+              <div className="p-4">
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <p className="text-xs font-medium text-amber-700 mb-1">⚠ Google Sheets no configurado</p>
+                  <p className="text-xs text-amber-600">{casosData.error}</p>
+                  <p className="text-xs text-amber-500 mt-1">Configura GOOGLE_SHEETS_API_KEY y GOOGLE_SHEETS_ID en los secretos.</p>
+                </div>
+              </div>
+            )}
+
+            {!isLoading && casos.length === 0 && !casosData?.error && (
+              <div className="p-4 text-center">
+                <p className="text-xs text-gray-400">No hay casos que mostrar.</p>
+              </div>
+            )}
+
+            {casos.map((caso) => (
               <button
                 key={caso.id}
                 onClick={() => handleCasoClick(caso)}
@@ -260,14 +345,11 @@ export default function PanelAsesor() {
                 </div>
                 <p className="text-xs text-gray-500">{caso.nif}</p>
                 <p className="text-xs text-gray-400 mt-1">{caso.comunidad} · {caso.fecha}</p>
+                {caso.nombreEmpresa && (
+                  <p className="text-xs text-teal-600 mt-0.5 truncate">{caso.nombreEmpresa}</p>
+                )}
               </button>
             ))}
-            
-            <div className="p-4 text-center">
-              <p className="text-xs text-gray-400">
-                Los casos reales se cargarán desde Google Sheets cuando esté conectado el backend.
-              </p>
-            </div>
           </div>
         </aside>
 
@@ -284,6 +366,17 @@ export default function PanelAsesor() {
               <p className="text-sm text-gray-400 max-w-sm">
                 Elige un expediente de la lista para completar los datos fiscales y generar el XML Modelo 100 para Renta Web.
               </p>
+              {!casosData?.configurado && (
+                <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-sm text-left">
+                  <p className="text-xs font-semibold text-amber-700 mb-2">Configuración pendiente</p>
+                  <p className="text-xs text-amber-600">Para cargar casos reales del Google Sheet, configura en Secretos:</p>
+                  <ul className="text-xs text-amber-600 mt-2 space-y-1">
+                    <li>• <code className="bg-amber-100 px-1 rounded">GOOGLE_SHEETS_API_KEY</code> — API Key de Google</li>
+                    <li>• <code className="bg-amber-100 px-1 rounded">GOOGLE_SHEETS_ID</code> — ID del Google Sheet</li>
+                  </ul>
+                  <p className="text-xs text-amber-500 mt-2">O usa el webhook de n8n ya configurado (<code className="bg-amber-100 px-1 rounded">VITE_WEBHOOK_N8N</code>).</p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="max-w-2xl">
@@ -293,12 +386,15 @@ export default function PanelAsesor() {
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">{casoSeleccionado.nombre}</h2>
                     <p className="text-sm text-gray-500 mt-0.5">{casoSeleccionado.nif} · {casoSeleccionado.email}</p>
+                    {casoSeleccionado.telefono && (
+                      <p className="text-xs text-gray-400 mt-0.5">📞 {casoSeleccionado.telefono}</p>
+                    )}
                   </div>
                   <span className={`text-sm px-2.5 py-1 rounded-full font-medium ${estadoColor(casoSeleccionado.estado)}`}>
                     {casoSeleccionado.estado}
                   </span>
                 </div>
-                <div className="flex gap-4 mt-4 pt-4 border-t border-gray-100">
+                <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-100">
                   <div>
                     <p className="text-xs text-gray-400">Comunidad</p>
                     <p className="text-sm font-medium text-gray-700">{casoSeleccionado.comunidad}</p>
@@ -315,7 +411,34 @@ export default function PanelAsesor() {
                     <p className="text-xs text-gray-400">Expediente</p>
                     <p className="text-sm font-medium text-gray-700 font-mono">{casoSeleccionado.id}</p>
                   </div>
+                  {casoSeleccionado.numPagadores && casoSeleccionado.numPagadores !== "1" && (
+                    <div>
+                      <p className="text-xs text-gray-400">Pagadores</p>
+                      <p className="text-sm font-medium text-amber-600">{casoSeleccionado.numPagadores} pagadores</p>
+                    </div>
+                  )}
                 </div>
+                
+                {/* Datos del pagador (si los hay) */}
+                {(casoSeleccionado.nifPagador || casoSeleccionado.nombreEmpresa) && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Datos del pagador (del formulario)</p>
+                    <div className="flex flex-wrap gap-4">
+                      {casoSeleccionado.nombreEmpresa && (
+                        <div>
+                          <p className="text-xs text-gray-400">Empresa pagadora</p>
+                          <p className="text-sm font-medium text-gray-700">{casoSeleccionado.nombreEmpresa}</p>
+                        </div>
+                      )}
+                      {casoSeleccionado.nifPagador && (
+                        <div>
+                          <p className="text-xs text-gray-400">NIF/CIF empresa</p>
+                          <p className="text-sm font-medium text-gray-700 font-mono">{casoSeleccionado.nifPagador}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Tabs */}
@@ -401,7 +524,13 @@ export default function PanelAsesor() {
 
                   {/* Rendimientos del trabajo */}
                   <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Rendimientos del trabajo — Pagador 1</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-1">Rendimientos del trabajo — Pagador 1</h3>
+                    {casoSeleccionado.nombreEmpresa && (
+                      <p className="text-xs text-teal-600 mb-4">
+                        Empresa: <strong>{casoSeleccionado.nombreEmpresa}</strong>
+                        {casoSeleccionado.nifPagador && ` (${casoSeleccionado.nifPagador})`}
+                      </p>
+                    )}
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -459,6 +588,11 @@ export default function PanelAsesor() {
                           className="rounded"
                         />
                         <span className="text-sm text-gray-600">Añadir segundo pagador</span>
+                        {casoSeleccionado.numPagadores && parseInt(casoSeleccionado.numPagadores) > 1 && (
+                          <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
+                            Cliente indicó {casoSeleccionado.numPagadores} pagadores
+                          </span>
+                        )}
                       </label>
                       
                       {form.tienePagador2 && (
@@ -743,10 +877,11 @@ export default function PanelAsesor() {
                     Generar y descargar XML
                   </button>
                   <button
-                    onClick={() => toast.info("Estado actualizado (función pendiente de conectar con Google Sheets)")}
-                    className="border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium px-6 py-3 rounded-lg transition-colors"
+                    onClick={handleMarcarCompletado}
+                    disabled={updateEstado.isPending}
+                    className="border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium px-6 py-3 rounded-lg transition-colors disabled:opacity-50"
                   >
-                    Marcar como completado
+                    {updateEstado.isPending ? "Actualizando..." : "Marcar como completado"}
                   </button>
                 </div>
               )}
