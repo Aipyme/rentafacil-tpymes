@@ -60,3 +60,9 @@
 - [x] Notificación por email cuando un caso pasa a estado "Revisión pendiente" (via n8n webhook)
 - [x] Backend: tRPC mutation notificarRevisionPendiente + listarAsesores
 - [x] Documentación n8n actualizada con sección 8 (notificaciones) y sección 9 (tabla de acciones)
+
+## Notas rápidas en el panel
+- [x] Columna "Notas" visible en la vista tabla del panel (con tooltip al pasar el ratón)
+- [x] Notas visibles en tarjetas del sidebar con icono 📝
+- [x] Botón "Añadir nota" / "Editar nota" inline en el detalle del caso
+- [x] Editor de notas con textarea y guardado directo en el Sheet via tRPC

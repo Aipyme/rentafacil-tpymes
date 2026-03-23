@@ -432,7 +432,7 @@ export default function PanelAsesor() {
             <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  {["ID", "Nombre", "NIF", "Comunidad", "Empresa", "Estado", "Prioridad", "Asesor", "Resultado", "Importe", "Presentación"].map(h => (
+                  {["ID", "Nombre", "NIF", "Comunidad", "Empresa", "Estado", "Prioridad", "Asesor", "Notas", "Resultado", "Importe", "Presentación"].map(h => (
                     <th key={h} className="px-3 py-2 text-left font-semibold text-gray-600 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -465,6 +465,13 @@ export default function PanelAsesor() {
                       {c.prioridad || "—"}
                     </td>
                     <td className="px-3 py-2 text-gray-600">{c.asesorAsignado || "—"}</td>
+                    <td className="px-3 py-2 max-w-[200px]">
+                      {c.notasAsesor ? (
+                        <span className="text-gray-600 text-xs line-clamp-2" title={c.notasAsesor}>{c.notasAsesor}</span>
+                      ) : (
+                        <span className="text-gray-300 italic text-xs">Sin notas</span>
+                      )}
+                    </td>
                     <td className="px-3 py-2 text-gray-600">{c.resultadoFinal || "—"}</td>
                     <td className="px-3 py-2 text-gray-600">{c.importeResultado ? `${c.importeResultado}€` : "—"}</td>
                     <td className="px-3 py-2 text-gray-600">{c.fechaPresentacion || "—"}</td>
@@ -592,6 +599,9 @@ export default function PanelAsesor() {
                     )}
                     {caso.asesorAsignado && (
                       <p className="text-xs text-teal-600 mt-0.5">👤 {caso.asesorAsignado}</p>
+                    )}
+                    {caso.notasAsesor && (
+                      <p className="text-xs text-gray-400 mt-0.5 truncate" title={caso.notasAsesor}>📝 {caso.notasAsesor}</p>
                     )}
                   </button>
                 ))
@@ -858,12 +868,19 @@ export default function PanelAsesor() {
                       <InfoField label="Fecha contacto" value={casoSeleccionado.fechaContacto} />
                       <InfoField label="Fecha revisión" value={casoSeleccionado.fechaRevision} />
                       <InfoField label="Fecha presentación" value={casoSeleccionado.fechaPresentacion} />
-                      {casoSeleccionado.notasAsesor && (
-                        <div className="col-span-2">
-                          <p className="text-xs text-gray-400 mb-1">Notas internas</p>
-                          <p className="text-sm text-gray-700 bg-yellow-50 rounded-lg p-2.5 border border-yellow-100">{casoSeleccionado.notasAsesor}</p>
+                      <div className="col-span-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-xs text-gray-400">Notas internas</p>
+                          <NotasRapidas caso={casoSeleccionado} onGuardado={(notas) => {
+                            setCasoSeleccionado(prev => prev ? { ...prev, notasAsesor: notas } : prev);
+                          }} />
                         </div>
-                      )}
+                        {casoSeleccionado.notasAsesor ? (
+                          <p className="text-sm text-gray-700 bg-yellow-50 rounded-lg p-2.5 border border-yellow-100 whitespace-pre-wrap">{casoSeleccionado.notasAsesor}</p>
+                        ) : (
+                          <p className="text-sm text-gray-300 italic bg-gray-50 rounded-lg p-2.5 border border-dashed border-gray-200">Sin notas — haz clic en "Añadir nota" para escribir</p>
+                        )}
+                      </div>
                       {casoSeleccionado.documentosRecibidos && (
                         <div className="col-span-2">
                           <p className="text-xs text-gray-400 mb-1">Documentos recibidos</p>
@@ -914,6 +931,84 @@ function InfoField({ label, value, badge, badgeClass }: {
       ) : (
         <p className="text-sm text-gray-700 font-medium">{value}</p>
       )}
+    </div>
+  );
+}
+
+// ── Componente NotasRapidas ─────────────────────────────────────────────────
+
+function NotasRapidas({ caso, onGuardado }: {
+  caso: CasoGoogleSheets;
+  onGuardado: (notas: string) => void;
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const [texto, setTexto] = useState(caso.notasAsesor ?? "");
+  const [guardando, setGuardando] = useState(false);
+  const updateGestion = trpc.casos.updateGestion.useMutation();
+
+  const handleGuardar = async () => {
+    if (!caso.rowIndex) return;
+    setGuardando(true);
+    try {
+      await updateGestion.mutateAsync({
+        casoId: caso.id,
+        rowIndex: caso.rowIndex,
+        campos: { notasAsesor: texto },
+      });
+      onGuardado(texto);
+      setAbierto(false);
+    } catch {
+      // silencioso
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  if (!abierto) {
+    return (
+      <button
+        onClick={() => { setTexto(caso.notasAsesor ?? ""); setAbierto(true); }}
+        className="text-xs text-teal-600 hover:text-teal-800 font-medium flex items-center gap-1"
+      >
+        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        {caso.notasAsesor ? "Editar nota" : "Añadir nota"}
+      </button>
+    );
+  }
+
+  return (
+    <div className="col-span-2 bg-yellow-50 border border-yellow-200 rounded-xl p-3 space-y-2">
+      <textarea
+        value={texto}
+        onChange={e => setTexto(e.target.value)}
+        placeholder="Escribe una nota sobre este caso..."
+        rows={4}
+        autoFocus
+        className="w-full text-sm border border-yellow-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-white resize-none"
+      />
+      <div className="flex gap-2 justify-end">
+        <button
+          onClick={() => setAbierto(false)}
+          className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+        >
+          Cancelar
+        </button>
+        <button
+          onClick={handleGuardar}
+          disabled={guardando}
+          className="text-xs px-3 py-1.5 rounded-lg bg-teal-600 text-white font-medium hover:bg-teal-700 disabled:opacity-50 flex items-center gap-1"
+        >
+          {guardando ? (
+            <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+          ) : null}
+          {guardando ? "Guardando..." : "Guardar nota"}
+        </button>
+      </div>
     </div>
   );
 }
