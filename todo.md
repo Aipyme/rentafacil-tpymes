@@ -30,5 +30,6 @@
 - [x] Configurar GOOGLE_SHEETS_API_KEY en Secretos del panel de Manus
 - [x] Configurar GOOGLE_SHEETS_ID en Secretos del panel de Manus
 - [x] Corregir scripts de build/start en package.json (fix deploy)
-- [ ] Añadir columnas AA (nombreEmpresa) y AB (nifPagador) al Google Sheet existente
-- [ ] Actualizar documentación del nodo Set de n8n con los nuevos campos
+- [x] Añadir columnas AY (nombreEmpresa) y AZ (nifPagador) al Google Sheet existente
+- [x] Actualizar backend para leer rango A:BZ y mapear columnas reales del Sheet
+- [x] Verificar lectura correcta del Sheet con los nuevos campos

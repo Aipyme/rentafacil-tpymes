@@ -47,8 +47,8 @@ async function leerDesdeGoogleSheetsDirecto(): Promise<CasoGoogleSheets[]> {
     throw new Error("Google Sheets no configurado: falta GOOGLE_SHEETS_API_KEY o GOOGLE_SHEETS_ID");
   }
 
-  // Leer el rango A:Z de la primera hoja
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:Z?key=${apiKey}`;
+  // Leer el rango A:BZ de la primera hoja (el sheet tiene 52 columnas)
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:BZ?key=${apiKey}`;
   
   const response = await fetch(url);
   if (!response.ok) {
@@ -68,22 +68,23 @@ async function leerDesdeGoogleSheetsDirecto(): Promise<CasoGoogleSheets[]> {
   // Mapear columnas por nombre
   const col = (name: string) => headers.indexOf(name);
   
-  // Columnas esperadas en el Google Sheet (ajustar según el sheet real)
-  const idCol = col("id") !== -1 ? col("id") : col("expediente");
-  const nombreCol = col("nombre") !== -1 ? col("nombre") : col("nombre completo");
-  const emailCol = col("email") !== -1 ? col("email") : col("correo");
-  const nifCol = col("nif") !== -1 ? col("nif") : col("dni");
-  const comunidadCol = col("comunidad") !== -1 ? col("comunidad") : col("comunidad autónoma");
-  const situacionCol = col("situacion") !== -1 ? col("situacion") : col("situación laboral");
-  const ingresosCol = col("ingresos") !== -1 ? col("ingresos") : col("tramo de ingresos");
-  const fechaCol = col("fecha") !== -1 ? col("fecha") : col("fecha envío");
-  const estadoCol = col("estado") !== -1 ? col("estado") : col("estado del caso");
-  const nifPagadorCol = col("nif pagador") !== -1 ? col("nif pagador") : col("nif empresa");
-  const nombreEmpresaCol = col("nombre empresa") !== -1 ? col("nombre empresa") : col("empresa pagadora");
-  const telefonoCol = col("telefono") !== -1 ? col("telefono") : col("teléfono");
-  const numPagadoresCol = col("num pagadores") !== -1 ? col("num pagadores") : col("número de pagadores");
-  const tieneInmueblesCol = col("tiene inmuebles") !== -1 ? col("tiene inmuebles") : col("inmuebles alquilados");
-  const tieneActividadCol = col("tiene actividad") !== -1 ? col("tiene actividad") : col("actividad económica");
+  // Columnas del Google Sheet real (nombres exactos tal como están en la fila 1)
+  // Sheet tiene 52 columnas: A-AZ + nombreEmpresa(col51=AY) + nifPagador(col52=AZ)
+  const idCol = col("id_caso") !== -1 ? col("id_caso") : col("expedienteId");
+  const nombreCol = col("nombreCompleto") !== -1 ? col("nombreCompleto") : col("nombre");
+  const emailCol = col("email");
+  const nifCol = col("nif");
+  const comunidadCol = col("comunidadAutonoma") !== -1 ? col("comunidadAutonoma") : col("comunidad");
+  const situacionCol = col("situacionLaboral") !== -1 ? col("situacionLaboral") : col("tipo");
+  const ingresosCol = col("ingresosBrutos") !== -1 ? col("ingresosBrutos") : col("rendimientosTrabajo");
+  const fechaCol = col("timestamp") !== -1 ? col("timestamp") : col("fecha_creacion");
+  const estadoCol = col("estado");
+  const nifPagadorCol = col("nifPagador");   // col 52 — nuevo campo
+  const nombreEmpresaCol = col("nombreEmpresa"); // col 51 — nuevo campo
+  const telefonoCol = col("telefono");
+  const numPagadoresCol = col("numPagadores");
+  const tieneInmueblesCol = col("tieneInmueblesAlquilados") !== -1 ? col("tieneInmueblesAlquilados") : col("tieneInmuebles");
+  const tieneActividadCol = col("tieneActividadEconomica") !== -1 ? col("tieneActividadEconomica") : col("tieneActividad");
 
   const casos: CasoGoogleSheets[] = [];
   
