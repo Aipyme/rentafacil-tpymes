@@ -14,6 +14,7 @@ import PoliticaCookies from "@/pages/PoliticaCookies";
 import NotFound from "@/pages/NotFound";
 import DemoAlfredo from "@/pages/DemoAlfredo";
 import Andalucia from "@/pages/Andalucia";
+import PanelAsesor from "@/pages/PanelAsesor";
 import Madrid from "@/pages/Madrid";
 import Cataluna from "@/pages/Cataluna";
 import Valencia from "@/pages/Valencia";
@@ -34,6 +35,7 @@ function AppRouter() {
       <Route path="/madrid" component={Madrid} />
       <Route path="/cataluna" component={Cataluna} />
       <Route path="/valencia" component={Valencia} />
+      <Route path="/panel-asesor" component={PanelAsesor} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -1119,3 +1119,11 @@
 [2026-03-20T17:01:45.040Z] Node.js v22.13.0
 [2026-03-20T17:01:45.048Z] ELIFECYCLE  Command failed with exit code 1.
 [2026-03-20T17:01:45.075Z] Dev server exited with code 1
+[2026-03-21T08:38:10.574Z] Starting dev server with command: pnpm run dev
+[2026-03-21T08:38:11.048Z] 
+[2026-03-21T08:38:11.049Z] > rest-express@1.0.0 dev /home/ubuntu/renta-facil-tpymes
+[2026-03-21T08:38:11.050Z] > tsx server/index.ts
+[2026-03-21T08:38:11.050Z] 
+[2026-03-21T08:38:12.407Z] 4:38:12 AM [express] serving on port 5000
+[2026-03-23T15:59:23.304Z] 11:59:23 AM [vite] (client) hmr update /src/App.tsx, /src/index.css
+[2026-03-23T15:59:51.321Z] 11:59:51 AM [vite] (client) page reload public/__manus__/version.json
