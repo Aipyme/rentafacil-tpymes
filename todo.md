@@ -83,3 +83,8 @@
 - [x] Google Sheet: columnas Z-AJ borradas (datos IA obsoletos), mapa de columnas corregido
 - [x] Nodo WF02 de n8n actualizado para aceptar campos del formulario (AB-AK) además de gestión
 - [x] 8 casos de prueba realistas con todos los campos rellenos en el Sheet
+
+## Mejoras de comunicación y UX (sesión actual)
+- [ ] Nodo email WF01 de n8n: incluir enlace de seguimiento en el email de confirmación al cliente
+- [x] Backend confirmarSubida: notificación al asesor cuando el cliente sube un documento
+- [x] Panel del Asesor: botón "Copiar enlace del cliente" en el detalle de cada caso (con opciones: copiar, WhatsApp, email)

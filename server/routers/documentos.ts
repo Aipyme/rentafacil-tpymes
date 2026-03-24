@@ -20,6 +20,9 @@ import { storagePut, storageGet } from "../storage";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { notifyOwner } from "../_core/notification";
+
+const APP_URL = "https://rentatpymes.aicheckpyme.co";
 
 // S3 client para operaciones de eliminación y presigned URLs
 const s3 = new S3Client({
@@ -144,6 +147,19 @@ export const documentosRouter = router({
         notas: input.notas ?? null,
       });
 
+      // Notificar al asesor si el documento lo sube el cliente
+      if (input.subidoPor === "cliente") {
+        const panelUrl = `${APP_URL}/panel-asesor`;
+        notifyOwner({
+          title: `📄 Nuevo documento de cliente — ${input.casoId}`,
+          content: `El cliente **${input.subidoPorNombre ?? "Desconocido"}** ha subido un documento al caso **${input.casoId}**.\n\n` +
+            `**Archivo:** ${input.nombreArchivo}\n` +
+            `**Categoría:** ${input.categoria ?? "Sin categoría"}\n` +
+            `**Tamaño:** ${(input.tamano / 1024).toFixed(1)} KB\n\n` +
+            `[Ver en el panel del asesor](${panelUrl})`,
+        }).catch(() => { /* silencioso si falla */ });
+      }
+
       return { success: true };
     }),
 
@@ -196,6 +212,19 @@ export const documentosRouter = router({
         categoria: input.categoria ?? null,
         notas: input.notas ?? null,
       });
+
+      // Notificar al asesor si el documento lo sube el cliente
+      if (input.subidoPor === "cliente") {
+        const panelUrl = `${APP_URL}/panel-asesor`;
+        notifyOwner({
+          title: `📄 Nuevo documento de cliente — ${input.casoId}`,
+          content: `El cliente **${input.subidoPorNombre ?? "Desconocido"}** ha subido un documento al caso **${input.casoId}**.\n\n` +
+            `**Archivo:** ${input.nombreArchivo}\n` +
+            `**Categoría:** ${input.categoria ?? "Sin categoría"}\n` +
+            `**Tamaño:** ${(input.tamano / 1024).toFixed(1)} KB\n\n` +
+            `[Ver en el panel del asesor](${panelUrl})`,
+        }).catch(() => { /* silencioso si falla */ });
+      }
 
       return { success: true, url, s3Key };
     }),
