@@ -113,3 +113,11 @@
 - [x] /seguimiento: componente FirmaDigital con canvas, botón firmar y confirmación
 - [x] Panel asesor: botón "Exportar PDF" que genera resumen del caso (jsPDF, con firma si existe)
 - [x] Sheet: columna firmaUrl se registra en BD y se envía al Sheet via WF02
+
+## Deducciones autonómicas todas las CCAA (sesión actual)
+- [x] Investigar etiquetas XML AEAT para las 15 CCAA de régimen común (XSD oficial descargado de AEAT)
+- [x] generadorXML.ts: tipos TypeScript para cada comunidad (DeduccionMadrid, DeduccionCatalunya, etc.)
+- [x] generadorXML.ts: bloques XML <DeduccionAutonomica> para las 15 CCAA con etiquetas oficiales AEAT
+- [x] DatosDeclaracion: campos deduccionXxx por comunidad con tipos TypeScript completos
+- [x] Triage: bloque dinámico de deducciones autonómicas por comunidad + campos enviados al Sheet
+- [x] Tests: 7/7 tests pasan, sin errores TypeScript

@@ -108,6 +108,17 @@ interface TriageData {
   nifPagador: string;
   nombreEmpresa: string;
   tieneActividadEconomica: string;
+  // Deducciones autonómicas específicas por comunidad
+  ded_alquilerJovenes: string;
+  ded_nacimientoAdopcion: string;
+  ded_familiaNumerosa: string;
+  ded_discapacidadFamiliar: string;
+  ded_gastosEscolaresHijos: string;
+  ded_alquilerViviendaHabitual: string;
+  ded_cuidadoMayores: string;
+  ded_inversionViviendaHabitual: string;
+  ded_donativos: string;
+  ded_emprendedores: string;
 }
 
 const INITIAL: TriageData = {
@@ -142,7 +153,99 @@ const INITIAL: TriageData = {
   nifPagador: "",
   nombreEmpresa: "",
   tieneActividadEconomica: "",
+  // Deducciones autonómicas
+  ded_alquilerJovenes: "",
+  ded_nacimientoAdopcion: "",
+  ded_familiaNumerosa: "",
+  ded_discapacidadFamiliar: "",
+  ded_gastosEscolaresHijos: "",
+  ded_alquilerViviendaHabitual: "",
+  ded_cuidadoMayores: "",
+  ded_inversionViviendaHabitual: "",
+  ded_donativos: "",
+  ded_emprendedores: "",
 };
+
+// Deducciones autonómicas disponibles por comunidad
+function getDeduccionesAutonomicas(ccaa: string): { key: string; label: string }[] {
+  const comunes = [
+    { key: 'ded_nacimientoAdopcion', label: 'Nacimiento o adopción de hijos en 2025' },
+    { key: 'ded_familiaNumerosa', label: 'Familia numerosa reconocida' },
+    { key: 'ded_discapacidadFamiliar', label: 'Discapacidad propia o de familiar a cargo' },
+    { key: 'ded_alquilerViviendaHabitual', label: 'Alquiler de vivienda habitual (deducción autonómica)' },
+  ];
+  const porCCAA: Record<string, { key: string; label: string }[]> = {
+    'Andalucía': [
+      ...comunes,
+      { key: 'ded_gastosEscolaresHijos', label: 'Gastos escolares de hijos (libros, uniformes, actividades)' },
+      { key: 'ded_cuidadoMayores', label: 'Cuidado de familiares mayores o dependientes' },
+    ],
+    'Aragón': [
+      ...comunes,
+      { key: 'ded_cuidadoMayores', label: 'Cuidado de personas mayores o dependientes' },
+    ],
+    'Asturias': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda (menores de 35 años)' },
+    ],
+    'Baleares': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (jóvenes o familia numerosa)' },
+    ],
+    'Canarias': [
+      ...comunes,
+      { key: 'ded_donativos', label: 'Donativos a entidades canarias' },
+    ],
+    'Cantabria': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (jóvenes)' },
+    ],
+    'Castilla-La Mancha': [
+      ...comunes,
+      { key: 'ded_cuidadoMayores', label: 'Cuidado de familiares mayores o con discapacidad' },
+    ],
+    'Castilla y León': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (menores de 36 años)' },
+      { key: 'ded_inversionViviendaHabitual', label: 'Inversión en vivienda habitual en zonas rurales' },
+    ],
+    'Cataluña': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (menores de 33 años o familia numerosa)' },
+      { key: 'ded_donativos', label: 'Donativos a entidades catalanas' },
+    ],
+    'Extremadura': [
+      ...comunes,
+      { key: 'ded_inversionViviendaHabitual', label: 'Adquisición de vivienda habitual en municipios rurales' },
+    ],
+    'Galicia': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (menores de 35 años)' },
+      { key: 'ded_cuidadoMayores', label: 'Cuidado de hijos o familiares mayores' },
+    ],
+    'Madrid': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (menores de 35 años)' },
+      { key: 'ded_gastosEscolaresHijos', label: 'Gastos de escolaridad de hijos (0-3 años, colegios, idiomas)' },
+      { key: 'ded_emprendedores', label: 'Inversión en empresas de nueva creación (Business Angel)' },
+    ],
+    'Murcia': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (menores de 35 años)' },
+    ],
+    'La Rioja': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual' },
+      { key: 'ded_emprendedores', label: 'Creación de empresa o actividad empresarial' },
+    ],
+    'Comunidad Valenciana': [
+      ...comunes,
+      { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (menores de 35 años o familia numerosa)' },
+      { key: 'ded_gastosEscolaresHijos', label: 'Gastos de escolaridad de hijos (libros, material, transporte)' },
+    ],
+  };
+  return porCCAA[ccaa] || comunes;
+}
 
 const CCAA = [
   "Andalucía", "Aragón", "Asturias", "Baleares", "Canarias",
@@ -223,6 +326,17 @@ function getDeduccionesDetectadas(data: TriageData): string[] {
   if (data.inmuebleAlquilado === "si") {
     deducciones.push("Reducción del 60% por rendimientos de alquiler de vivienda");
   }
+  // Deducciones autonómicas específicas
+  if (data.ded_nacimientoAdopcion === "si") deducciones.push(`Deducción autonómica por nacimiento/adopción (${data.comunidadAutonoma})`);
+  if (data.ded_familiaNumerosa === "si") deducciones.push(`Deducción autonómica por familia numerosa (${data.comunidadAutonoma})`);
+  if (data.ded_discapacidadFamiliar === "si") deducciones.push(`Deducción autonómica por discapacidad (${data.comunidadAutonoma})`);
+  if (data.ded_alquilerViviendaHabitual === "si") deducciones.push(`Deducción autonómica por alquiler de vivienda habitual (${data.comunidadAutonoma})`);
+  if (data.ded_alquilerJovenes === "si") deducciones.push(`Deducción autonómica por alquiler jóvenes (${data.comunidadAutonoma})`);
+  if (data.ded_gastosEscolaresHijos === "si") deducciones.push(`Deducción autonómica por gastos escolares (${data.comunidadAutonoma})`);
+  if (data.ded_cuidadoMayores === "si") deducciones.push(`Deducción autonómica por cuidado de mayores (${data.comunidadAutonoma})`);
+  if (data.ded_inversionViviendaHabitual === "si") deducciones.push(`Deducción autonómica por inversión en vivienda habitual (${data.comunidadAutonoma})`);
+  if (data.ded_donativos === "si") deducciones.push(`Deducción autonómica por donativos (${data.comunidadAutonoma})`);
+  if (data.ded_emprendedores === "si") deducciones.push(`Deducción autonómica por emprendimiento/inversión (${data.comunidadAutonoma})`);
   return deducciones;
 }
 
@@ -1073,6 +1187,31 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                             </SelectContent>
                           </Select>
                         </div>
+
+                        {/* ── Deducciones autonómicas dinámicas ── */}
+                        {data.comunidadAutonoma && !['País Vasco', 'Navarra'].includes(data.comunidadAutonoma) && (
+                          <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 space-y-3">
+                            <p className="text-sm font-semibold text-[#1a365d] flex items-center gap-2">
+                              <span className="text-base">🏛️</span>
+                              Deducciones propias de {data.comunidadAutonoma}
+                            </p>
+                            <p className="text-xs text-gray-500">Marca las que apliquen para que las incluyamos en tu declaración.</p>
+                            <div className="space-y-2">
+                              {getDeduccionesAutonomicas(data.comunidadAutonoma).map((item) => (
+                                <label key={item.key} className="flex items-start gap-3 cursor-pointer group">
+                                  <Checkbox
+                                    checked={data[item.key as keyof TriageData] === 'si'}
+                                    onCheckedChange={(checked) => update({ [item.key]: checked ? 'si' : 'no' })}
+                                    className="mt-0.5"
+                                  />
+                                  <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
+                                    {item.label}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
