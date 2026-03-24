@@ -5,6 +5,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { casosRouter } from "./routers/casos";
 import { documentosRouter } from "./routers/documentos";
+import { firmasRouter } from "./routers/firmas";
 import { ENV } from "./_core/env";
 
 export const appRouter = router({
@@ -26,6 +27,9 @@ export const appRouter = router({
 
   // Gestión de documentos subidos por asesores y clientes
   documentos: documentosRouter,
+
+  // Firmas digitales del cliente
+  firmas: firmasRouter,
 
   // Autenticación básica del Panel del Asesor
   panel: router({

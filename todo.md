@@ -105,3 +105,11 @@
 - [x] Backend WF02: actualizar nodo para que acepte y escriba ultimoRecordatorio (n8n_actualizar_caso.js v2.1)
 - [x] Backend: endpoint casos.listarParaRecordatorio (casos doc. pendiente > 3 días sin recordatorio hoy)
 - [x] n8n WF02: nodo actualizado para escribir ultimoRecordatorio (pendiente de pegar en n8n)
+
+## Firma digital y exportar PDF (sesión actual)
+- [x] Instalar signature_pad, jspdf, html2canvas
+- [x] BD: añadida tabla firmas (casoId, firmaUrl, ip, fecha, nif)
+- [x] Backend: procedimiento firmas.guardar (sube PNG a S3, guarda en BD y Sheet)
+- [x] /seguimiento: componente FirmaDigital con canvas, botón firmar y confirmación
+- [x] Panel asesor: botón "Exportar PDF" que genera resumen del caso (jsPDF, con firma si existe)
+- [x] Sheet: columna firmaUrl se registra en BD y se envía al Sheet via WF02

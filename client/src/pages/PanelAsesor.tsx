@@ -14,6 +14,7 @@ import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import DocumentosPanel from "@/components/DocumentosPanel";
+import ExportarPDF from "@/components/ExportarPDF";
 
 // Tipo local del caso (espejo de server/routers/casos.ts)
 interface CasoGoogleSheets {
@@ -677,6 +678,31 @@ export default function PanelAsesor() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
+                      <ExportarPDF
+                        caso={{
+                          id: casoSeleccionado.id,
+                          nombre: casoSeleccionado.nombre,
+                          nif: casoSeleccionado.nif,
+                          email: casoSeleccionado.email,
+                          telefono: casoSeleccionado.telefono,
+                          comunidadAutonoma: casoSeleccionado.comunidad,
+                          tipo: casoSeleccionado.situacion,
+                          plan: casoSeleccionado.plan,
+                          precio: casoSeleccionado.precio,
+                          complejidad: casoSeleccionado.complejidad,
+                          estado: casoSeleccionado.estado,
+                          prioridad: casoSeleccionado.prioridad,
+                          asesorAsignado: casoSeleccionado.asesorAsignado,
+                          notasAsesor: casoSeleccionado.notasAsesor,
+                          fechaContacto: casoSeleccionado.fechaContacto,
+                          fechaRevision: casoSeleccionado.fechaRevision,
+                          resultadoFinal: casoSeleccionado.resultadoFinal,
+                          importeResultado: casoSeleccionado.importeResultado,
+                          fechaPresentacion: casoSeleccionado.fechaPresentacion,
+                          observaciones: casoSeleccionado.observaciones,
+                          documentosRecibidos: casoSeleccionado.documentosRecibidos,
+                        }}
+                      />
                       <CopiarEnlaceCliente casoId={casoSeleccionado.id} />
                       <button
                         onClick={() => editando ? setEditando(false) : iniciarEdicion(casoSeleccionado)}

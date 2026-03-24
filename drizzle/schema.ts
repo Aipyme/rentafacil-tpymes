@@ -80,3 +80,28 @@ export const rechazosDocumentos = mysqlTable("rechazos_documentos", {
 
 export type RechazoDocumento = typeof rechazosDocumentos.$inferSelect;
 export type InsertRechazoDocumento = typeof rechazosDocumentos.$inferInsert;
+
+/**
+ * Firmas digitales del cliente para autorizar la presentación de la declaración.
+ * La imagen PNG de la firma se almacena en S3; aquí guardamos metadatos y trazabilidad.
+ */
+export const firmas = mysqlTable("firmas", {
+  id: int("id").autoincrement().primaryKey(),
+  /** ID del caso en el Google Sheet */
+  casoId: varchar("casoId", { length: 64 }).notNull(),
+  /** NIF del cliente que firmó */
+  nif: varchar("nif", { length: 20 }).notNull(),
+  /** URL pública de la imagen PNG de la firma en S3 */
+  firmaUrl: text("firmaUrl").notNull(),
+  /** Clave S3 de la firma */
+  firmaS3Key: varchar("firmaS3Key", { length: 512 }).notNull(),
+  /** Dirección IP del cliente en el momento de la firma */
+  ip: varchar("ip", { length: 64 }),
+  /** User-Agent del navegador del cliente */
+  userAgent: text("userAgent"),
+  /** Fecha y hora de la firma (UTC) */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Firma = typeof firmas.$inferSelect;
+export type InsertFirma = typeof firmas.$inferInsert;

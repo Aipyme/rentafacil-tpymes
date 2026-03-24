@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import DocumentosPanel from "@/components/DocumentosPanel";
+import FirmaDigital from "@/components/FirmaDigital";
 import {
   CheckCircle2,
   Clock,
@@ -310,6 +311,26 @@ export default function SeguimientoCliente() {
                   nombreUsuario={casoData.nombre}
                   documentosNecesarios={casoData.documentosNecesarios}
                   filtrarPorTipo={false}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Firma digital de autorización */}
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-2 pt-5 px-5">
+                <CardTitle className="text-base font-bold text-[#1a365d] flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-[#059669]" />
+                  Autorización para presentar tu declaración
+                </CardTitle>
+                <p className="text-sm text-gray-500 mt-1">
+                  Para poder presentar tu declaración necesitamos tu autorización firmada digitalmente.
+                </p>
+              </CardHeader>
+              <CardContent className="px-5 pb-5">
+                <FirmaDigital
+                  casoId={casoData.id}
+                  nif={nif}
+                  nombreCliente={casoData.nombre}
                 />
               </CardContent>
             </Card>
