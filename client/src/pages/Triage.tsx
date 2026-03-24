@@ -291,9 +291,9 @@ function getComplejidad(data: TriageData): "simple" | "medio" | "complejo" | "no
 
 function getPrecio(complejidad: string): string {
   switch (complejidad) {
-    case "simple": return "Según caso";
-    case "medio": return "Según caso";
-    case "complejo": return "Según caso";
+    case "simple": return "desde 39€";
+    case "medio": return "desde 69€";
+    case "complejo": return "desde 99€";
     default: return "—";
   }
 }
@@ -508,7 +508,7 @@ export default function Triage() {
     expedienteId,
     complejidad,
     plan: getPlan(complejidad),
-    precio: 'Según caso',
+    precio: getPrecio(complejidad),
     deduccionesDetectadas: deducciones.join(', '),
     documentosNecesarios: documentos.join(', '),
     fechaRegistro: new Date().toISOString(),
