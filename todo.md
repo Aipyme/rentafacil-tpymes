@@ -134,3 +134,10 @@
 - [x] Emails de seguimiento: confirmado que van al email del cliente ($json.email) en workflow 01
 - [x] Añadir botón eliminar caso en el panel del asesor (para limpiar casos de prueba)
 - [ ] Precio en triage: evaluar si mostrar precio orientativo o quitarlo (el precio final lo fija el asesor)
+
+## Demo Luis Guillén - ajustes finales (sesión actual)
+- [x] Triage: quitar precio estimado del resultado, sustituir por "Te contactamos en 24h con presupuesto exacto"
+- [x] n8n WF01: corregir email confirmación — precio "Según caso" → quitar precio, añadir enlace de seguimiento
+- [x] Preparar 3 casos de ejemplo realistas en el Sheet para la demo (María García, Carlos Martínez, Ana Fernández)
+- [x] n8n WF01: corregir zona horaria — guardar hora en formato español (UTC+2) en lugar de UTC
+- [x] n8n WF01: asegurar que todas las celdas del Sheet se rellenan con valores por defecto (nunca vacías)

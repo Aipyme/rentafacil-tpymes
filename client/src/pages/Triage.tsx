@@ -1489,7 +1489,7 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                             <p className="font-['DM_Sans'] text-3xl font-bold mb-1">
                               {getPlan(complejidad)}
                             </p>
-                            <p className="text-white/40 text-xs">Precio cerrado antes de empezar</p>
+                            <p className="text-emerald-400 text-sm font-medium mt-1">Un asesor te contactará en menos de 24h con el presupuesto exacto</p>
                           </div>
                           <div className="space-y-2">
                             {[
