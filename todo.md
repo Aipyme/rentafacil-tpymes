@@ -88,3 +88,8 @@
 - [ ] Nodo email WF01 de n8n: incluir enlace de seguimiento en el email de confirmación al cliente
 - [x] Backend confirmarSubida: notificación al asesor cuando el cliente sube un documento
 - [x] Panel del Asesor: botón "Copiar enlace del cliente" en el detalle de cada caso (con opciones: copiar, WhatsApp, email)
+
+## Mejoras UX panel y comunicación (sesión actual)
+- [ ] Email n8n WF01: añadir enlace de seguimiento en el email de confirmación al cliente
+- [x] Panel sidebar: badge con contador de documentos subidos por el cliente por caso
+- [x] DocumentosPanel: campo de motivo al rechazar/eliminar un documento

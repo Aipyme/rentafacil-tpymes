@@ -190,6 +190,17 @@ export default function PanelAsesor() {
   );
   const asesores = asesoresData?.asesores ?? [];
 
+  // Conteo de documentos del cliente por caso (para badges en el sidebar)
+  const todosLosCasoIds = useMemo(
+    () => (casosData?.casos ?? []).map(c => c.id),
+    [casosData]
+  );
+  const { data: conteosData } = trpc.documentos.contarPorCasos.useQuery(
+    { casoIds: todosLosCasoIds },
+    { enabled: !!panelToken && todosLosCasoIds.length > 0, refetchOnWindowFocus: false }
+  );
+  const conteosDocumentos: Record<string, number> = conteosData?.conteos ?? {};
+
   // Notificación por email al pasar a Revisión pendiente
   const notificarRevisionMutation = trpc.casos.notificarRevisionPendiente.useMutation({
     onSuccess: (data) => {
@@ -585,9 +596,22 @@ export default function PanelAsesor() {
                   >
                     <div className="flex items-start justify-between gap-1 mb-1">
                       <span className="text-xs font-semibold text-gray-900 truncate flex-1">{caso.nombre}</span>
-                      {caso.prioridad && (
-                        <span className={`w-2 h-2 rounded-full flex-shrink-0 mt-0.5 ${PRIORIDAD_COLORES[caso.prioridad]}`} title={`Prioridad ${caso.prioridad}`} />
-                      )}
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        {(conteosDocumentos[caso.id] ?? 0) > 0 && (
+                          <span
+                            className="inline-flex items-center gap-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            title={`${conteosDocumentos[caso.id]} documento${conteosDocumentos[caso.id] !== 1 ? 's' : ''} subido${conteosDocumentos[caso.id] !== 1 ? 's' : ''} por el cliente`}
+                          >
+                            <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            {conteosDocumentos[caso.id]}
+                          </span>
+                        )}
+                        {caso.prioridad && (
+                          <span className={`w-2 h-2 rounded-full ${PRIORIDAD_COLORES[caso.prioridad]}`} title={`Prioridad ${caso.prioridad}`} />
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${ESTADO_COLORES[caso.estado] ?? "bg-gray-100 text-gray-600"}`}>

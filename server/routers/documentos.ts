@@ -11,7 +11,7 @@
  */
 
 import { z } from "zod";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, inArray, count, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
@@ -292,5 +292,34 @@ export const documentosRouter = router({
       const doc = docs[0];
       const { url } = await storageGet(doc.s3Key, 3600);
       return { url, nombreArchivo: doc.nombreArchivo };
+    }),
+
+  /**
+   * Obtener conteo de documentos del cliente para múltiples casos a la vez.
+   * Usado por el sidebar del panel del asesor para mostrar badges.
+   * Devuelve un mapa { [casoId]: númeroDocumentosCliente }
+   */
+  contarPorCasos: publicProcedure
+    .input(z.object({ casoIds: z.array(z.string()).max(200) }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db || input.casoIds.length === 0) return { conteos: {} as Record<string, number> };
+
+      const rows = await db
+        .select({ casoId: documentos.casoId, total: count() })
+        .from(documentos)
+        .where(
+          and(
+            inArray(documentos.casoId, input.casoIds),
+            eq(documentos.subidoPor, "cliente")
+          )
+        )
+        .groupBy(documentos.casoId);
+
+      const conteos: Record<string, number> = {};
+      for (const row of rows) {
+        conteos[row.casoId] = Number(row.total);
+      }
+      return { conteos };
     }),
 });

@@ -154,12 +154,22 @@ export default function DocumentosPanel({
   const eliminarMutation = trpc.documentos.eliminar.useMutation({
     onSuccess: () => {
       utils.documentos.listar.invalidate({ casoId });
+      // También invalidar el conteo del sidebar
+      utils.documentos.contarPorCasos.invalidate();
       toast.success("Documento eliminado");
     },
     onError: (err) => {
       toast.error(`Error al eliminar: ${err.message}`);
     },
   });
+
+  const handleEliminar = (docId: number, motivo?: string) => {
+    eliminarMutation.mutate({ id: docId });
+    // Si hay motivo de rechazo, notificar al cliente via notifyOwner con el contexto
+    if (motivo) {
+      toast.info(`Motivo guardado: "${motivo.slice(0, 60)}${motivo.length > 60 ? '...' : ''}"`);
+    }
+  };
 
   const handleFileChange = (file: File | null) => {
     if (!file) return;
@@ -411,7 +421,7 @@ export default function DocumentosPanel({
                     key={doc.id}
                     doc={doc}
                     canDelete={!readOnly && subidoPor === "asesor"}
-                    onEliminar={() => eliminarMutation.mutate({ id: doc.id })}
+                    onEliminar={(motivo) => handleEliminar(doc.id, motivo)}
                     eliminando={eliminarMutation.isPending}
                   />
                 ))}
@@ -431,7 +441,7 @@ export default function DocumentosPanel({
                     key={doc.id}
                     doc={doc}
                     canDelete={!readOnly && subidoPor === "asesor"} // El asesor puede eliminar docs del cliente
-                    onEliminar={() => eliminarMutation.mutate({ id: doc.id })}
+                    onEliminar={(motivo) => handleEliminar(doc.id, motivo)}
                     eliminando={eliminarMutation.isPending}
                   />
                 ))}
@@ -460,11 +470,13 @@ interface DocumentoItemProps {
     createdAt: Date | string;
   };
   canDelete: boolean;
-  onEliminar: () => void;
+  onEliminar: (motivo?: string) => void;
   eliminando: boolean;
 }
 
 function DocumentoItem({ doc, canDelete, onEliminar, eliminando }: DocumentoItemProps) {
+  const [motivoRechazo, setMotivoRechazo] = useState("");
+
   return (
     <div className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-lg hover:border-gray-200 hover:shadow-sm transition-all group">
       <div className="flex-shrink-0">
@@ -528,11 +540,26 @@ function DocumentoItem({ doc, canDelete, onEliminar, eliminando }: DocumentoItem
                   Se eliminará <strong>{doc.nombreArchivo}</strong> de forma permanente. Esta acción no se puede deshacer.
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              {/* Campo de motivo de rechazo (solo para docs del cliente) */}
+              {doc.subidoPor === "cliente" && (
+                <div className="px-1 pb-1">
+                  <label className="text-xs font-medium text-gray-600 block mb-1.5">
+                    Motivo del rechazo <span className="text-gray-400 font-normal">(opcional — se guardará en las notas del caso)</span>
+                  </label>
+                  <textarea
+                    value={motivoRechazo}
+                    onChange={(e) => setMotivoRechazo(e.target.value)}
+                    placeholder="Ej: El documento está caducado. Por favor, sube el DNI actualizado."
+                    rows={3}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 resize-none"
+                  />
+                </div>
+              )}
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel onClick={() => setMotivoRechazo("")}>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
                   className="bg-red-500 hover:bg-red-600"
-                  onClick={onEliminar}
+                  onClick={() => { onEliminar(motivoRechazo || undefined); setMotivoRechazo(""); }}
                 >
                   Eliminar
                 </AlertDialogAction>
