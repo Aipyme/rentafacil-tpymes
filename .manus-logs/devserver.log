@@ -1226,3 +1226,5 @@
 [2026-03-24T08:09:19.106Z] 4:09:19 AM [tsx] change in ./server/routers/casos.ts Restarting...
 [2026-03-24T08:09:20.804Z] c[OAuth] Initialized with baseURL: https://api.manus.im
 [2026-03-24T08:09:20.983Z] Server running on http://localhost:3000/
+[2026-03-24T08:37:23.104Z] 4:37:23 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-24T09:20:43.098Z] 5:20:43 AM [vite] (client) page reload public/__manus__/version.json
