@@ -121,3 +121,9 @@
 - [x] DatosDeclaracion: campos deduccionXxx por comunidad con tipos TypeScript completos
 - [x] Triage: bloque dinámico de deducciones autonómicas por comunidad + campos enviados al Sheet
 - [x] Tests: 7/7 tests pasan, sin errores TypeScript
+
+## Recordatorio automático y validación NIF (sesión actual)
+- [x] Backend: endpoint público casos.listarParaRecordatorio (ya estaba implementado)
+- [x] n8n: instrucciones completas para configurar el workflow de recordatorio diario (entregadas al usuario)
+- [x] Triage: validación en tiempo real NIF/NIE/CIF con letra de control (ya estaba implementada)
+- [x] Triage: mensaje de error visual inline bajo el campo NIF (ya estaba implementado)
