@@ -34,6 +34,7 @@ import {
   Search,
   ArrowRight,
   Shield,
+  XCircle,
 } from "lucide-react";
 
 // Colores de estado
@@ -313,6 +314,11 @@ export default function SeguimientoCliente() {
               </CardContent>
             </Card>
 
+            {/* Historial de rechazos */}
+            {verificado && casoData && (
+              <HistorialRechazos casoId={casoData.id} />
+            )}
+
             {/* Botón para salir */}
             <div className="text-center pt-2">
               <Button
@@ -327,5 +333,77 @@ export default function SeguimientoCliente() {
         )}
       </div>
     </div>
+  );
+}
+
+// ── Componente de historial de rechazos ──────────────────────────────────────
+
+function HistorialRechazos({ casoId }: { casoId: string }) {
+  const { data, isLoading } = trpc.documentos.listarRechazos.useQuery(
+    { casoId },
+    { enabled: !!casoId }
+  );
+
+  const rechazos = data?.rechazos ?? [];
+
+  if (isLoading) return null;
+  if (rechazos.length === 0) return null;
+
+  return (
+    <Card className="border-0 shadow-md border-l-4 border-l-red-400">
+      <CardHeader className="pb-2 pt-5 px-5">
+        <CardTitle className="text-base font-bold text-red-700 flex items-center gap-2">
+          <XCircle className="w-5 h-5 text-red-500" />
+          Documentos rechazados — acción requerida
+        </CardTitle>
+        <p className="text-sm text-gray-500 mt-1">
+          Los siguientes documentos han sido rechazados por tu asesor. Lee el motivo y vuelve a subirlos corregidos.
+        </p>
+      </CardHeader>
+      <CardContent className="px-5 pb-5 space-y-3">
+        {rechazos.map((rechazo) => (
+          <div
+            key={rechazo.id}
+            className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-xl"
+          >
+            <div className="flex-shrink-0 mt-0.5">
+              <XCircle className="w-5 h-5 text-red-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <span className="text-sm font-semibold text-gray-800 truncate">
+                  {rechazo.nombreArchivo}
+                </span>
+                {rechazo.categoria && (
+                  <Badge variant="outline" className="text-xs px-1.5 py-0 h-4 border-red-200 text-red-600">
+                    {rechazo.categoria}
+                  </Badge>
+                )}
+              </div>
+              {rechazo.motivo ? (
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  <span className="font-medium text-red-700">Motivo: </span>
+                  {rechazo.motivo}
+                </p>
+              ) : (
+                <p className="text-sm text-gray-500 italic">Sin motivo especificado.</p>
+              )}
+              <p className="text-xs text-gray-400 mt-1.5">
+                Rechazado el {new Date(rechazo.createdAt).toLocaleDateString("es-ES", {
+                  day: "2-digit", month: "long", year: "numeric",
+                })}
+                {rechazo.rechazadoPor ? ` por ${rechazo.rechazadoPor}` : ""}
+              </p>
+            </div>
+          </div>
+        ))}
+        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg mt-2">
+          <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+          <p className="text-xs text-amber-700">
+            Sube los documentos corregidos en la sección <strong>"Documentos de tu caso"</strong> de arriba.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

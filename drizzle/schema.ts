@@ -57,3 +57,26 @@ export const documentos = mysqlTable("documentos", {
 
 export type Documento = typeof documentos.$inferSelect;
 export type InsertDocumento = typeof documentos.$inferInsert;
+
+/**
+ * Historial de documentos rechazados por el asesor.
+ * Cuando el asesor elimina un documento del cliente con motivo,
+ * se guarda un registro aquí para que el cliente lo vea en /seguimiento.
+ */
+export const rechazosDocumentos = mysqlTable("rechazos_documentos", {
+  id: int("id").autoincrement().primaryKey(),
+  /** ID del caso en el Google Sheet */
+  casoId: varchar("casoId", { length: 64 }).notNull(),
+  /** Nombre del archivo rechazado */
+  nombreArchivo: varchar("nombreArchivo", { length: 255 }).notNull(),
+  /** Categoría del documento rechazado */
+  categoria: varchar("categoria", { length: 64 }),
+  /** Motivo del rechazo escrito por el asesor */
+  motivo: text("motivo"),
+  /** Nombre del asesor que rechazó el documento */
+  rechazadoPor: varchar("rechazadoPor", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type RechazoDocumento = typeof rechazosDocumentos.$inferSelect;
+export type InsertRechazoDocumento = typeof rechazosDocumentos.$inferInsert;

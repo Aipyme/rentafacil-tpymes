@@ -164,11 +164,7 @@ export default function DocumentosPanel({
   });
 
   const handleEliminar = (docId: number, motivo?: string) => {
-    eliminarMutation.mutate({ id: docId });
-    // Si hay motivo de rechazo, notificar al cliente via notifyOwner con el contexto
-    if (motivo) {
-      toast.info(`Motivo guardado: "${motivo.slice(0, 60)}${motivo.length > 60 ? '...' : ''}"`);
-    }
+    eliminarMutation.mutate({ id: docId, motivo: motivo || undefined });
   };
 
   const handleFileChange = (file: File | null) => {

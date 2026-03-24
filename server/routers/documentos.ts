@@ -15,7 +15,7 @@ import { eq, desc, inArray, count, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { documentos } from "../../drizzle/schema";
+import { documentos, rechazosDocumentos } from "../../drizzle/schema";
 import { storagePut, storageGet } from "../storage";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -230,10 +230,15 @@ export const documentosRouter = router({
     }),
 
   /**
-   * Eliminar un documento (de S3 y de la BD)
+   * Eliminar un documento (de S3 y de la BD).
+   * Si se proporciona motivo y el doc es del cliente, guarda un registro de rechazo.
    */
   eliminar: publicProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({
+      id: z.number(),
+      motivo: z.string().optional(),
+      rechazadoPor: z.string().optional(),
+    }))
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) {
@@ -243,7 +248,7 @@ export const documentosRouter = router({
         });
       }
 
-      // Obtener el documento para saber su s3Key
+      // Obtener el documento para saber su s3Key y datos
       const docs = await db
         .select()
         .from(documentos)
@@ -255,6 +260,17 @@ export const documentosRouter = router({
       }
 
       const doc = docs[0];
+
+      // Si el doc es del cliente y hay motivo, guardar registro de rechazo
+      if (doc.subidoPor === "cliente" && input.motivo) {
+        await db.insert(rechazosDocumentos).values({
+          casoId: doc.casoId,
+          nombreArchivo: doc.nombreArchivo,
+          categoria: doc.categoria ?? null,
+          motivo: input.motivo,
+          rechazadoPor: input.rechazadoPor ?? null,
+        });
+      }
 
       // Eliminar de S3
       try {
@@ -268,6 +284,25 @@ export const documentosRouter = router({
       await db.delete(documentos).where(eq(documentos.id, input.id));
 
       return { success: true };
+    }),
+
+  /**
+   * Listar el historial de documentos rechazados de un caso.
+   * Usado en /seguimiento para que el cliente vea qué documentos fueron rechazados y por qué.
+   */
+  listarRechazos: publicProcedure
+    .input(z.object({ casoId: z.string() }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) return { rechazos: [] };
+
+      const rechazos = await db
+        .select()
+        .from(rechazosDocumentos)
+        .where(eq(rechazosDocumentos.casoId, input.casoId))
+        .orderBy(desc(rechazosDocumentos.createdAt));
+
+      return { rechazos };
     }),
 
   /**

@@ -93,3 +93,9 @@
 - [ ] Email n8n WF01: añadir enlace de seguimiento en el email de confirmación al cliente
 - [x] Panel sidebar: badge con contador de documentos subidos por el cliente por caso
 - [x] DocumentosPanel: campo de motivo al rechazar/eliminar un documento
+
+## Historial rechazos y recordatorio n8n (sesión actual)
+- [x] BD: tabla rechazos_documentos (casoId, nombreArchivo, motivo, fecha)
+- [x] Backend: guardar rechazo al eliminar doc del cliente con motivo
+- [x] /seguimiento: sección "Documentos rechazados" con motivo visible para el cliente
+- [x] n8n: HTML del email de recordatorio preparado (n8n_email_recordatorio.html) + instrucciones de configuración
