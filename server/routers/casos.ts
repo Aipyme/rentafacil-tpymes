@@ -307,17 +307,17 @@ export const casosRouter = router({
       }),
     }))
     .mutation(async ({ input }) => {
-      if (!ENV.n8nWebhookUrl) {
+      const updateUrl = ENV.n8nUpdateWebhookUrl || ENV.n8nWebhookUrl;
+      if (!updateUrl) {
         return { success: false, error: "n8n webhook no configurado — no se puede escribir en el Sheet" };
       }
 
       try {
-        const response = await fetch(ENV.n8nWebhookUrl, {
+        const response = await fetch(updateUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            action: "update_gestion",
-            casoId: input.casoId,
+            id_caso: input.casoId,
             rowIndex: input.rowIndex,
             ...input.campos,
           }),
@@ -343,18 +343,18 @@ export const casosRouter = router({
       rowIndex: z.number().optional(),
     }))
     .mutation(async ({ input }) => {
-      if (!ENV.n8nWebhookUrl) {
+      const updateUrl = ENV.n8nUpdateWebhookUrl || ENV.n8nWebhookUrl;
+      if (!updateUrl) {
         return { success: false, error: "n8n webhook no configurado" };
       }
 
       try {
-        const response = await fetch(ENV.n8nWebhookUrl, {
+        const response = await fetch(updateUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            action: "update_estado",
-            casoId: input.casoId,
-            nuevoEstado: input.nuevoEstado,
+            id_caso: input.casoId,
+            estado: input.nuevoEstado,
             rowIndex: input.rowIndex,
           }),
         });

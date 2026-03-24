@@ -33,6 +33,44 @@ import { useSEO } from "@/hooks/useSEO";
 
 type TriageStep = "perfil" | "ingresos" | "patrimonio" | "deducciones" | "contacto" | "resultado";
 
+// ============================================================
+// Validación de NIF / NIE / CIF español
+// ============================================================
+function validarNIF(valor: string): boolean {
+  if (!valor) return true; // opcional
+  const v = valor.trim().toUpperCase();
+
+  // NIE: X/Y/Z + 7 dígitos + letra
+  if (/^[XYZ]\d{7}[A-Z]$/.test(v)) {
+    const map: Record<string, string> = { X: '0', Y: '1', Z: '2' };
+    const num = parseInt(map[v[0]] + v.slice(1, 8));
+    const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    return v[8] === letras[num % 23];
+  }
+
+  // DNI: 8 dígitos + letra
+  if (/^\d{8}[A-Z]$/.test(v)) {
+    const letras = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    return v[8] === letras[parseInt(v.slice(0, 8)) % 23];
+  }
+
+  // CIF: letra + 7 dígitos + letra/dígito
+  if (/^[ABCDEFGHJKLMNPQRSUVW]\d{7}[0-9A-J]$/.test(v)) {
+    return true; // validación básica de formato
+  }
+
+  return false;
+}
+
+function validarNIFPagador(valor: string): boolean {
+  if (!valor) return true; // opcional
+  const v = valor.trim().toUpperCase();
+  // CIF empresa: letra + 7 dígitos + letra/dígito
+  if (/^[ABCDEFGHJKLMNPQRSUVW]\d{7}[0-9A-J]$/.test(v)) return true;
+  // También puede ser NIF/NIE de autónomo
+  return validarNIF(v);
+}
+
 interface TriageData {
   // Perfil
   tipoContribuyente: string;
@@ -260,6 +298,8 @@ export default function Triage() {
   const [data, setData] = useState<TriageData>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
   const [expedienteId] = useState(() => generateExpedienteId());
+  const [nifError, setNifError] = useState<string>('');
+  const [nifPagadorError, setNifPagadorError] = useState<string>('');
 
   const update = (partial: Partial<TriageData>) => setData((prev) => ({ ...prev, ...partial }));
 
@@ -381,6 +421,18 @@ export default function Triage() {
   }, [currentStep, webhookSent]);
 
   const handleSubmit = async () => {
+    // Validar NIF antes de enviar
+    if (data.nif && !validarNIF(data.nif)) {
+      setNifError('NIF/NIE no válido. Comprueba el formato y la letra de control.');
+      toast.error('El NIF/NIE introducido no es válido. Por favor, corrígelo antes de continuar.');
+      return;
+    }
+    if (data.nifPagador && !validarNIFPagador(data.nifPagador)) {
+      setNifPagadorError('CIF/NIF no válido. Ej: B12345678 o A87654321');
+      toast.error('El CIF/NIF de la empresa pagadora no es válido. Por favor, corrígelo.');
+      return;
+    }
+
     setIsSending(true);
     try {
       // Enviar al webhook de n8n (configurar URL en variable de entorno)
@@ -389,15 +441,25 @@ export default function Triage() {
       const payload = buildPayload();
 
       if (webhookUrl) {
-
         const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
 
-      } else {
-
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          const errorMsg = errorData?.error || `Error ${response.status}`;
+          // Si es error de NIF, mostrarlo al usuario
+          if (errorMsg.toLowerCase().includes('nif') || errorMsg.toLowerCase().includes('nie')) {
+            setNifError(`El NIF no fue aceptado por el sistema: ${errorMsg}`);
+            toast.error(`NIF no válido: ${errorMsg}`);
+            setIsSending(false);
+            return;
+          }
+          // Otros errores: registrar igualmente pero avisar
+          console.warn('[Webhook] Error no crítico:', errorMsg);
+        }
       }
 
       setSubmitted(true);
@@ -406,10 +468,8 @@ export default function Triage() {
         { duration: 6000 }
       );
     } catch (err) {
-      // Si falla el webhook, registramos igual pero avisamos
+      // Si falla la conexión, registramos igualmente
       console.error('[DEBUG] Error enviando al webhook:', err);
-      console.error('[DEBUG] Error name:', (err as Error).name);
-      console.error('[DEBUG] Error message:', (err as Error).message);
       setSubmitted(true);
       toast.success(
         `Solicitud ${expedienteId} registrada. Te contactaremos en menos de 24 horas.`,
@@ -1063,12 +1123,33 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                           </Label>
                           <Input
                             value={data.nif}
-                            onChange={(e) => update({ nif: e.target.value.toUpperCase() })}
+                            onChange={(e) => {
+                              const val = e.target.value.toUpperCase();
+                              update({ nif: val });
+                              if (val && !validarNIF(val)) {
+                                setNifError('NIF/NIE no válido. Comprueba el formato y la letra de control.');
+                              } else {
+                                setNifError('');
+                              }
+                            }}
+                            onBlur={() => {
+                              if (data.nif && !validarNIF(data.nif)) {
+                                setNifError('NIF/NIE no válido. Comprueba el formato y la letra de control.');
+                              } else {
+                                setNifError('');
+                              }
+                            }}
                             placeholder="12345678A"
-                            className="h-11 uppercase"
+                            className={`h-11 uppercase ${nifError ? 'border-red-400 focus-visible:ring-red-400' : ''}`}
                             maxLength={9}
                           />
-                          <p className="text-xs text-gray-400 mt-1">Opcional ahora, necesario para la gestión</p>
+                          {nifError ? (
+                            <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" />{nifError}
+                            </p>
+                          ) : (
+                            <p className="text-xs text-gray-400 mt-1">Opcional ahora, necesario para la gestión</p>
+                          )}
                         </div>
 
                         <div>
@@ -1155,12 +1236,33 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                               </Label>
                               <Input
                                 value={data.nifPagador}
-                                onChange={(e) => update({ nifPagador: e.target.value.toUpperCase() })}
+                                onChange={(e) => {
+                                  const val = e.target.value.toUpperCase();
+                                  update({ nifPagador: val });
+                                  if (val && !validarNIFPagador(val)) {
+                                    setNifPagadorError('CIF/NIF no válido. Ej: B12345678 o A87654321');
+                                  } else {
+                                    setNifPagadorError('');
+                                  }
+                                }}
+                                onBlur={() => {
+                                  if (data.nifPagador && !validarNIFPagador(data.nifPagador)) {
+                                    setNifPagadorError('CIF/NIF no válido. Ej: B12345678 o A87654321');
+                                  } else {
+                                    setNifPagadorError('');
+                                  }
+                                }}
                                 placeholder="A12345678 (CIF empresa)"
-                                className="h-11 bg-white uppercase"
+                                className={`h-11 bg-white uppercase ${nifPagadorError ? 'border-red-400 focus-visible:ring-red-400' : ''}`}
                                 maxLength={9}
                               />
-                              <p className="text-xs text-gray-400 mt-1">Lo encontrarás en tu nómina o en el certificado de retenciones</p>
+                              {nifPagadorError ? (
+                                <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                                  <AlertTriangle className="w-3 h-3" />{nifPagadorError}
+                                </p>
+                              ) : (
+                                <p className="text-xs text-gray-400 mt-1">Lo encontrarás en tu nómina o en el certificado de retenciones</p>
+                              )}
                             </div>
                           </div>
                         </div>

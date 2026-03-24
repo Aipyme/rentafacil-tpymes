@@ -66,3 +66,7 @@
 - [x] Notas visibles en tarjetas del sidebar con icono 📝
 - [x] Botón "Añadir nota" / "Editar nota" inline en el detalle del caso
 - [x] Editor de notas con textarea y guardado directo en el Sheet via tRPC
+
+## Validación NIF y fix webhook
+- [ ] Validación de NIF/NIE/CIF en el frontend con mensaje de error visual
+- [ ] Verificar flujo completo formulario → n8n → Google Sheet

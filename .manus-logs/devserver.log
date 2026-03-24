@@ -1212,3 +1212,17 @@
 [2026-03-23T17:47:37.157Z] 1:47:37 PM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=coJ9cuwIvB1eqC0fi8sFv
 [2026-03-23T17:47:47.076Z] 1:47:47 PM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=coJ9cuwIvB1eqC0fi8sFv
 [2026-03-23T17:48:42.262Z] 1:48:42 PM [vite] (client) page reload public/__manus__/version.json
+[2026-03-23T18:40:45.811Z] 2:40:45 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=coJ9cuwIvB1eqC0fi8sFv
+[2026-03-23T18:40:55.588Z] 2:40:55 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=coJ9cuwIvB1eqC0fi8sFv
+[2026-03-23T18:41:11.008Z] 2:41:11 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=coJ9cuwIvB1eqC0fi8sFv
+[2026-03-23T18:41:34.672Z] 2:41:34 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=coJ9cuwIvB1eqC0fi8sFv
+[2026-03-23T18:41:55.296Z] 2:41:55 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=coJ9cuwIvB1eqC0fi8sFv
+[2026-03-24T08:08:52.845Z] 4:08:52 AM [tsx] change in ./server/_core/env.ts Restarting...
+[2026-03-24T08:08:54.768Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-24T08:08:54.951Z] Server running on http://localhost:3000/
+[2026-03-24T08:09:07.056Z] 4:09:07 AM [tsx] change in ./server/routers/casos.ts Restarting...
+[2026-03-24T08:09:08.751Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-24T08:09:09.324Z] Server running on http://localhost:3000/
+[2026-03-24T08:09:19.106Z] 4:09:19 AM [tsx] change in ./server/routers/casos.ts Restarting...
+[2026-03-24T08:09:20.804Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-24T08:09:20.983Z] Server running on http://localhost:3000/
