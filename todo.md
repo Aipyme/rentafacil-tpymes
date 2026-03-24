@@ -99,3 +99,9 @@
 - [x] Backend: guardar rechazo al eliminar doc del cliente con motivo
 - [x] /seguimiento: sección "Documentos rechazados" con motivo visible para el cliente
 - [x] n8n: HTML del email de recordatorio preparado (n8n_email_recordatorio.html) + instrucciones de configuración
+
+## Columna ultimoRecordatorio (sesión actual)
+- [x] Sheet: añadida columna ultimoRecordatorio en AY (hecho manualmente por el usuario)
+- [x] Backend WF02: actualizar nodo para que acepte y escriba ultimoRecordatorio (n8n_actualizar_caso.js v2.1)
+- [x] Backend: endpoint casos.listarParaRecordatorio (casos doc. pendiente > 3 días sin recordatorio hoy)
+- [x] n8n WF02: nodo actualizado para escribir ultimoRecordatorio (pendiente de pegar en n8n)

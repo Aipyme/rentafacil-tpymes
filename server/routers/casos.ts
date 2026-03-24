@@ -49,6 +49,8 @@ export interface CasoGoogleSheets {
   importeResultado?: string;
   fechaPresentacion?: string;
   observaciones?: string;
+  // Control de recordatorios
+  ultimoRecordatorio?: string;
   // Fila en el sheet (para actualizar)
   rowIndex?: number;
 }
@@ -63,8 +65,8 @@ async function leerDesdeGoogleSheetsDirecto(): Promise<CasoGoogleSheets[]> {
     throw new Error("Google Sheets no configurado: falta GOOGLE_SHEETS_API_KEY o GOOGLE_SHEETS_ID");
   }
 
-  // Leer hasta la columna BJ (62 columnas)
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:BJ?key=${apiKey}`;
+  // Leer hasta la columna AZ (incluye ultimoRecordatorio en AY)
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:AZ?key=${apiKey}`;
 
   const response = await fetch(url);
   if (!response.ok) {
@@ -111,7 +113,8 @@ async function leerDesdeGoogleSheetsDirecto(): Promise<CasoGoogleSheets[]> {
   const resultadoFinalCol     = col("resultadofinal");
   const importeResultadoCol   = col("importeresultado");
   const fechaPresentacionCol  = col("fechapresentacion");
-  const observacionesCol      = col("observaciones");
+  const observacionesCol          = col("observaciones");
+  const ultimoRecordatorioCol     = col("ultimorecordatorio");
 
   const casos: CasoGoogleSheets[] = [];
 
@@ -152,6 +155,7 @@ async function leerDesdeGoogleSheetsDirecto(): Promise<CasoGoogleSheets[]> {
       importeResultado:   importeResultadoCol >= 0 ? (row[importeResultadoCol] ?? "") : "",
       fechaPresentacion:  fechaPresentacionCol >= 0 ? (row[fechaPresentacionCol] ?? "") : "",
       observaciones:      observacionesCol >= 0 ? (row[observacionesCol] ?? "") : "",
+      ultimoRecordatorio: ultimoRecordatorioCol >= 0 ? (row[ultimoRecordatorioCol] ?? "") : "",
       rowIndex: i + 1,
     });
   }
@@ -202,6 +206,7 @@ async function leerDesdeN8nWebhook(): Promise<CasoGoogleSheets[]> {
     importeResultado:   item.importeResultado ?? "",
     fechaPresentacion:  item.fechaPresentacion ?? "",
     observaciones:      item.observaciones ?? "",
+    ultimoRecordatorio: item.ultimoRecordatorio ?? "",
     rowIndex: item.rowIndex ? Number(item.rowIndex) : i + 2,
   }));
 }
@@ -304,6 +309,7 @@ export const casosRouter = router({
         importeResultado: z.string().optional(),
         fechaPresentacion: z.string().optional(),
         observaciones: z.string().optional(),
+        ultimoRecordatorio: z.string().optional(),
       }),
     }))
     .mutation(async ({ input }) => {
@@ -437,6 +443,70 @@ export const casosRouter = router({
       } catch {
         return { asesores: [] as string[] };
       }
+    }),
+
+  /**
+   * Listar casos pendientes de documentación para el recordatorio automático de n8n.
+   * Devuelve solo los casos con estado "Documentación pendiente" que llevan más de N días
+   * sin haber recibido un recordatorio hoy.
+   * Este endpoint es público para que n8n pueda consultarlo sin autenticación.
+   */
+  listarParaRecordatorio: publicProcedure
+    .input(z.object({
+      diasMinimos: z.number().default(3),
+    }).optional())
+    .query(async ({ input }) => {
+      const diasMinimos = input?.diasMinimos ?? 3;
+      let casos: CasoGoogleSheets[] = [];
+
+      if (ENV.googleSheetsApiKey && ENV.googleSheetsId) {
+        try {
+          casos = await leerDesdeGoogleSheetsDirecto();
+        } catch {
+          // silencioso
+        }
+      }
+
+      const ahora = new Date();
+      const hoyStr = ahora.toISOString().split("T")[0]; // YYYY-MM-DD
+
+      const casosParaRecordar = casos.filter(c => {
+        // Solo casos en estado "Documentación pendiente"
+        if (c.estado !== "Documentación pendiente") return false;
+
+        // No enviar si ya se envió un recordatorio hoy
+        if (c.ultimoRecordatorio) {
+          const fechaUltimoRecordatorio = c.ultimoRecordatorio.split("T")[0];
+          if (fechaUltimoRecordatorio === hoyStr) return false;
+        }
+
+        // Verificar que lleva más de N días en este estado
+        const fechaContacto = c.fechaContacto || c.fecha;
+        if (!fechaContacto) return true; // Sin fecha, incluir por seguridad
+
+        try {
+          const fechaInicio = new Date(fechaContacto);
+          const diasTranscurridos = (ahora.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24);
+          return diasTranscurridos >= diasMinimos;
+        } catch {
+          return false;
+        }
+      });
+
+      return {
+        casos: casosParaRecordar.map(c => ({
+          id_caso: c.id,
+          nombreCompleto: c.nombre,
+          email: c.email,
+          nif: c.nif,
+          telefono: c.telefono,
+          documentosNecesarios: (c as any).documentosNecesarios ?? "",
+          estado: c.estado,
+          rowIndex: c.rowIndex,
+        })),
+        total: casosParaRecordar.length,
+        fecha: hoyStr,
+      };
     }),
 
   /**
