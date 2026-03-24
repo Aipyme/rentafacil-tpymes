@@ -70,3 +70,16 @@
 ## Validación NIF y fix webhook
 - [ ] Validación de NIF/NIE/CIF en el frontend con mensaje de error visual
 - [ ] Verificar flujo completo formulario → n8n → Google Sheet
+
+## Sistema de documentos (sesión actual)
+- [x] Tabla `documentos` creada en MySQL con migración aplicada (drizzle/schema.ts)
+- [x] Corregir drizzle.config.ts para usar MySQL en lugar de PostgreSQL
+- [x] Router tRPC `documentos` con: listar, subirBase64, confirmarSubida, eliminar, getDownloadUrl
+- [x] Componente reutilizable `DocumentosPanel` (asesor + cliente) con drag & drop, categorías, preview
+- [x] Sección "Documentos del caso" integrada en el Panel del Asesor
+- [x] Página de seguimiento del cliente `/seguimiento?caso=ID` con verificación por NIF
+- [x] Procedimiento `casos.buscarPorId` para la página de seguimiento
+- [x] Ruta `/seguimiento` registrada en App.tsx
+- [x] Google Sheet: columnas Z-AJ borradas (datos IA obsoletos), mapa de columnas corregido
+- [x] Nodo WF02 de n8n actualizado para aceptar campos del formulario (AB-AK) además de gestión
+- [x] 8 casos de prueba realistas con todos los campos rellenos en el Sheet

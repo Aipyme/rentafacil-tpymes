@@ -15,6 +15,7 @@ import NotFound from "@/pages/NotFound";
 import DemoAlfredo from "@/pages/DemoAlfredo";
 import Andalucia from "@/pages/Andalucia";
 import PanelAsesor from "@/pages/PanelAsesor";
+import SeguimientoCliente from "@/pages/SeguimientoCliente";
 import Madrid from "@/pages/Madrid";
 import Cataluna from "@/pages/Cataluna";
 import Valencia from "@/pages/Valencia";
@@ -37,6 +38,7 @@ function AppRouter() {
       <Route path="/cataluna" component={Cataluna} />
       <Route path="/valencia" component={Valencia} />
       <Route path="/panel-asesor" component={PanelAsesor} />
+      <Route path="/seguimiento" component={SeguimientoCliente} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

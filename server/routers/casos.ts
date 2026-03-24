@@ -438,4 +438,57 @@ export const casosRouter = router({
         return { asesores: [] as string[] };
       }
     }),
+
+  /**
+   * Buscar un caso por su ID (para la página de seguimiento del cliente)
+   * No devuelve datos sensibles internos del asesor.
+   */
+  buscarPorId: publicProcedure
+    .input(z.object({ casoId: z.string() }))
+    .mutation(async ({ input }) => {
+      let casos: CasoGoogleSheets[] = [];
+
+      if (ENV.googleSheetsApiKey && ENV.googleSheetsId) {
+        try {
+          casos = await leerDesdeGoogleSheetsDirecto();
+        } catch {
+          // silencioso
+        }
+      }
+
+      if (casos.length === 0 && ENV.n8nWebhookUrl) {
+        try {
+          casos = await leerDesdeN8nWebhook();
+        } catch {
+          // silencioso
+        }
+      }
+
+      const caso = casos.find(c => c.id.toUpperCase() === input.casoId.toUpperCase());
+
+      if (!caso) {
+        return { caso: null };
+      }
+
+      // Devolver solo los campos que el cliente puede ver (no notas internas del asesor)
+      return {
+        caso: {
+          id: caso.id,
+          nombre: caso.nombre,
+          email: caso.email,
+          nif: caso.nif,
+          telefono: caso.telefono,
+          comunidad: caso.comunidad,
+          estado: caso.estado,
+          asesorAsignado: caso.asesorAsignado,
+          resultadoFinal: caso.resultadoFinal,
+          importeResultado: caso.importeResultado,
+          fechaPresentacion: caso.fechaPresentacion,
+          // Mensaje público del asesor al cliente (observaciones)
+          observaciones: caso.observaciones,
+          // Documentos necesarios para que el cliente sepa qué aportar
+          documentosNecesarios: (caso as any).documentosNecesarios,
+        },
+      };
+    }),
 });

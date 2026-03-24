@@ -1228,3 +1228,17 @@
 [2026-03-24T08:09:20.983Z] Server running on http://localhost:3000/
 [2026-03-24T08:37:23.104Z] 4:37:23 AM [vite] (client) page reload public/__manus__/version.json
 [2026-03-24T09:20:43.098Z] 5:20:43 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-24T09:24:03.286Z] 5:24:03 AM [tsx] change in ./drizzle/schema.ts Restarting...
+[2026-03-24T09:24:17.149Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-24T09:24:17.942Z] Server running on http://localhost:3000/
+[2026-03-24T09:29:24.144Z] 5:29:24 AM [tsx] change in ./server/routers.ts Restarting...
+[2026-03-24T09:29:26.023Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-24T09:29:29.040Z] Server running on http://localhost:3000/
+[2026-03-24T09:32:02.553Z] 5:32:02 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=qp9AnfMsY1oWVI6MgkyVO
+[2026-03-24T09:32:04.007Z] 5:32:04 AM [vite] (client) ✨ new dependencies optimized: @radix-ui/react-alert-dialog
+[2026-03-24T09:32:04.008Z] 5:32:04 AM [vite] (client) ✨ optimized dependencies changed. reloading
+[2026-03-24T09:34:27.391Z] 5:34:27 AM [tsx] change in ./server/routers/casos.ts Restarting...
+[2026-03-24T09:34:29.080Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-24T09:34:29.462Z] Server running on http://localhost:3000/
+[2026-03-24T09:34:55.728Z] 5:34:55 AM [vite] (client) hmr update /src/App.tsx?v=Q5BMDOUXcpXvHBFfhqlhT, /src/index.css?v=Q5BMDOUXcpXvHBFfhqlhT
+[2026-03-24T09:37:12.674Z] 5:37:12 AM [vite] (client) page reload public/__manus__/version.json

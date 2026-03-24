@@ -4,6 +4,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { casosRouter } from "./routers/casos";
+import { documentosRouter } from "./routers/documentos";
 import { ENV } from "./_core/env";
 
 export const appRouter = router({
@@ -22,6 +23,9 @@ export const appRouter = router({
 
   // Panel del Asesor - casos del Google Sheet
   casos: casosRouter,
+
+  // Gestión de documentos subidos por asesores y clientes
+  documentos: documentosRouter,
 
   // Autenticación básica del Panel del Asesor
   panel: router({

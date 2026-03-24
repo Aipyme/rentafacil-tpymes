@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, bigint } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,4 +25,35 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Tabla de documentos subidos por asesores y clientes.
+ * Cada documento está asociado a un caso (id_caso del Google Sheet).
+ * El archivo binario se almacena en S3; aquí guardamos solo metadatos.
+ */
+export const documentos = mysqlTable("documentos", {
+  id: int("id").autoincrement().primaryKey(),
+  /** ID del caso en el Google Sheet (ej: RENTA-2025-MN4CXQB8) */
+  casoId: varchar("casoId", { length: 64 }).notNull(),
+  /** Nombre original del archivo tal como lo subió el usuario */
+  nombreArchivo: varchar("nombreArchivo", { length: 255 }).notNull(),
+  /** Clave del objeto en S3 (ruta relativa dentro del bucket) */
+  s3Key: varchar("s3Key", { length: 512 }).notNull(),
+  /** URL pública del archivo en S3 */
+  url: text("url").notNull(),
+  /** Tipo MIME del archivo (application/pdf, image/jpeg, etc.) */
+  mimeType: varchar("mimeType", { length: 128 }).notNull(),
+  /** Tamaño del archivo en bytes */
+  tamano: bigint("tamano", { mode: "number" }).notNull(),
+  /** Quién subió el documento: "asesor" o "cliente" */
+  subidoPor: mysqlEnum("subidoPor", ["asesor", "cliente"]).notNull(),
+  /** Nombre o identificador del usuario que subió el documento */
+  subidoPorNombre: varchar("subidoPorNombre", { length: 128 }),
+  /** Categoría del documento para organización */
+  categoria: varchar("categoria", { length: 64 }),
+  /** Notas opcionales sobre el documento */
+  notas: text("notas"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Documento = typeof documentos.$inferSelect;
+export type InsertDocumento = typeof documentos.$inferInsert;
