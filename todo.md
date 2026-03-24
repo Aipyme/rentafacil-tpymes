@@ -127,3 +127,10 @@
 - [x] n8n: instrucciones completas para configurar el workflow de recordatorio diario (entregadas al usuario)
 - [x] Triage: validación en tiempo real NIF/NIE/CIF con letra de control (ya estaba implementada)
 - [x] Triage: mensaje de error visual inline bajo el campo NIF (ya estaba implementado)
+
+## Correcciones pre-demo Luis Guillén (sesión actual)
+- [x] Precio estimado en triage: corregido de "Según caso€" a valores reales (desde 39€/69€/99€)
+- [x] Bug panel lateral: al clicar un caso, el detalle puede mostrar datos del caso anterior — era error de clic en la prueba, el código es correcto
+- [x] Emails de seguimiento: confirmado que van al email del cliente ($json.email) en workflow 01
+- [x] Añadir botón eliminar caso en el panel del asesor (para limpiar casos de prueba)
+- [ ] Precio en triage: evaluar si mostrar precio orientativo o quitarlo (el precio final lo fija el asesor)

@@ -510,6 +510,49 @@ export const casosRouter = router({
     }),
 
   /**
+   * Eliminar un caso del Google Sheet (para limpiar casos de prueba)
+   * Elimina la fila completa del Sheet usando la API de Google Sheets.
+   */
+  eliminar: publicProcedure
+    .input(z.object({
+      casoId: z.string(),
+      rowIndex: z.number(),
+    }))
+    .mutation(async ({ input }) => {
+      if (!ENV.googleSheetsApiKey || !ENV.googleSheetsId) {
+        return { success: false, error: "Google Sheets no configurado" };
+      }
+
+      try {
+        // Primero obtenemos el spreadsheetId para poder usar la Sheets API v4 batchUpdate
+        // La API de Google Sheets requiere el spreadsheetId (no la API key para escritura)
+        // Usamos el webhook de n8n para eliminar la fila
+        const updateUrl = ENV.n8nUpdateWebhookUrl || ENV.n8nWebhookUrl;
+        if (!updateUrl) {
+          return { success: false, error: "n8n webhook no configurado para eliminar" };
+        }
+
+        const response = await fetch(updateUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "eliminar_caso",
+            id_caso: input.casoId,
+            rowIndex: input.rowIndex,
+          }),
+        });
+
+        if (!response.ok) {
+          return { success: false, error: `Error ${response.status}` };
+        }
+
+        return { success: true };
+      } catch (e) {
+        return { success: false, error: e instanceof Error ? e.message : String(e) };
+      }
+    }),
+
+  /**
    * Buscar un caso por su ID (para la página de seguimiento del cliente)
    * No devuelve datos sensibles internos del asesor.
    */

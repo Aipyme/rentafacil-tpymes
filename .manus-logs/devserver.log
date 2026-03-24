@@ -1293,3 +1293,10 @@
 [2026-03-24T11:42:13.706Z] 7:42:13 AM [vite] (client) page reload public/__manus__/version.json
 [2026-03-24T14:16:24.512Z] 10:16:24 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=HgyPFTjEqyKaLeUVPWD_D
 [2026-03-24T14:17:00.306Z] 10:17:00 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=HgyPFTjEqyKaLeUVPWD_D
+[2026-03-24T14:17:43.745Z] 10:17:43 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-24T14:26:31.812Z] 10:26:30 AM [tsx] change in ./server/routers/casos.ts Restarting...
+[2026-03-24T14:26:36.603Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-24T14:26:38.981Z] Server running on http://localhost:3000/
+[2026-03-24T14:27:21.047Z] 10:27:21 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=azGBBRd1Qw7cNqOMkxsfu
+[2026-03-24T14:27:42.991Z] 10:27:42 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=azGBBRd1Qw7cNqOMkxsfu
+[2026-03-24T14:29:07.259Z] 10:29:07 AM [vite] (client) page reload public/__manus__/version.json

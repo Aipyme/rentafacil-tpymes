@@ -228,6 +228,21 @@ export default function PanelAsesor() {
     onError: () => toast.error("Error de conexión"),
   });
 
+  // Mutation para eliminar caso
+  const eliminarCasoMutation = trpc.casos.eliminar.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Caso eliminado del Sheet");
+        setCasoSeleccionado(null);
+        refetch();
+      } else {
+        toast.error(data.error ?? "Error al eliminar");
+      }
+    },
+    onError: () => toast.error("Error de conexión al eliminar"),
+  });
+  const [confirmarEliminar, setConfirmarEliminar] = useState(false);
+
   // Filtrado local
   const casos = useMemo(() => {
     let lista = casosData?.casos ?? [];
@@ -710,6 +725,37 @@ export default function PanelAsesor() {
                       >
                         {editando ? "Cancelar" : "✏️ Editar gestión"}
                       </button>
+                      {!confirmarEliminar ? (
+                        <button
+                          onClick={() => setConfirmarEliminar(true)}
+                          className="text-sm font-medium px-3 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition-colors"
+                          title="Eliminar caso del Sheet"
+                        >
+                          🗑️ Eliminar
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-red-600 font-medium">¿Eliminar?</span>
+                          <button
+                            onClick={() => {
+                              eliminarCasoMutation.mutate({
+                                casoId: casoSeleccionado.id,
+                                rowIndex: casoSeleccionado.rowIndex ?? 0,
+                              });
+                              setConfirmarEliminar(false);
+                            }}
+                            className="text-xs font-bold px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+                          >
+                            Sí
+                          </button>
+                          <button
+                            onClick={() => setConfirmarEliminar(false)}
+                            className="text-xs font-medium px-2 py-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          >
+                            No
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
