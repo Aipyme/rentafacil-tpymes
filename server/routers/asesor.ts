@@ -7,13 +7,45 @@ import { notifyOwner } from "../_core/notification";
 
 // Franjas horarias disponibles
 const FRANJAS_HORARIAS = [
-  { id: "manana_temprano", label: "Mañana temprano (9:00 - 11:00)" },
-  { id: "manana", label: "Mañana (11:00 - 13:00)" },
-  { id: "mediodia", label: "Mediodía (13:00 - 15:00)" },
-  { id: "tarde_temprano", label: "Tarde temprana (15:00 - 17:00)" },
-  { id: "tarde", label: "Tarde (17:00 - 19:00)" },
-  { id: "flexible", label: "Flexible (cualquier hora)" },
+  { id: "manana_temprano", label: "Mañana temprano (9:00 - 11:00)", horaInicio: 9, horaFin: 11 },
+  { id: "manana", label: "Mañana (11:00 - 13:00)", horaInicio: 11, horaFin: 13 },
+  { id: "mediodia", label: "Mediodía (13:00 - 15:00)", horaInicio: 13, horaFin: 15 },
+  { id: "tarde_temprano", label: "Tarde temprana (15:00 - 17:00)", horaInicio: 15, horaFin: 17 },
+  { id: "tarde", label: "Tarde (17:00 - 19:00)", horaInicio: 17, horaFin: 19 },
+  { id: "flexible", label: "Flexible (cualquier hora)", horaInicio: 9, horaFin: 19 },
 ];
+
+/**
+ * Calcula el próximo día hábil (lunes-viernes) a partir de hoy.
+ * Si hoy es viernes/sábado/domingo, salta al lunes.
+ */
+function proximoDiaHabil(offsetDias = 1): Date {
+  const fecha = new Date();
+  // Usar hora española (Europe/Madrid)
+  const ahora = new Date(fecha.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+  ahora.setDate(ahora.getDate() + offsetDias);
+  // Si cae en sábado (6) → lunes
+  if (ahora.getDay() === 6) ahora.setDate(ahora.getDate() + 2);
+  // Si cae en domingo (0) → lunes
+  if (ahora.getDay() === 0) ahora.setDate(ahora.getDate() + 1);
+  return ahora;
+}
+
+/**
+ * Genera el ISO datetime del slot reservado basado en la franja horaria y el día.
+ * Devuelve el primer día hábil disponible (mañana si es día hábil, si no el lunes).
+ */
+function calcularReservedSlot(franjaId: string): string {
+  const franja = FRANJAS_HORARIAS.find(f => f.id === franjaId) || FRANJAS_HORARIAS[5];
+  const dia = proximoDiaHabil(1);
+  dia.setHours(franja.horaInicio, 0, 0, 0);
+  // Formatear como ISO con offset +02:00 (CEST) o +01:00 (CET)
+  // Usamos toISOString y ajustamos manualmente para España
+  const offset = "+02:00"; // Campaña de renta = abril-junio = CEST (UTC+2)
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const iso = `${dia.getFullYear()}-${pad(dia.getMonth() + 1)}-${pad(dia.getDate())}T${pad(franja.horaInicio)}:00:00${offset}`;
+  return iso;
+}
 
 export const asesorRouter = router({
   /**
@@ -24,7 +56,8 @@ export const asesorRouter = router({
   }),
 
   /**
-   * Crear solicitud de contacto con asesor (derivación de caso complejo)
+   * Crear solicitud de contacto con asesor (derivación de caso complejo).
+   * Guarda audit_log, calcula reserved_slot, envía webhook enriquecido a n8n.
    */
   crearSolicitud: publicProcedure
     .input(z.object({
@@ -39,10 +72,31 @@ export const asesorRouter = router({
       resultadoSimulador: z.record(z.string(), z.unknown()).optional(),
       precioEstimado: z.number().optional(),
       consentimientoRGPD: z.boolean().refine(v => v === true, "Debes aceptar la política de privacidad"),
+      // Audit fields pasados desde el frontend
+      ipAddress: z.string().optional(),
+      userAgent: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Database not available");
+
+      const franjaId = input.franjaHoraria || "flexible";
+      const reservedSlot = calcularReservedSlot(franjaId);
+      const ahora = new Date().toISOString();
+
+      // Construir audit log inicial
+      const auditLog = [{
+        action: "solicitud_creada",
+        timestamp: ahora,
+        ip: input.ipAddress || "unknown",
+        user_agent: input.userAgent || "unknown",
+        details: {
+          expediente_id: input.expedienteId,
+          franja: franjaId,
+          reserved_slot: reservedSlot,
+          consent: input.consentimientoRGPD,
+        },
+      }];
 
       // Crear la solicitud en DB
       await db.insert(solicitudesAsesor).values({
@@ -51,12 +105,18 @@ export const asesorRouter = router({
         nif: input.nif,
         email: input.email,
         telefono: input.telefono,
-        franjaHoraria: input.franjaHoraria || "flexible",
+        franjaHoraria: franjaId,
         motivoComplejidad: input.motivoComplejidad || null,
         descripcionSituacion: input.descripcionSituacion || null,
         resultadoSimulador: input.resultadoSimulador as Record<string, unknown> || null,
         precioEstimado: input.precioEstimado || null,
         estado: "pendiente",
+        reservedSlot,
+        slotStatus: "tentative",
+        auditLogs: auditLog as any,
+        notificacionesSent: [] as any,
+        ipAddress: input.ipAddress || null,
+        userAgent: input.userAgent || null,
       });
 
       // Obtener el ID recién creado
@@ -66,6 +126,9 @@ export const asesorRouter = router({
         .where(eq(solicitudesAsesor.email, input.email))
         .orderBy(desc(solicitudesAsesor.createdAt))
         .limit(1);
+
+      const solicitudId = solicitud?.id;
+      const derivacionId = `d-${solicitudId}`;
 
       // Actualizar estado del expediente a "derivado" si existe
       if (input.expedienteId) {
@@ -87,54 +150,99 @@ export const asesorRouter = router({
           `Cliente: ${input.nombre} (${input.nif})\n` +
           `Email: ${input.email}\n` +
           `Telefono: ${input.telefono}\n` +
-          `Franja horaria: ${FRANJAS_HORARIAS.find(f => f.id === input.franjaHoraria)?.label || "Flexible"}\n` +
+          `Franja horaria: ${FRANJAS_HORARIAS.find(f => f.id === franjaId)?.label || "Flexible"}\n` +
+          `Slot reservado: ${reservedSlot}\n` +
           `Motivo: ${input.motivoComplejidad || "No especificado"}\n` +
           `Ahorro estimado: ${ahorroEstimado}\n` +
-          `Expediente: ${input.expedienteId || "Sin expediente previo"}\n\n` +
+          `Precio estimado: ${input.precioEstimado ? input.precioEstimado + " €" : "Por determinar"}\n` +
+          `Expediente: ${input.expedienteId || "Sin expediente previo"}\n` +
+          `Derivacion ID: ${derivacionId}\n\n` +
           `Descripcion del cliente: ${input.descripcionSituacion || "Sin descripcion adicional"}`
         });
       } catch (notifyErr) {
         console.error("[Asesor] Error notificando al owner:", notifyErr);
       }
 
-      // Enviar webhook a n8n si está configurado
+      // Enviar webhook a n8n con payload enriquecido (formato del documento de especificaciones)
       const n8nWebhookUrl = process.env.VITE_WEBHOOK_N8N;
+      let n8nStatus = "not_configured";
       if (n8nWebhookUrl) {
         try {
           const webhookPayload = {
             event: "derivacion_created",
-            derivacion_id: solicitud?.id,
+            derivacion_id: derivacionId,
             expediente_id: input.expedienteId,
             user_contact: {
               nombre: input.nombre,
               nif: input.nif,
               email: input.email,
-              telefono: input.telefono,
+              phone: input.telefono,
             },
-            franja_horaria: input.franjaHoraria,
-            motivo_complejidad: input.motivoComplejidad,
+            franja_horaria: franjaId,
+            reserved_slot: reservedSlot,
+            motivo: input.motivoComplejidad,
             descripcion_situacion: input.descripcionSituacion,
-            ahorro_estimado: (input.resultadoSimulador as any)?.ahorro_total,
-            precio_estimado: input.precioEstimado,
+            ahorro_estimado: (input.resultadoSimulador as any)?.ahorro_total || 0,
+            precio: input.precioEstimado || 0,
             resultado_simulador: input.resultadoSimulador,
-            timestamp: new Date().toISOString(),
+            // Datos para crear evento Google Calendar
+            google_calendar_event: {
+              summary: `Revisión Renta - ${input.nombre} (${input.expedienteId || derivacionId})`,
+              description: `Expediente: ${input.expedienteId || "Directo"}\nMotivo: ${input.motivoComplejidad || "No especificado"}\nAhorro estimado: ${ahorroEstimado}\nLink admin: https://rentatpymes.aicheckpyme.co/panel-asesor`,
+              start: { dateTime: reservedSlot },
+              end: { dateTime: calcularReservedSlot(franjaId).replace(/T\d{2}:/, `T${(FRANJAS_HORARIAS.find(f => f.id === franjaId)?.horaFin || 11).toString().padStart(2, "0")}:`) },
+              attendees: [{ email: "info@ayudatpymes.com" }],
+              status: "tentative",
+            },
+            // Plantilla email confirmación provisional
+            email_template: {
+              to: input.email,
+              subject: "Confirmación provisional de cita — Renta Fácil",
+              nombre_cliente: input.nombre,
+              expediente_id: input.expedienteId || derivacionId,
+              motivo: input.motivoComplejidad || "Revisión especializada",
+              ahorro_estimado: (input.resultadoSimulador as any)?.ahorro_total || 0,
+              precio: input.precioEstimado || 0,
+              reserved_slot: reservedSlot,
+              link_expediente: `https://rentatpymes.aicheckpyme.co/mi-renta/${input.expedienteId || ""}`,
+            },
+            timestamp: ahora,
           };
 
-          await fetch(n8nWebhookUrl, {
+          const n8nResponse = await fetch(n8nWebhookUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(webhookPayload),
           });
+          n8nStatus = n8nResponse.ok ? "sent" : `error_${n8nResponse.status}`;
+
+          // Actualizar notificaciones_sent en DB
+          if (solicitudId) {
+            const notif = [{
+              type: "n8n_webhook",
+              timestamp: ahora,
+              status: n8nStatus,
+              payload_summary: { derivacion_id: derivacionId, reserved_slot: reservedSlot },
+            }];
+            await db
+              .update(solicitudesAsesor)
+              .set({ notificacionesSent: notif as any, n8nExecutionId: derivacionId })
+              .where(eq(solicitudesAsesor.id, solicitudId));
+          }
         } catch (err) {
           console.error("[Asesor] Error enviando webhook n8n:", err);
+          n8nStatus = "error_fetch";
           // No lanzamos error - la solicitud ya se guardó en DB
         }
       }
 
       return {
         success: true,
-        solicitudId: solicitud?.id,
+        solicitudId,
+        derivacionId,
+        reservedSlot,
         mensaje: "Tu solicitud ha sido recibida. Te contactaremos en menos de 24 horas.",
+        n8nStatus,
       };
     }),
 
@@ -216,18 +324,52 @@ export const asesorRouter = router({
       estado: z.enum(["pendiente", "contactado", "en_gestion", "resuelto", "cancelado"]),
       notasAsesor: z.string().optional(),
       asesorAsignado: z.string().optional(),
+      slotStatus: z.enum(["tentative", "confirmed", "cancelled", "retrying"]).optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Database not available");
 
+      const updateData: Record<string, unknown> = {
+        estado: input.estado,
+        notasAsesor: input.notasAsesor,
+        asesorAsignado: input.asesorAsignado,
+      };
+      if (input.slotStatus) {
+        updateData.slotStatus = input.slotStatus;
+      }
+
       await db
         .update(solicitudesAsesor)
-        .set({
-          estado: input.estado,
-          notasAsesor: input.notasAsesor,
-          asesorAsignado: input.asesorAsignado,
-        })
+        .set(updateData as any)
+        .where(eq(solicitudesAsesor.id, input.id));
+
+      return { success: true };
+    }),
+
+  /**
+   * ADMIN: Confirmar slot de una solicitud (actualiza a confirmed)
+   */
+  adminConfirmarSlot: protectedProcedure
+    .input(z.object({
+      id: z.number(),
+      slotConfirmado: z.string().optional(), // ISO datetime, si se cambia
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const updateData: Record<string, unknown> = {
+        slotStatus: "confirmed",
+        estado: "contactado",
+      };
+      if (input.slotConfirmado) {
+        updateData.reservedSlot = input.slotConfirmado;
+      }
+
+      await db
+        .update(solicitudesAsesor)
+        .set(updateData as any)
         .where(eq(solicitudesAsesor.id, input.id));
 
       return { success: true };

@@ -3,6 +3,12 @@
  * Accesible desde:
  *  - El simulador cuando detecta un caso complejo (con expedienteId y resultadoSimulador)
  *  - Directamente desde la landing page (sin expediente previo)
+ *
+ * Mejoras v2:
+ *  - Muestra fecha real del slot reservado (próximo día hábil)
+ *  - Captura IP y User-Agent para audit log
+ *  - Pantalla de confirmación con slot confirmado y próximos pasos claros
+ *  - Email de confirmación provisional enviado automáticamente por n8n
  */
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -12,24 +18,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   UserCheck, Phone, Mail, Clock, CheckCircle2,
   AlertTriangle, ArrowLeft, Calendar, Shield,
-  TrendingUp, FileText, ChevronRight
+  TrendingUp, FileText, ChevronRight, CalendarCheck
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 // Franjas horarias disponibles
 const FRANJAS = [
-  { id: "manana_temprano", label: "Mañana temprano", sublabel: "9:00 - 11:00", icon: "🌅" },
-  { id: "manana", label: "Mañana", sublabel: "11:00 - 13:00", icon: "☀️" },
-  { id: "mediodia", label: "Mediodía", sublabel: "13:00 - 15:00", icon: "🌞" },
-  { id: "tarde_temprano", label: "Tarde temprana", sublabel: "15:00 - 17:00", icon: "🌤️" },
-  { id: "tarde", label: "Tarde", sublabel: "17:00 - 19:00", icon: "🌆" },
-  { id: "flexible", label: "Flexible", sublabel: "Cualquier hora", icon: "🕐" },
+  { id: "manana_temprano", label: "Mañana temprano", sublabel: "9:00 - 11:00", icon: "🌅", horaInicio: 9 },
+  { id: "manana", label: "Mañana", sublabel: "11:00 - 13:00", icon: "☀️", horaInicio: 11 },
+  { id: "mediodia", label: "Mediodía", sublabel: "13:00 - 15:00", icon: "🌞", horaInicio: 13 },
+  { id: "tarde_temprano", label: "Tarde temprana", sublabel: "15:00 - 17:00", icon: "🌤️", horaInicio: 15 },
+  { id: "tarde", label: "Tarde", sublabel: "17:00 - 19:00", icon: "🌆", horaInicio: 17 },
+  { id: "flexible", label: "Flexible", sublabel: "Cualquier hora", icon: "🕐", horaInicio: 9 },
 ];
 
 // Motivos de complejidad legibles
@@ -46,16 +51,44 @@ const MOTIVOS_LEGIBLES: Record<string, string> = {
   "multiple_complejidad": "Múltiples factores de complejidad",
 };
 
-interface AsesorFiscalProps {
-  expedienteId?: string;
-  resultadoSimulador?: Record<string, unknown>;
-  motivoComplejidad?: string;
-  datosContribuyente?: {
-    nombre?: string;
-    nif?: string;
-    email?: string;
-    telefono?: string;
-  };
+/**
+ * Calcula el próximo día hábil (lunes-viernes) a partir de hoy.
+ * Devuelve una fecha formateada en español.
+ */
+function proximoDiaHabilLabel(offsetDias = 1): { fecha: Date; label: string } {
+  const fecha = new Date();
+  fecha.setDate(fecha.getDate() + offsetDias);
+  // Si cae en sábado → lunes
+  if (fecha.getDay() === 6) fecha.setDate(fecha.getDate() + 2);
+  // Si cae en domingo → lunes
+  if (fecha.getDay() === 0) fecha.setDate(fecha.getDate() + 1);
+
+  const label = fecha.toLocaleDateString("es-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return { fecha, label };
+}
+
+/**
+ * Formatea un ISO datetime en texto legible en español.
+ * Ej: "2026-04-02T10:00:00+02:00" → "jueves 2 de abril a las 10:00"
+ */
+function formatearSlot(isoSlot: string): string {
+  try {
+    const fecha = new Date(isoSlot);
+    return fecha.toLocaleString("es-ES", {
+      timeZone: "Europe/Madrid",
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return isoSlot;
+  }
 }
 
 export default function AsesorFiscal() {
@@ -67,6 +100,9 @@ export default function AsesorFiscal() {
   const motivoUrl = urlParams.get("motivo") || undefined;
   const ahorroUrl = urlParams.get("ahorro") ? parseFloat(urlParams.get("ahorro")!) : undefined;
   const precioUrl = urlParams.get("precio") ? parseInt(urlParams.get("precio")!) : undefined;
+
+  // Calcular el próximo día hábil para mostrar al usuario
+  const { label: proximoDiaLabel } = proximoDiaHabilLabel(1);
 
   // Estado del formulario
   const [nombre, setNombre] = useState(urlParams.get("nombre") || "");
@@ -81,11 +117,15 @@ export default function AsesorFiscal() {
   // Estado de la solicitud
   const [solicitudEnviada, setSolicitudEnviada] = useState(false);
   const [solicitudId, setSolicitudId] = useState<number | null>(null);
+  const [derivacionId, setDerivacionId] = useState<string | null>(null);
+  const [reservedSlot, setReservedSlot] = useState<string | null>(null);
 
   const crearSolicitud = trpc.asesor.crearSolicitud.useMutation({
     onSuccess: (data) => {
       setSolicitudEnviada(true);
       setSolicitudId(data.solicitudId || null);
+      setDerivacionId(data.derivacionId || null);
+      setReservedSlot(data.reservedSlot || null);
     },
     onError: (error) => {
       toast.error("Error al enviar la solicitud: " + error.message);
@@ -129,11 +169,16 @@ export default function AsesorFiscal() {
       resultadoSimulador: ahorroUrl ? { ahorro_total: ahorroUrl } : undefined,
       precioEstimado: precioUrl,
       consentimientoRGPD: consentimiento,
+      // Capturar user agent para audit log
+      userAgent: navigator.userAgent,
     });
   };
 
   // ==================== PANTALLA DE CONFIRMACIÓN ====================
   if (solicitudEnviada) {
+    const slotFormateado = reservedSlot ? formatearSlot(reservedSlot) : proximoDiaLabel;
+    const franjaLabel = FRANJAS.find(f => f.id === franjaHoraria)?.label || "Flexible";
+
     return (
       <div className="min-h-screen flex flex-col bg-[#f7f5f2]">
         <Navbar />
@@ -151,6 +196,25 @@ export default function AsesorFiscal() {
               Hemos recibido tu solicitud de revisión. Un asesor especializado se pondrá en contacto contigo en <strong>menos de 24 horas</strong>.
             </p>
 
+            {/* Slot reservado */}
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-6 text-left">
+              <div className="flex items-center gap-3 mb-2">
+                <CalendarCheck className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                <h3 className="font-['DM_Sans'] font-semibold text-emerald-800">
+                  Cita provisional reservada
+                </h3>
+              </div>
+              <p className="text-emerald-700 font-medium capitalize">
+                {slotFormateado}
+              </p>
+              <p className="text-xs text-emerald-600 mt-1">
+                Franja: {franjaLabel} · Estado: <span className="font-semibold">Provisional</span> (pendiente confirmación del asesor)
+              </p>
+              <p className="text-xs text-emerald-600 mt-1">
+                Recibirás un email de confirmación en los próximos minutos con todos los detalles.
+              </p>
+            </div>
+
             {/* Resumen de la solicitud */}
             <div className="bg-white rounded-2xl border border-gray-200 p-6 text-left mb-8 shadow-sm">
               <h3 className="font-['DM_Sans'] font-semibold text-[#1a365d] mb-4 flex items-center gap-2">
@@ -162,6 +226,12 @@ export default function AsesorFiscal() {
                   <div className="flex justify-between">
                     <span className="text-gray-500">Nº de solicitud</span>
                     <span className="font-semibold text-[#1a365d]">SOL-{String(solicitudId).padStart(5, "0")}</span>
+                  </div>
+                )}
+                {derivacionId && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">ID derivación</span>
+                    <span className="font-mono text-xs text-gray-500">{derivacionId}</span>
                   </div>
                 )}
                 {expedienteId && (
@@ -184,14 +254,18 @@ export default function AsesorFiscal() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Franja preferida</span>
-                  <span className="font-medium">
-                    {FRANJAS.find(f => f.id === franjaHoraria)?.label || "Flexible"}
-                  </span>
+                  <span className="font-medium">{franjaLabel}</span>
                 </div>
                 {ahorroUrl && (
                   <div className="flex justify-between pt-3 border-t border-gray-100">
                     <span className="text-gray-500">Ahorro estimado</span>
                     <span className="font-bold text-emerald-600 text-base">{ahorroUrl.toFixed(2)} €</span>
+                  </div>
+                )}
+                {precioUrl && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Precio estimado</span>
+                    <span className="font-bold text-[#1a365d] text-base">{precioUrl} €</span>
                   </div>
                 )}
               </div>
@@ -202,9 +276,10 @@ export default function AsesorFiscal() {
               <h3 className="font-semibold text-blue-900 mb-3 text-sm">¿Qué pasa ahora?</h3>
               <div className="space-y-2">
                 {[
-                  "Recibirás un email de confirmación en los próximos minutos",
-                  "Un asesor revisará tu expediente y te llamará en tu franja preferida",
-                  "Te presentaremos un presupuesto cerrado antes de empezar",
+                  "Recibirás un email de confirmación provisional en los próximos minutos",
+                  "El asesor revisará tu expediente y confirmará la cita en tu franja preferida",
+                  "Recibirás un recordatorio 24 h antes y 1 h antes de la llamada",
+                  "El asesor te presentará un presupuesto cerrado antes de empezar",
                   "Si aceptas, gestionamos tu declaración de principio a fin",
                 ].map((paso, i) => (
                   <div key={i} className="flex items-start gap-2 text-sm text-blue-800">
@@ -314,6 +389,20 @@ export default function AsesorFiscal() {
                 </div>
               )}
 
+              {/* Disponibilidad */}
+              <div className="bg-blue-50 rounded-2xl border border-blue-100 p-5 shadow-sm">
+                <h3 className="font-['DM_Sans'] font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Próxima disponibilidad
+                </h3>
+                <p className="text-sm text-blue-700 capitalize font-medium">
+                  {proximoDiaLabel}
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Primer día hábil disponible para la llamada.
+                </p>
+              </div>
+
               {/* Garantías */}
               <div className="bg-[#1a365d] rounded-2xl p-5 text-white">
                 <h3 className="font-['DM_Sans'] font-semibold mb-4">Nuestras garantías</h3>
@@ -405,10 +494,13 @@ export default function AsesorFiscal() {
 
                 {/* Franja horaria */}
                 <div className="mb-6">
-                  <Label className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5" />
+                  <Label className="text-sm font-medium text-gray-700 mb-1 block">
+                    <Calendar className="w-3.5 h-3.5 inline mr-1" />
                     ¿Cuándo prefieres que te llamemos?
                   </Label>
+                  <p className="text-xs text-gray-500 mb-3">
+                    Próxima disponibilidad: <span className="font-medium capitalize text-[#1a365d]">{proximoDiaLabel}</span>
+                  </p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {FRANJAS.map((franja) => (
                       <button

@@ -188,6 +188,18 @@ export const solicitudesAsesor = mysqlTable("solicitudes_asesor", {
   precioEstimado: int("precioEstimado"),
   /** ID del webhook de n8n para tracking */
   n8nExecutionId: varchar("n8nExecutionId", { length: 128 }),
+  /** Slot reservado como ISO datetime (ej: 2026-04-02T10:00:00+02:00) */
+  reservedSlot: varchar("reservedSlot", { length: 64 }),
+  /** Estado de la reserva del slot */
+  slotStatus: mysqlEnum("slotStatus", ["tentative", "confirmed", "cancelled", "retrying"]).default("tentative"),
+  /** Logs de auditoría: [{action, timestamp, ip, user_agent, details}] */
+  auditLogs: json("auditLogs"),
+  /** Registro de notificaciones enviadas: [{type, timestamp, status, payload}] */
+  notificacionesSent: json("notificacionesSent"),
+  /** IP del cliente al enviar la solicitud */
+  ipAddress: varchar("ipAddress", { length: 64 }),
+  /** User agent del cliente */
+  userAgent: text("userAgent"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

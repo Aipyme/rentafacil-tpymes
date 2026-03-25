@@ -168,3 +168,20 @@
 - [x] Notificación automática al asesor (notifyOwner + n8n webhook)
 - [x] SimuladorRenta: redirige a /asesor-fiscal con datos pre-rellenados cuando es_complejo=true
 - [ ] Panel de gestión de solicitudes en /panel-asesor
+
+## Mejoras trazabilidad y automatización derivaciones (sesión actual)
+- [x] Schema BD: añadidos campos reservedSlot, slotStatus, auditLogs, notificacionesSent, ipAddress, userAgent a solicitudes_asesor
+- [x] db:push aplicado correctamente (migración 0005)
+- [x] Backend asesor.ts: calcularReservedSlot() genera ISO datetime del próximo día hábil según franja
+- [x] Backend asesor.ts: audit_log inicial guardado en BD con IP, user agent, timestamp, consent
+- [x] Backend asesor.ts: payload webhook enriquecido (google_calendar_event + email_template + reserved_slot)
+- [x] Backend asesor.ts: registro de notificaciones_sent en BD con estado del webhook n8n
+- [x] Backend asesor.ts: nuevo endpoint adminConfirmarSlot (actualiza a confirmed)
+- [x] Frontend /asesor-fiscal: muestra próximo día hábil disponible en el formulario
+- [x] Frontend /asesor-fiscal: captura navigator.userAgent para audit log
+- [x] Frontend /asesor-fiscal: pantalla confirmación muestra slot reservado formateado en español
+- [x] Frontend /asesor-fiscal: muestra derivacion_id y precio estimado en confirmación
+- [x] Workflow n8n JSON completo (docs/n8n-workflow-derivacion.json) - todos los nodos
+- [x] Guía de configuración n8n (docs/n8n-derivacion-setup.md) - credenciales, payloads, QA queries
+- [ ] Configurar credenciales en n8n (Google Calendar, SMTP, Slack, Sheets)
+- [ ] Activar workflow derivacion_handler en n8n

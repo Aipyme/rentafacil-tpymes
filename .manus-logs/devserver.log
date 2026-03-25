@@ -1375,3 +1375,13 @@
 [2026-03-25T16:52:06.125Z] Server running on http://localhost:3000/
 [2026-03-25T16:56:00.507Z] 12:56:00 PM [vite] (client) hmr update /src/pages/SimuladorRenta.tsx, /src/index.css?v=TUjBsqELZIao9YJeWOJtg
 [2026-03-25T16:57:04.835Z] 12:57:04 PM [vite] (client) page reload public/__manus__/version.json
+[2026-03-25T17:09:45.269Z] [Auth] Missing session cookie
+[2026-03-25T17:10:00.251Z] [Auth] Missing session cookie
+[2026-03-25T17:10:14.646Z] [Auth] Missing session cookie
+[2026-03-25T17:10:27.269Z] [Auth] Missing session cookie
+[2026-03-25T19:23:00.564Z] 3:23:00 PM [tsx] change in ./drizzle/schema.ts Restarting...
+[2026-03-25T19:23:02.594Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T19:23:03.127Z] Server running on http://localhost:3000/
+[2026-03-25T19:24:39.133Z] 3:24:39 PM [tsx] change in ./server/routers/asesor.ts Restarting...
+[2026-03-25T19:24:41.199Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T19:24:41.729Z] Server running on http://localhost:3000/
