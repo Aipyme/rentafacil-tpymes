@@ -162,7 +162,22 @@ export default function SimuladorRenta() {
         telefonoContacto: form.telefono,
       });
       setExpedienteId(res.expedienteId);
-      navigate(`/pago/${res.expedienteId}`);
+
+      // Si es caso complejo, derivar al asesor con datos pre-rellenados
+      if (resultado?.es_complejo) {
+        const params = new URLSearchParams();
+        params.set("expediente", res.expedienteId);
+        if (resultado.motivo_complejidad) params.set("motivo", resultado.motivo_complejidad);
+        if (resultado.ahorro_vs_borrador) params.set("ahorro", String(Math.abs(resultado.ahorro_vs_borrador)));
+        if (precio?.precioTotal) params.set("precio", String(Math.round(precio.precioTotal / 100)));
+        if (form.nombre) params.set("nombre", form.nombre);
+        if (form.nif) params.set("nif", form.nif);
+        if (form.email) params.set("email", form.email);
+        if (form.telefono) params.set("telefono", form.telefono);
+        navigate(`/asesor-fiscal?${params.toString()}`);
+      } else {
+        navigate(`/pago/${res.expedienteId}`);
+      }
     } catch (e) {
       console.error(e);
     }

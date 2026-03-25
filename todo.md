@@ -158,3 +158,13 @@
 - [ ] Actualizar precios cuando los confirme el cliente
 - [x] Prueba E2E completa del flujo: simulador → pago → área cliente → PDF (5/5 PASS)
 - [x] Mejoras UX simulador: validación por paso, indicador de pasos visual con círculos, mensajes de error
+
+## Funcionalidad casos complejos → Asesor fiscal
+
+- [x] Router server: asesor.ts (crearSolicitud, getSolicitudes, actualizarEstado)
+- [x] Schema DB: tabla solicitudes_asesor + db:push
+- [x] Página /asesor-fiscal con formulario de contacto especializado y 6 franjas horarias
+- [x] Pantalla de confirmación con número de solicitud y próximos pasos
+- [x] Notificación automática al asesor (notifyOwner + n8n webhook)
+- [x] SimuladorRenta: redirige a /asesor-fiscal con datos pre-rellenados cuando es_complejo=true
+- [ ] Panel de gestión de solicitudes en /panel-asesor

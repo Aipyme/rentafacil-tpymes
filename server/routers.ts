@@ -8,6 +8,7 @@ import { documentosRouter } from "./routers/documentos";
 import { firmasRouter } from "./routers/firmas";
 import { simuladorRouter } from "./routers/simulador";
 import { pagosRouter } from "./routers/pagos";
+import { asesorRouter } from "./routers/asesor";
 import { ENV } from "./_core/env";
 
 export const appRouter = router({
@@ -38,6 +39,9 @@ export const appRouter = router({
 
   // Pasarela de pago Stripe
   pagos: pagosRouter,
+
+  // Derivación de casos complejos al asesor
+  asesor: asesorRouter,
 
   // Autenticación básica del Panel del Asesor
   panel: router({

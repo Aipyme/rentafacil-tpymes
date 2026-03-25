@@ -1,0 +1,20 @@
+CREATE TABLE `solicitudes_asesor` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`expedienteId` varchar(32),
+	`nombre` varchar(255) NOT NULL,
+	`nif` varchar(20) NOT NULL,
+	`email` varchar(320) NOT NULL,
+	`telefono` varchar(20) NOT NULL,
+	`franjaHoraria` varchar(64),
+	`motivoComplejidad` text,
+	`descripcionSituacion` text,
+	`estado` enum('pendiente','contactado','en_gestion','resuelto','cancelado') NOT NULL DEFAULT 'pendiente',
+	`notasAsesor` text,
+	`asesorAsignado` varchar(128),
+	`resultadoSimulador` json,
+	`precioEstimado` int,
+	`n8nExecutionId` varchar(128),
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `solicitudes_asesor_id` PRIMARY KEY(`id`)
+);

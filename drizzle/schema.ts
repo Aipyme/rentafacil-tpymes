@@ -148,3 +148,49 @@ export const configuracionPrecios = mysqlTable("configuracion_precios", {
 });
 
 export type ConfiguracionPrecio = typeof configuracionPrecios.$inferSelect;
+
+/**
+ * Solicitudes de contacto con asesor fiscal (casos complejos derivados).
+ */
+export const solicitudesAsesor = mysqlTable("solicitudes_asesor", {
+  id: int("id").autoincrement().primaryKey(),
+  /** ID del expediente original del simulador (puede ser null si contacta directo) */
+  expedienteId: varchar("expedienteId", { length: 32 }),
+  /** Nombre completo del contribuyente */
+  nombre: varchar("nombre", { length: 255 }).notNull(),
+  /** NIF/NIE */
+  nif: varchar("nif", { length: 20 }).notNull(),
+  /** Email de contacto */
+  email: varchar("email", { length: 320 }).notNull(),
+  /** Teléfono de contacto */
+  telefono: varchar("telefono", { length: 20 }).notNull(),
+  /** Franja horaria preferida para la llamada */
+  franjaHoraria: varchar("franjaHoraria", { length: 64 }),
+  /** Motivo de la complejidad (del motor fiscal) */
+  motivoComplejidad: text("motivoComplejidad"),
+  /** Descripción libre del usuario sobre su situación */
+  descripcionSituacion: text("descripcionSituacion"),
+  /** Estado de la solicitud */
+  estado: mysqlEnum("estado", [
+    "pendiente",
+    "contactado",
+    "en_gestion",
+    "resuelto",
+    "cancelado"
+  ]).default("pendiente").notNull(),
+  /** Notas internas del asesor */
+  notasAsesor: text("notasAsesor"),
+  /** Asesor asignado */
+  asesorAsignado: varchar("asesorAsignado", { length: 128 }),
+  /** Resultado del cálculo del simulador (JSON) para contexto del asesor */
+  resultadoSimulador: json("resultadoSimulador"),
+  /** Precio estimado del servicio complejo */
+  precioEstimado: int("precioEstimado"),
+  /** ID del webhook de n8n para tracking */
+  n8nExecutionId: varchar("n8nExecutionId", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SolicitudAsesor = typeof solicitudesAsesor.$inferSelect;
+export type InsertSolicitudAsesor = typeof solicitudesAsesor.$inferInsert;
