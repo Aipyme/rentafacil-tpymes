@@ -1308,3 +1308,24 @@
 [2026-03-25T09:20:18.869Z] 5:20:18 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=azGBBRd1Qw7cNqOMkxsfu
 [2026-03-25T09:20:48.636Z] 5:20:48 AM [vite] (client) page reload public/__manus__/version.json
 [2026-03-25T10:23:50.748Z] 6:23:50 AM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=azGBBRd1Qw7cNqOMkxsfu
+[2026-03-25T10:24:22.268Z] 6:24:22 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-25T16:01:49.846Z] 12:01:49 PM [tsx] change in ./drizzle/schema.ts Restarting...
+[2026-03-25T16:01:53.542Z] c/home/ubuntu/renta-facil-tpymes/server/routers/documentos.ts:18
+[2026-03-25T16:01:53.543Z] import { documentos, rechazosDocumentos } from "../../drizzle/schema";
+[2026-03-25T16:01:53.543Z] ^
+[2026-03-25T16:01:53.544Z] 
+[2026-03-25T16:01:53.544Z] SyntaxError: The requested module '../../drizzle/schema' does not provide an export named 'rechazosDocumentos'
+[2026-03-25T16:01:53.544Z] at ModuleJob._instantiate (node:internal/modules/esm/module_job:180:21)
+[2026-03-25T16:01:53.545Z] at async ModuleJob.run (node:internal/modules/esm/module_job:263:5)
+[2026-03-25T16:01:53.545Z] at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:547:26)
+[2026-03-25T16:01:53.546Z] at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:116:5)
+[2026-03-25T16:01:53.546Z] 
+[2026-03-25T16:01:53.546Z] Node.js v22.13.0
+[2026-03-25T16:03:36.931Z] 12:03:36 PM [tsx] change in ./drizzle/schema.ts Rerunning...
+[2026-03-25T16:03:39.632Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T16:03:41.185Z] Server running on http://localhost:3000/
+[2026-03-25T16:09:40.972Z] 12:09:40 PM [tsx] change in ./server/routers.ts Restarting...
+[2026-03-25T16:09:42.674Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T16:09:43.176Z] Server running on http://localhost:3000/
+[2026-03-25T16:13:21.726Z] 12:13:21 PM [vite] (client) hmr update /src/App.tsx?v=HD0C5J47uiksmbpn9t8c_, /src/index.css?v=HD0C5J47uiksmbpn9t8c_
+[2026-03-25T16:16:22.789Z] 12:16:22 PM [vite] (client) page reload public/__manus__/version.json

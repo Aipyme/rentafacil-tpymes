@@ -6,6 +6,7 @@ import { publicProcedure, router } from "./_core/trpc";
 import { casosRouter } from "./routers/casos";
 import { documentosRouter } from "./routers/documentos";
 import { firmasRouter } from "./routers/firmas";
+import { simuladorRouter } from "./routers/simulador";
 import { ENV } from "./_core/env";
 
 export const appRouter = router({
@@ -30,6 +31,9 @@ export const appRouter = router({
 
   // Firmas digitales del cliente
   firmas: firmasRouter,
+
+  // Simulador de renta automatizado
+  simulador: simuladorRouter,
 
   // Autenticación básica del Panel del Asesor
   panel: router({

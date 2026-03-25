@@ -1,17 +1,10 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, bigint } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, bigint, boolean, json } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
  */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
@@ -26,31 +19,21 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Tabla de documentos subidos por asesores y clientes.
- * Cada documento está asociado a un caso (id_caso del Google Sheet).
- * El archivo binario se almacena en S3; aquí guardamos solo metadatos.
+ * Documentos subidos por asesores y clientes.
+ * Mantiene casoId para compatibilidad con el panel del asesor existente.
  */
 export const documentos = mysqlTable("documentos", {
   id: int("id").autoincrement().primaryKey(),
-  /** ID del caso en el Google Sheet (ej: RENTA-2025-MN4CXQB8) */
+  /** ID del caso en el Google Sheet o expedienteId */
   casoId: varchar("casoId", { length: 64 }).notNull(),
-  /** Nombre original del archivo tal como lo subió el usuario */
   nombreArchivo: varchar("nombreArchivo", { length: 255 }).notNull(),
-  /** Clave del objeto en S3 (ruta relativa dentro del bucket) */
   s3Key: varchar("s3Key", { length: 512 }).notNull(),
-  /** URL pública del archivo en S3 */
   url: text("url").notNull(),
-  /** Tipo MIME del archivo (application/pdf, image/jpeg, etc.) */
   mimeType: varchar("mimeType", { length: 128 }).notNull(),
-  /** Tamaño del archivo en bytes */
   tamano: bigint("tamano", { mode: "number" }).notNull(),
-  /** Quién subió el documento: "asesor" o "cliente" */
   subidoPor: mysqlEnum("subidoPor", ["asesor", "cliente"]).notNull(),
-  /** Nombre o identificador del usuario que subió el documento */
   subidoPorNombre: varchar("subidoPorNombre", { length: 128 }),
-  /** Categoría del documento para organización */
   categoria: varchar("categoria", { length: 64 }),
-  /** Notas opcionales sobre el documento */
   notas: text("notas"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -60,20 +43,13 @@ export type InsertDocumento = typeof documentos.$inferInsert;
 
 /**
  * Historial de documentos rechazados por el asesor.
- * Cuando el asesor elimina un documento del cliente con motivo,
- * se guarda un registro aquí para que el cliente lo vea en /seguimiento.
  */
 export const rechazosDocumentos = mysqlTable("rechazos_documentos", {
   id: int("id").autoincrement().primaryKey(),
-  /** ID del caso en el Google Sheet */
   casoId: varchar("casoId", { length: 64 }).notNull(),
-  /** Nombre del archivo rechazado */
   nombreArchivo: varchar("nombreArchivo", { length: 255 }).notNull(),
-  /** Categoría del documento rechazado */
   categoria: varchar("categoria", { length: 64 }),
-  /** Motivo del rechazo escrito por el asesor */
   motivo: text("motivo"),
-  /** Nombre del asesor que rechazó el documento */
   rechazadoPor: varchar("rechazadoPor", { length: 128 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -82,26 +58,93 @@ export type RechazoDocumento = typeof rechazosDocumentos.$inferSelect;
 export type InsertRechazoDocumento = typeof rechazosDocumentos.$inferInsert;
 
 /**
- * Firmas digitales del cliente para autorizar la presentación de la declaración.
- * La imagen PNG de la firma se almacena en S3; aquí guardamos metadatos y trazabilidad.
+ * Firmas digitales del cliente.
+ * Mantiene casoId para compatibilidad con el panel del asesor existente.
  */
 export const firmas = mysqlTable("firmas", {
   id: int("id").autoincrement().primaryKey(),
-  /** ID del caso en el Google Sheet */
   casoId: varchar("casoId", { length: 64 }).notNull(),
-  /** NIF del cliente que firmó */
   nif: varchar("nif", { length: 20 }).notNull(),
-  /** URL pública de la imagen PNG de la firma en S3 */
   firmaUrl: text("firmaUrl").notNull(),
-  /** Clave S3 de la firma */
   firmaS3Key: varchar("firmaS3Key", { length: 512 }).notNull(),
-  /** Dirección IP del cliente en el momento de la firma */
   ip: varchar("ip", { length: 64 }),
-  /** User-Agent del navegador del cliente */
   userAgent: text("userAgent"),
-  /** Fecha y hora de la firma (UTC) */
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export type Firma = typeof firmas.$inferSelect;
 export type InsertFirma = typeof firmas.$inferInsert;
+
+/**
+ * ============================================================
+ * NUEVA PLATAFORMA DE RENTA AUTOMATIZADA
+ * ============================================================
+ */
+
+/**
+ * Declaraciones de renta - tabla principal.
+ * Cada fila representa una declaración iniciada por un contribuyente.
+ * El simulador puede usarse sin registro; el userId se asigna al pagar.
+ */
+export const declaraciones = mysqlTable("declaraciones", {
+  id: int("id").autoincrement().primaryKey(),
+  /** ID único de expediente (ej: RF2025-XXXX) */
+  expedienteId: varchar("expedienteId", { length: 32 }).notNull().unique(),
+  /** Usuario registrado (null si aún no ha pagado/registrado) */
+  userId: int("userId"),
+  /** Estado del expediente */
+  estado: mysqlEnum("estado", [
+    "simulacion",
+    "pendiente_pago",
+    "pagado",
+    "en_proceso",
+    "completado",
+    "derivado",
+    "cancelado"
+  ]).default("simulacion").notNull(),
+  /** Datos del contribuyente (JSON con todas las respuestas del simulador) */
+  datosContribuyente: json("datosContribuyente"),
+  /** Resultado del cálculo fiscal (JSON con casillas y valores) */
+  resultadoCalculo: json("resultadoCalculo"),
+  /** Precio base en céntimos */
+  precioBase: int("precioBase").default(0),
+  /** Suplementos aplicados (JSON: [{concepto, descripcion, importe}]) */
+  suplementos: json("suplementos"),
+  /** Precio total en céntimos */
+  precioTotal: int("precioTotal").default(0),
+  /** Si el caso fue marcado como complejo */
+  esComplejo: boolean("esComplejo").default(false),
+  /** Motivo por el que es complejo */
+  motivoComplejidad: text("motivoComplejidad"),
+  /** ID de sesión de pago de Stripe */
+  stripeSessionId: varchar("stripeSessionId", { length: 255 }),
+  /** ID de pago de Stripe confirmado */
+  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }),
+  /** URL del informe PDF generado */
+  informePdfUrl: text("informePdfUrl"),
+  /** Clave S3 del informe PDF */
+  informePdfS3Key: varchar("informePdfS3Key", { length: 512 }),
+  /** Email del contribuyente */
+  emailContacto: varchar("emailContacto", { length: 320 }),
+  /** Teléfono del contribuyente */
+  telefonoContacto: varchar("telefonoContacto", { length: 20 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Declaracion = typeof declaraciones.$inferSelect;
+export type InsertDeclaracion = typeof declaraciones.$inferInsert;
+
+/**
+ * Configuración de precios - gestionada por el administrador.
+ */
+export const configuracionPrecios = mysqlTable("configuracion_precios", {
+  id: int("id").autoincrement().primaryKey(),
+  clave: varchar("clave", { length: 64 }).notNull().unique(),
+  descripcion: text("descripcion").notNull(),
+  importe: int("importe").notNull(),
+  activo: boolean("activo").default(true).notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ConfiguracionPrecio = typeof configuracionPrecios.$inferSelect;

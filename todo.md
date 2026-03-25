@@ -141,3 +141,18 @@
 - [x] Preparar 3 casos de ejemplo realistas en el Sheet para la demo (María García, Carlos Martínez, Ana Fernández)
 - [x] n8n WF01: corregir zona horaria — guardar hora en formato español (UTC+2) en lugar de UTC
 - [x] n8n WF01: asegurar que todas las celdas del Sheet se rellenan con valores por defecto (nunca vacías)
+
+## Nueva plataforma renta automatizada (sesión actual)
+- [x] Motor fiscal IRPF 2025 (server/lib/motorFiscal.ts) - tramos, deducciones estatales y autonómicas 17 CCAA
+- [x] Schema BD: tabla declaraciones y configuracion_precios (drizzle/schema.ts)
+- [x] Router tRPC simulador (server/routers/simulador.ts) - calcular, guardar, getExpediente, listar
+- [x] Página SimuladorRenta (/renta) - 7 pasos + comparativa + CTA de pago
+- [x] Ruta /renta registrada en App.tsx
+- [ ] Guardar checkpoint y verificar en producción
+- [ ] Integrar Stripe con Google Pay / Apple Pay
+- [ ] Página de pago /pago/:expedienteId
+- [ ] Área de cliente /mi-renta/:expedienteId
+- [ ] Generación de informe PDF con casillas modelo 100
+- [ ] Panel de administración para gestión de declaraciones
+- [ ] Añadir botón "Simula gratis" en la landing page principal
+- [ ] Actualizar precios cuando los confirme el cliente
