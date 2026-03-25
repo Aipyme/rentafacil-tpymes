@@ -1360,3 +1360,10 @@
 [2026-03-25T16:34:49.287Z] 12:34:49 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
 [2026-03-25T16:34:49.318Z] Server running on http://localhost:3000/
 [2026-03-25T16:35:32.914Z] [Auth] Missing session cookie
+[2026-03-25T16:39:49.488Z] [Auth] Missing session cookie
+[2026-03-25T16:39:49.504Z] [Auth] Missing session cookie
+[2026-03-25T16:39:49.516Z] [Auth] Missing session cookie
+[2026-03-25T16:39:49.530Z] [Auth] Missing session cookie
+[2026-03-25T16:39:49.544Z] [Auth] Missing session cookie
+[2026-03-25T16:42:35.620Z] 12:42:35 PM [vite] (client) hmr update /src/pages/SimuladorRenta.tsx, /src/index.css?v=Vcu5jnuCbTVOrIWi4p021
+[2026-03-25T16:44:21.094Z] 12:44:21 PM [vite] (client) page reload public/__manus__/version.json

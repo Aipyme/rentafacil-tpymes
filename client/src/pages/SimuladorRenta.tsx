@@ -92,15 +92,39 @@ export default function SimuladorRenta() {
   const [precio, setPrecio] = useState<any>(null);
   const [expedienteId, setExpedienteId] = useState<string | null>(null);
   const [, navigate] = useLocation();
+  const [error, setError] = useState<string | null>(null);
 
   const calcularMutation = trpc.simulador.calcular.useMutation();
   const guardarMutation = trpc.simulador.guardarSimulacion.useMutation();
 
   const progreso = Math.round((paso / (TOTAL_PASOS + 1)) * 100);
 
+  const validarPaso = (): boolean => {
+    setError(null);
+    if (paso === 1 && !form.situacion) {
+      setError("Por favor, selecciona tu situación laboral para continuar.");
+      return false;
+    }
+    if (paso === 2 && (!form.ingresos_brutos || form.ingresos_brutos <= 0)) {
+      setError("Por favor, introduce tus ingresos brutos anuales.");
+      return false;
+    }
+    if (paso === 6 && !form.comunidad) {
+      setError("Por favor, selecciona tu comunidad autónoma.");
+      return false;
+    }
+    if (paso === 7) {
+      if (!form.nombre?.trim()) { setError("Por favor, introduce tu nombre."); return false; }
+      if (!form.nif?.trim()) { setError("Por favor, introduce tu NIF/NIE."); return false; }
+      if (!form.email?.trim() || !form.email.includes("@")) { setError("Por favor, introduce un email válido."); return false; }
+    }
+    return true;
+  };
+
   const update = (data: Partial<FormData>) => setForm(prev => ({ ...prev, ...data }));
 
   const siguiente = () => {
+    if (!validarPaso()) return;
     if (paso < TOTAL_PASOS) {
       setPaso(p => p + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -204,13 +228,25 @@ export default function SimuladorRenta() {
             <>
               {/* Header del wizard */}
               <div className="mb-8">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-[#1a365d]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-[#1a365d]">
                     Paso {paso} de {TOTAL_PASOS}
                   </span>
-                  <span className="text-sm text-gray-400">{progreso}% completado</span>
+                  <span className="text-sm text-[#059669] font-medium">{progreso}% completado</span>
                 </div>
-                <Progress value={progreso} className="h-2" />
+                <Progress value={progreso} className="h-2.5" />
+                <div className="flex justify-between mt-2">
+                  {[{i:1,l:"Situación"},{i:2,l:"Ingresos"},{i:3,l:"Vivienda"},{i:4,l:"Familia"},{i:5,l:"Deducciones"},{i:6,l:"Comunidad"},{i:7,l:"Contacto"}].map(s => (
+                    <div key={s.i} className={`text-center flex-1 ${
+                      s.i < paso ? "text-[#059669]" : s.i === paso ? "text-[#1a365d] font-semibold" : "text-gray-300"
+                    }`}>
+                      <div className={`w-5 h-5 rounded-full mx-auto mb-0.5 flex items-center justify-center text-xs font-bold ${
+                        s.i < paso ? "bg-[#059669] text-white" : s.i === paso ? "bg-[#1a365d] text-white" : "bg-gray-200 text-gray-400"
+                      }`}>{s.i < paso ? "✓" : s.i}</div>
+                      <span className="text-[9px] hidden sm:block">{s.l}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <Card className="border-0 shadow-xl shadow-gray-200/60 bg-white">
@@ -229,6 +265,14 @@ export default function SimuladorRenta() {
                   )}
                   {paso === 6 && <Paso6Comunidad form={form} update={update} />}
                   {paso === 7 && <Paso7Contacto form={form} update={update} />}
+
+                  {/* Error de validación */}
+                  {error && (
+                    <div className="mt-4 bg-red-50 border border-red-200 rounded-xl p-3 flex gap-2">
+                      <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-red-600">{error}</p>
+                    </div>
+                  )}
 
                   {/* Navegación */}
                   <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">

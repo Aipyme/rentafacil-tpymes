@@ -156,4 +156,5 @@
 - [x] Botón "Simula gratis" en landing apunta a /renta
 - [ ] Panel de administración para gestión de declaraciones
 - [ ] Actualizar precios cuando los confirme el cliente
-- [ ] Prueba E2E completa del flujo: simulador → pago → área cliente → PDF
+- [x] Prueba E2E completa del flujo: simulador → pago → área cliente → PDF (5/5 PASS)
+- [x] Mejoras UX simulador: validación por paso, indicador de pasos visual con círculos, mensajes de error
