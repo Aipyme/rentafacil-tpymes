@@ -460,16 +460,27 @@ export default function Triage() {
   const [isSending, setIsSending] = useState(false);
   const [webhookSent, setWebhookSent] = useState(false);
 
-  // Timestamp en formato español DD/MM/AAAA HH:MM
+  // Timestamp en zona horaria de España (Europe/Madrid)
   const getTimestampES = () => {
     const now = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const opts: Intl.DateTimeFormatOptions = {
+      timeZone: 'Europe/Madrid',
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: false,
+    };
+    const parts = new Intl.DateTimeFormat('es-ES', opts).formatToParts(now);
+    const get = (t: string) => parts.find(p => p.type === t)?.value ?? '00';
+    return `${get('day')}/${get('month')}/${get('year')} ${get('hour')}:${get('minute')}`;
   };
   const getFechaES = () => {
     const now = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
+    const opts: Intl.DateTimeFormatOptions = {
+      timeZone: 'Europe/Madrid',
+      day: '2-digit', month: '2-digit', year: 'numeric',
+    };
+    const parts = new Intl.DateTimeFormat('es-ES', opts).formatToParts(now);
+    const get = (t: string) => parts.find(p => p.type === t)?.value ?? '00';
+    return `${get('day')}/${get('month')}/${get('year')}`;
   };
 
   // Construir payload mapeado a las columnas del Google Sheet (53 columnas)
