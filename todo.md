@@ -148,11 +148,12 @@
 - [x] Router tRPC simulador (server/routers/simulador.ts) - calcular, guardar, getExpediente, listar
 - [x] Página SimuladorRenta (/renta) - 7 pasos + comparativa + CTA de pago
 - [x] Ruta /renta registrada en App.tsx
-- [ ] Guardar checkpoint y verificar en producción
-- [ ] Integrar Stripe con Google Pay / Apple Pay
-- [ ] Página de pago /pago/:expedienteId
-- [ ] Área de cliente /mi-renta/:expedienteId
-- [ ] Generación de informe PDF con casillas modelo 100
+- [x] Guardar checkpoint y verificar en producción
+- [x] Integrar Stripe con Google Pay / Apple Pay (server/routers/pagos.ts + stripeWebhook.ts)
+- [x] Página de pago /pago/:expedienteId (client/src/pages/PagoRenta.tsx)
+- [x] Área de cliente /mi-renta/:expedienteId (client/src/pages/MiRenta.tsx)
+- [x] Generación de informe PDF con casillas modelo 100 (server/lib/generarPDF.ts)
+- [x] Botón "Simula gratis" en landing apunta a /renta
 - [ ] Panel de administración para gestión de declaraciones
-- [ ] Añadir botón "Simula gratis" en la landing page principal
 - [ ] Actualizar precios cuando los confirme el cliente
+- [ ] Prueba E2E completa del flujo: simulador → pago → área cliente → PDF

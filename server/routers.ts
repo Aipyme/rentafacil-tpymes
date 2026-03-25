@@ -7,6 +7,7 @@ import { casosRouter } from "./routers/casos";
 import { documentosRouter } from "./routers/documentos";
 import { firmasRouter } from "./routers/firmas";
 import { simuladorRouter } from "./routers/simulador";
+import { pagosRouter } from "./routers/pagos";
 import { ENV } from "./_core/env";
 
 export const appRouter = router({
@@ -34,6 +35,9 @@ export const appRouter = router({
 
   // Simulador de renta automatizado
   simulador: simuladorRouter,
+
+  // Pasarela de pago Stripe
+  pagos: pagosRouter,
 
   // Autenticación básica del Panel del Asesor
   panel: router({

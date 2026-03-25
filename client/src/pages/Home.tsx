@@ -106,7 +106,7 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <Link href="/simulador">
+                <Link href="/renta">
                   <Button
                     size="lg"
                     className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-8 h-12 text-base shadow-xl shadow-emerald-900/30 transition-all hover:-translate-y-0.5 w-full sm:w-auto"
@@ -371,7 +371,7 @@ export default function Home() {
 
               <FadeUp delay={0.3}>
                 <div className="mt-8">
-                  <Link href="/simulador">
+                  <Link href="/renta">
                     <Button className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-8 h-12 shadow-lg shadow-emerald-200/50">
                       <Calculator className="w-4 h-4 mr-2" />
                       Simula gratis y descubre tu precio
@@ -419,7 +419,7 @@ export default function Home() {
                     ))}
                   </div>
                   <div className="shrink-0">
-                    <Link href="/simulador">
+                    <Link href="/renta">
                       <Button
                         size="lg"
                         className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-8 h-13 text-base shadow-xl shadow-emerald-200/50 transition-all hover:-translate-y-0.5 w-full md:w-auto"
@@ -561,7 +561,7 @@ export default function Home() {
               Haz la simulación gratuita y te diremos cuál es la mejor vía para tu caso,
               con un precio claro antes de empezar.
             </p>
-            <Link href="/simulador">
+            <Link href="/renta">
               <Button
                 size="lg"
                 className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-10 h-13 text-base shadow-xl shadow-emerald-900/30"

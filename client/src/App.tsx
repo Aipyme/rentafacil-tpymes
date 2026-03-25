@@ -17,6 +17,8 @@ import Andalucia from "@/pages/Andalucia";
 import PanelAsesor from "@/pages/PanelAsesor";
 import SeguimientoCliente from "@/pages/SeguimientoCliente";
 import SimuladorRenta from "@/pages/SimuladorRenta";
+import PagoRenta from "@/pages/PagoRenta";
+import MiRenta from "@/pages/MiRenta";
 import Madrid from "@/pages/Madrid";
 import Cataluna from "@/pages/Cataluna";
 import Valencia from "@/pages/Valencia";
@@ -42,6 +44,8 @@ function AppRouter() {
       <Route path="/seguimiento" component={SeguimientoCliente} />
       <Route path="/renta" component={SimuladorRenta} />
       <Route path="/renta/simulador" component={SimuladorRenta} />
+      <Route path="/pago/:expedienteId" component={PagoRenta} />
+      <Route path="/mi-renta/:expedienteId" component={MiRenta} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

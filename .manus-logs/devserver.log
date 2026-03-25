@@ -1329,3 +1329,34 @@
 [2026-03-25T16:09:43.176Z] Server running on http://localhost:3000/
 [2026-03-25T16:13:21.726Z] 12:13:21 PM [vite] (client) hmr update /src/App.tsx?v=HD0C5J47uiksmbpn9t8c_, /src/index.css?v=HD0C5J47uiksmbpn9t8c_
 [2026-03-25T16:16:22.789Z] 12:16:22 PM [vite] (client) page reload public/__manus__/version.json
+[2026-03-25T16:16:28.131Z] 12:16:28 PM [vite] (client) ✨ new dependencies optimized: @radix-ui/react-progress
+[2026-03-25T16:16:28.132Z] 12:16:28 PM [vite] (client) ✨ optimized dependencies changed. reloading
+[2026-03-25T16:17:14.347Z] Dev server process group stopped
+[2026-03-25T16:17:14.387Z] Dev server exited with code -15
+[2026-03-25T16:17:17.414Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-25T16:17:19.709Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T16:17:20.542Z] Server running on http://localhost:3000/
+[2026-03-25T16:17:20.970Z] Dev server process group stopped
+[2026-03-25T16:17:21.033Z] Dev server exited with code -15
+[2026-03-25T16:17:24.006Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-25T16:17:25.721Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T16:17:26.065Z] Server running on http://localhost:3000/
+[2026-03-25T16:18:30.937Z] 12:18:30 PM [tsx] change in ./server/routers.ts Restarting...
+[2026-03-25T16:18:32.865Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T16:18:33.255Z] 12:18:33 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-03-25T16:18:33.289Z] Server running on http://localhost:3000/
+[2026-03-25T16:20:04.083Z] [Auth] Missing session cookie
+[2026-03-25T16:24:10.017Z] 12:24:10 PM [tsx] change in ./server/routers/pagos.ts Restarting...
+[2026-03-25T16:24:12.475Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T16:24:13.171Z] Server running on http://localhost:3000/
+[2026-03-25T16:26:29.692Z] 12:26:29 PM [tsx] change in ./server/_core/index.ts Restarting...
+[2026-03-25T16:26:31.708Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T16:26:32.088Z] Server running on http://localhost:3000/
+[2026-03-25T16:27:56.436Z] [Auth] Missing session cookie
+[2026-03-25T16:28:46.146Z] 12:28:46 PM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=jZrKezluANhxvd3pRZ8v6
+[2026-03-25T16:29:00.360Z] 12:29:00 PM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=jZrKezluANhxvd3pRZ8v6
+[2026-03-25T16:34:46.638Z] 12:34:46 PM [tsx] change in ./server/routers/simulador.ts Restarting...
+[2026-03-25T16:34:48.802Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-25T16:34:49.287Z] 12:34:49 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-03-25T16:34:49.318Z] Server running on http://localhost:3000/
+[2026-03-25T16:35:32.914Z] [Auth] Missing session cookie

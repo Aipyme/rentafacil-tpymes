@@ -4,6 +4,8 @@ import { calcularRenta, calcularPrecio, type RespuestasSimulador } from "../lib/
 import { getDb } from "../db";
 import { declaraciones } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { generarInformePDF } from "../lib/generarPDF";
+import { storagePut } from "../storage";
 
 // ============================================================
 // Zod schema para las respuestas del simulador
@@ -161,6 +163,46 @@ export const simuladorRouter = router({
         .set({ estado: "pagado" })
         .where(eq(declaraciones.expedienteId, input.expedienteId));
       return { success: true };
+    }),
+
+  /**
+   * Generar informe PDF con casillas del Modelo 100
+   */
+  generarPDF: publicProcedure
+    .input(z.object({ expedienteId: z.string() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const [expediente] = await db
+        .select()
+        .from(declaraciones)
+        .where(eq(declaraciones.expedienteId, input.expedienteId));
+
+      if (!expediente) throw new Error("Expediente no encontrado");
+
+      const datos = expediente.datosContribuyente as any;
+      const resultado = expediente.resultadoCalculo as any;
+
+      const pdfBuffer = await generarInformePDF({
+        expedienteId: expediente.expedienteId,
+        contribuyente: datos?.contribuyente || {},
+        comunidad: datos?.comunidad,
+        resultado: resultado || {},
+        precioTotal: expediente.precioTotal || 0,
+      });
+
+      // Subir a S3
+      const fileKey = `informes/${expediente.expedienteId}-modelo100.pdf`;
+      const { url } = await storagePut(fileKey, pdfBuffer, "application/pdf");
+
+      // Guardar URL en base de datos
+      await db
+        .update(declaraciones)
+        .set({ informePdfUrl: url })
+        .where(eq(declaraciones.expedienteId, input.expedienteId));
+
+      return { url };
     }),
 
   /**
