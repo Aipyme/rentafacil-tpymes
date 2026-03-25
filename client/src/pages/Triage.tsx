@@ -460,23 +460,35 @@ export default function Triage() {
   const [isSending, setIsSending] = useState(false);
   const [webhookSent, setWebhookSent] = useState(false);
 
-  // Construir payload mapeado a las columnas del Google Sheet
+  // Timestamp en formato español DD/MM/AAAA HH:MM
+  const getTimestampES = () => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  };
+  const getFechaES = () => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
+  };
+
+  // Construir payload mapeado a las columnas del Google Sheet (53 columnas)
   const buildPayload = () => ({
-    // Columnas originales del Sheet (1-35)
+    // Col A: id_caso (generado por n8n)
+    // Col B: timestamp — formato DD/MM/AAAA HH:MM
+    timestamp: getTimestampES(),
+    // Col C-F: datos personales
     nombreCompleto: `${data.nombre} ${data.apellidos}`.trim(),
     nif: data.nif,
     email: data.email,
     telefono: data.telefono,
+    // Col G-S: datos fiscales
     comunidadAutonoma: data.comunidadAutonoma,
     estadoCivil: data.situacionFamiliar === 'con_hijos' ? 'Con hijos a cargo'
       : data.situacionFamiliar === 'monoparental' ? 'Familia monoparental'
       : data.situacionFamiliar === 'ascendientes' ? 'Con ascendientes a cargo'
       : data.situacionFamiliar === 'sin_cargas' ? 'Sin cargas familiares' : data.situacionFamiliar,
     numHijos: data.numHijos || '0',
-    tipoVivienda: data.tieneInmuebles === 'no' ? 'Sin inmuebles'
-      : data.tieneInmuebles === 'uno' ? 'Un inmueble'
-      : data.tieneInmuebles === 'varios' ? 'Varios inmuebles' : data.tieneInmuebles,
-    hipotecaAnterior2013: data.tieneHipotecaPre2013 === 'si' ? 'TRUE' : 'FALSE',
     rendimientosTrabajo: data.ingresosAprox === 'menos_22k' ? '18000'
       : data.ingresosAprox === '22k_35k' ? '28000'
       : data.ingresosAprox === '35k_60k' ? '45000'
@@ -484,34 +496,64 @@ export default function Triage() {
     numPagadores: data.numPagadores === '1' ? '1'
       : data.numPagadores === '2' ? '2'
       : data.numPagadores === '3_mas' ? '3' : data.numPagadores,
-    tieneOtrosRendimientos: 'FALSE',
-    otrosRendimientosDescripcion: '',
-    tieneInmueblesAlquilados: data.inmuebleAlquilado === 'si' ? 'TRUE' : 'FALSE',
-    tieneInversiones: data.tieneInversiones === 'si' ? 'TRUE' : 'FALSE',
-    tieneActividadEconomica: data.esAutonomo === 'si' ? 'TRUE' : 'FALSE',
-    deduccionesConocidas: deducciones.join(', '),
-    tieneDiscapacidad: data.tieneDiscapacidad === 'si' ? 'TRUE' : 'FALSE',
-    porcentajeDiscapacidad: '0',
-    realizaDonaciones: data.haceDonaciones === 'si' ? 'TRUE' : 'FALSE',
-    tienePlanPensiones: data.aportaPlanPensiones === 'si' ? 'TRUE' : 'FALSE',
-    aceptaPolitica: data.aceptaRGPD ? 'TRUE' : 'FALSE',
-    aceptaTratamiento: data.aceptaRGPD ? 'TRUE' : 'FALSE',
-    estado: 'recibido',
-    tipo: data.tipoContribuyente === 'asalariado' ? 'Asalariado'
-      : data.tipoContribuyente === 'autonomo' ? 'Autónomo'
+    tieneActividadEconomica: data.esAutonomo === 'si' ? 'Si' : 'No',
+    tieneInmueblesAlquilados: data.inmuebleAlquilado === 'si' ? 'Si' : 'No',
+    tieneInversiones: data.tieneInversiones === 'si' ? 'Si' : 'No',
+    tieneDiscapacidad: data.tieneDiscapacidad === 'si' ? 'Si' : 'No',
+    realizaDonaciones: data.haceDonaciones === 'si' ? 'Si' : 'No',
+    tienePlanPensiones: data.aportaPlanPensiones === 'si' ? 'Si' : 'No',
+    aceptaPolitica: data.aceptaRGPD ? 'Si' : 'No',
+    aceptaTratamiento: data.aceptaRGPD ? 'Si' : 'No',
+    // Col T-W: estado y contacto
+    estado: 'Pendiente',
+    tipo_declaracion: data.tipoContribuyente === 'autonomo' ? 'Autonomo' : 'Individual',
+    fecha_creacion: getFechaES(),
+    contactoPreferido: data.prefiereContacto || 'Email',
+    // Col X-Z: situacion laboral e ingresos
+    situacionLaboral: data.tipoContribuyente === 'asalariado' ? 'Asalariado'
+      : data.tipoContribuyente === 'autonomo' ? 'Autonomo'
       : data.tipoContribuyente === 'pensionista' ? 'Pensionista'
       : data.tipoContribuyente === 'desempleado' ? 'Desempleado' : data.tipoContribuyente,
-    // Datos del pagador principal (empresa) — nuevos campos
-    nifPagador: data.nifPagador || '',
-    nombreEmpresa: data.nombreEmpresa || '',
-    // Campos extra del resultado
+    ingresosBrutos: data.ingresosAprox === 'menos_22k' ? '18000'
+      : data.ingresosAprox === '22k_35k' ? '28000'
+      : data.ingresosAprox === '35k_60k' ? '45000'
+      : data.ingresosAprox === 'mas_60k' ? '70000' : '',
+    tipoVivienda: data.tieneInmuebles === 'no' ? 'Sin inmuebles'
+      : data.tieneInmuebles === 'uno' ? 'Propiedad propia'
+      : data.tieneInmuebles === 'varios' ? 'Varios inmuebles' : data.tieneInmuebles,
+    // Col AA-AD: deducciones
+    hipotecaAnterior2013: data.tieneHipotecaPre2013 === 'si' ? 'Si' : 'No',
+    otrosRendimientosDescripcion: '',
+    deduccionesConocidas: deducciones.join(', '),
+    porcentajeDiscapacidad: '0',
+    // Col AE-AK: clasificacion
+    tipo: data.tipoContribuyente === 'asalariado' ? 'Individual'
+      : data.tipoContribuyente === 'autonomo' ? 'Autonomo'
+      : 'Individual',
     expedienteId,
     complejidad,
     plan: getPlan(complejidad),
     precio: getPrecio(complejidad),
     deduccionesDetectadas: deducciones.join(', '),
     documentosNecesarios: documentos.join(', '),
-    fechaRegistro: new Date().toISOString(),
+    // Col AL-AN: empresa pagadora
+    fechaRegistro: getFechaES(),
+    nombreEmpresa: data.nombreEmpresa || '',
+    nifPagador: data.nifPagador || '',
+    // Col AO-BA: gestion inicial (rellenos con valores por defecto)
+    prioridad: 'Media',
+    asesorAsignado: 'Sin asignar',
+    notasAsesor: 'Nuevo caso pendiente de asignacion y revision inicial.',
+    documentosRecibidos: '',
+    fechaContacto: '',
+    fechaRevision: '',
+    resultadoFinal: 'Pendiente',
+    importeResultado: '0',
+    fechaPresentacion: '',
+    observaciones: 'Pendiente revisar documentacion inicial.',
+    ultimoRecordatorio: getFechaES(),
+    tipoResultado: 'Pendiente',
+    resultadoEstimado: '0',
   });
 
   // Enviar datos al webhook automáticamente cuando se llega al paso resultado
