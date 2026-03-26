@@ -1,49 +1,97 @@
 {
-  "name": "derivacion_handler - Renta Fácil TPymes",
+  "name": "derivacion_handler",
   "nodes": [
     {
       "parameters": {
+        "path": "derivacion-create",
         "httpMethod": "POST",
-        "path": "derivacion-created",
-        "responseMode": "responseNode",
+        "responseMode": "onReceived",
         "options": {}
       },
       "id": "node_webhook_trigger",
       "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [240, 300],
-      "webhookId": "derivacion-handler"
+      "position": [250, 300],
+      "notes": "URL del webhook: https://autogr.app.n8n.cloud/webhook/derivacion-create\nConfigurar esta URL en VITE_WEBHOOK_N8N del proyecto."
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={\"status\":\"received\",\"derivacion_id\":\"{{$json.derivacion_id}}\"}",
-        "options": {}
+        "url": "={{ $json[\"body\"][\"expediente_url\"] || `https://rentatpymes.aicheckpyme.co/api/trpc/simulador.getExpediente?input=${encodeURIComponent(JSON.stringify({\"0\":{\"json\":{\"expedienteId\":$json[\"body\"][\"expediente_id\"]}}}))}` }}",
+        "options": {
+          "timeout": 10000
+        }
       },
-      "id": "node_respond_immediately",
-      "name": "Responder inmediatamente (200 OK)",
-      "type": "n8n-nodes-base.respondToWebhook",
+      "id": "node_get_expediente",
+      "name": "Get Expediente",
+      "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
-      "position": [460, 180]
+      "position": [520, 300],
+      "notes": "Obtiene los datos completos del expediente desde la API de Renta Fácil.\nSi el payload ya incluye expediente_url, la usa directamente."
     },
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "boolean": [
             {
-              "value1": "={{$json.event}}",
-              "operation": "equals",
-              "value2": "derivacion_created"
+              "value1": "={{ $json[\"body\"][\"es_complejo\"] || $json[\"body\"][\"flag_review\"] }}",
+              "operation": "isTrue"
             }
           ]
         }
       },
-      "id": "node_check_event",
-      "name": "¿Es derivacion_created?",
+      "id": "node_if_complejo",
+      "name": "IF Es Complejo",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [460, 380]
+      "position": [760, 300],
+      "notes": "Rama TRUE → ejecutar todos los nodos de derivación.\nRama FALSE → no hacer nada (caso simple, ya gestionado por el flujo estándar)."
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "resource": "contact",
+        "additionalFields": {
+          "properties": [
+            {
+              "name": "email",
+              "value": "={{ $json[\"body\"][\"user_contact\"][\"email\"] || $json[\"body\"][\"user_email\"] }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json[\"body\"][\"user_contact\"][\"phone\"] }}"
+            },
+            {
+              "name": "firstname",
+              "value": "={{ ($json[\"body\"][\"user_contact\"][\"nombre\"] || $json[\"body\"][\"contribuyente\"][\"nombre\"] || '').split(' ')[0] }}"
+            },
+            {
+              "name": "lastname",
+              "value": "={{ ($json[\"body\"][\"user_contact\"][\"nombre\"] || $json[\"body\"][\"contribuyente\"][\"nombre\"] || '').split(' ').slice(1).join(' ') }}"
+            },
+            {
+              "name": "notes",
+              "value": "={{ `Expediente: ${$json[\"body\"][\"expediente_id\"]}; Motivo: ${$json[\"body\"][\"motivo\"]}; Ahorro estimado: ${$json[\"body\"][\"ahorro_estimado\"]} €; Slot: ${$json[\"body\"][\"reserved_slot\"]}` }}"
+            },
+            {
+              "name": "hs_lead_status",
+              "value": "NEW"
+            }
+          ]
+        }
+      },
+      "id": "node_create_crm_lead",
+      "name": "Create CRM Lead",
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 1,
+      "position": [1040, 80],
+      "credentials": {
+        "hubspotApi": {
+          "id": "PLACEHOLDER_HUBSPOT_CREDENTIAL_ID",
+          "name": "HubSpot - Renta Fácil TPymes"
+        }
+      },
+      "notes": "Crea contacto en HubSpot con estado NEW.\nSi no usas HubSpot, desactiva este nodo o sustitúyelo por tu CRM."
     },
     {
       "parameters": {
@@ -51,56 +99,81 @@
         "resource": "event",
         "operation": "create",
         "calendarId": "primary",
-        "summary": "=Revisión Renta - {{$json.google_calendar_event.summary}}",
-        "start": "={{$json.google_calendar_event.start.dateTime}}",
-        "end": "={{$json.google_calendar_event.end.dateTime}}",
         "additionalFields": {
-          "description": "={{$json.google_calendar_event.description}}",
-          "attendees": "={{$json.google_calendar_event.attendees}}",
+          "summary": "={{ `Revisión Renta - ${$json[\"body\"][\"user_contact\"][\"nombre\"] || $json[\"body\"][\"contribuyente\"][\"nombre\"]} (${$json[\"body\"][\"expediente_id\"]})` }}",
+          "description": "={{ `Expediente: ${$json[\"body\"][\"expediente_id\"]}\\nMotivo: ${$json[\"body\"][\"motivo\"]}\\nAhorro estimado: ${$json[\"body\"][\"ahorro_estimado\"]} €\\nPrecio: ${$json[\"body\"][\"precio\"]} €\\nLink admin: https://rentatpymes.aicheckpyme.co/panel-asesor` }}",
+          "start": "={{ { dateTime: $json[\"body\"][\"reserved_slot\"] } }}",
+          "end": "={{ { dateTime: new Date(new Date($json[\"body\"][\"reserved_slot\"]).getTime() + 60*60000).toISOString() } }}",
+          "attendees": [
+            {
+              "email": "info@ayudatpymes.com"
+            }
+          ],
           "status": "tentative",
           "sendUpdates": "all"
         }
       },
       "id": "node_create_calendar_event",
-      "name": "Crear evento Google Calendar (tentative)",
+      "name": "Create Calendar Event",
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1,
-      "position": [700, 300],
+      "position": [1040, 280],
       "credentials": {
         "googleCalendarOAuth2Api": {
           "id": "PLACEHOLDER_GOOGLE_CALENDAR_CREDENTIAL_ID",
           "name": "Google Calendar - Renta Fácil TPymes"
         }
-      }
+      },
+      "notes": "Crea evento tentative en Google Calendar del asesor.\nDuración: 60 minutos. Notifica al asesor por email automáticamente.\nScopes necesarios: https://www.googleapis.com/auth/calendar.events"
     },
     {
       "parameters": {
         "fromEmail": "noreply@rentatpymes.aicheckpyme.co",
-        "toEmail": "={{$('Webhook Trigger').item.json.email_template.to}}",
+        "toEmail": "={{ $json[\"body\"][\"user_contact\"][\"email\"] || $json[\"body\"][\"contribuyente\"][\"email\"] }}",
         "subject": "Confirmación provisional de cita — Renta Fácil",
         "emailType": "html",
-        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head><meta charset=\"UTF-8\"><style>\nbody{font-family:Arial,sans-serif;background:#f7f5f2;margin:0;padding:0}\n.container{max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}\n.header{background:#1a365d;padding:32px 40px;text-align:center}\n.header h1{color:#fff;font-size:22px;margin:0}\n.header p{color:rgba(255,255,255,.7);font-size:14px;margin:8px 0 0}\n.body{padding:32px 40px}\n.slot-box{background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:16px 20px;margin:20px 0}\n.slot-box p{margin:0;color:#065f46;font-weight:600;font-size:16px}\n.slot-box small{color:#047857;font-size:12px}\n.summary{background:#f8fafc;border-radius:8px;padding:16px 20px;margin:20px 0}\n.summary table{width:100%;border-collapse:collapse}\n.summary td{padding:6px 0;font-size:14px;color:#374151}\n.summary td:first-child{color:#6b7280;width:40%}\n.summary td:last-child{font-weight:600;color:#111827}\n.steps{margin:20px 0}\n.step{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}\n.step-num{background:#1a365d;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px}\n.step p{margin:0;font-size:14px;color:#374151}\n.cta{text-align:center;margin:28px 0}\n.cta a{background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px}\n.footer{background:#f1f5f9;padding:20px 40px;text-align:center}\n.footer p{color:#94a3b8;font-size:12px;margin:4px 0}\n</style></head>\n<body>\n<div class=\"container\">\n  <div class=\"header\">\n    <h1>Renta Fácil TPymes</h1>\n    <p>Confirmación provisional de cita</p>\n  </div>\n  <div class=\"body\">\n    <p>Hola <strong>{{$('Webhook Trigger').item.json.email_template.nombre_cliente}}</strong>,</p>\n    <p>Hemos recibido tu solicitud de revisión fiscal. Hemos reservado provisionalmente el siguiente slot para la llamada con tu asesor:</p>\n    \n    <div class=\"slot-box\">\n      <p>📅 {{$('Webhook Trigger').item.json.email_template.reserved_slot}}</p>\n      <small>Estado: Provisional · El asesor confirmará en las próximas horas</small>\n    </div>\n\n    <div class=\"summary\">\n      <table>\n        <tr><td>Expediente</td><td>{{$('Webhook Trigger').item.json.email_template.expediente_id}}</td></tr>\n        <tr><td>Motivo</td><td>{{$('Webhook Trigger').item.json.email_template.motivo}}</td></tr>\n        <tr><td>Ahorro estimado</td><td>{{$('Webhook Trigger').item.json.email_template.ahorro_estimado}} €</td></tr>\n        <tr><td>Precio estimado</td><td>{{$('Webhook Trigger').item.json.email_template.precio}} €</td></tr>\n      </table>\n    </div>\n\n    <div class=\"steps\">\n      <p style=\"font-weight:600;color:#1a365d;margin-bottom:12px\">¿Qué pasa ahora?</p>\n      <div class=\"step\"><div class=\"step-num\">1</div><p>El asesor revisará tu expediente y confirmará la cita</p></div>\n      <div class=\"step\"><div class=\"step-num\">2</div><p>Recibirás un recordatorio 24 h antes y 1 h antes de la llamada</p></div>\n      <div class=\"step\"><div class=\"step-num\">3</div><p>El asesor te presentará un presupuesto cerrado antes de empezar</p></div>\n      <div class=\"step\"><div class=\"step-num\">4</div><p>Si aceptas, gestionamos tu declaración de principio a fin</p></div>\n    </div>\n\n    <div class=\"cta\">\n      <a href=\"{{$('Webhook Trigger').item.json.email_template.link_expediente}}\">Ver mi expediente</a>\n    </div>\n\n    <p style=\"font-size:13px;color:#6b7280\">Si necesitas cambiar la cita, accede a tu área de cliente usando el botón de arriba.</p>\n  </div>\n  <div class=\"footer\">\n    <p>Renta Fácil TPymes · Ayuda T Pymes</p>\n    <p>Este email es una confirmación provisional automática.</p>\n  </div>\n</div>\n</body></html>",
+        "message": "=<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><style>body{font-family:Arial,sans-serif;background:#f7f5f2;margin:0;padding:0}.container{max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}.header{background:#1a365d;padding:32px 40px;text-align:center}.header h1{color:#fff;font-size:22px;margin:0}.header p{color:rgba(255,255,255,.7);font-size:14px;margin:8px 0 0}.body{padding:32px 40px}.slot-box{background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:16px 20px;margin:20px 0}.slot-box p{margin:0;color:#065f46;font-weight:600;font-size:16px}.slot-box small{color:#047857;font-size:12px}.summary{background:#f8fafc;border-radius:8px;padding:16px 20px;margin:20px 0}.summary table{width:100%;border-collapse:collapse}.summary td{padding:6px 0;font-size:14px;color:#374151}.summary td:first-child{color:#6b7280;width:40%}.summary td:last-child{font-weight:600;color:#111827}.cta{text-align:center;margin:28px 0}.cta a{background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px}.footer{background:#f1f5f9;padding:20px 40px;text-align:center}.footer p{color:#94a3b8;font-size:12px;margin:4px 0}</style></head><body><div class=\"container\"><div class=\"header\"><h1>Renta Fácil TPymes</h1><p>Confirmación provisional de cita</p></div><div class=\"body\"><p>Hola <strong>{{ $json[\"body\"][\"contribuyente\"][\"nombre\"] || $json[\"body\"][\"user_contact\"][\"nombre\"] }}</strong>,</p><p>Hemos reservado provisionalmente el siguiente slot para la llamada con tu asesor:</p><div class=\"slot-box\"><p>📅 {{ $json[\"body\"][\"reserved_slot\"] }}</p><small>Estado: Provisional · El asesor confirmará en las próximas horas</small></div><div class=\"summary\"><table><tr><td>Expediente</td><td>{{ $json[\"body\"][\"expediente_id\"] }}</td></tr><tr><td>Motivo</td><td>{{ $json[\"body\"][\"motivo\"] }}</td></tr><tr><td>Ahorro estimado</td><td>{{ $json[\"body\"][\"ahorro_estimado\"] }} €</td></tr><tr><td>Precio estimado</td><td>{{ $json[\"body\"][\"precio\"] }} €</td></tr></table></div><div class=\"cta\"><a href=\"https://rentatpymes.aicheckpyme.co/mi-renta/{{ $json[\"body\"][\"expediente_id\"] }}\">Ver mi expediente</a></div><p style=\"font-size:13px;color:#6b7280\">Recibirás un recordatorio 24h antes y 1h antes de la llamada.</p></div><div class=\"footer\"><p>Renta Fácil TPymes · Ayuda T Pymes</p><p>Este email es una confirmación provisional automática.</p></div></div></body></html>",
         "options": {}
       },
-      "id": "node_send_email_cliente",
-      "name": "Email confirmación provisional al cliente",
+      "id": "node_send_email",
+      "name": "Send Email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [700, 460],
+      "position": [1040, 480],
       "credentials": {
         "smtp": {
           "id": "PLACEHOLDER_SMTP_CREDENTIAL_ID",
           "name": "SMTP - Renta Fácil TPymes"
         }
-      }
+      },
+      "notes": "Email HTML de confirmación provisional al cliente.\nSMTP recomendado: Brevo (smtp-relay.brevo.com:587) — 300 emails/día gratis."
+    },
+    {
+      "parameters": {
+        "channel": "#asesores",
+        "text": "={{ `🔔 *Nuevo caso derivado: ${$json[\"body\"][\"derivacion_id\"]}*\\n\\n*Cliente:* ${$json[\"body\"][\"contribuyente\"][\"nombre\"] || $json[\"body\"][\"user_contact\"][\"nombre\"]} (${$json[\"body\"][\"user_contact\"][\"email\"]})\\n*NIF:* ${$json[\"body\"][\"user_contact\"][\"nif\"]}\\n*Teléfono:* ${$json[\"body\"][\"user_contact\"][\"phone\"]}\\n*Motivo:* ${$json[\"body\"][\"motivo\"]}\\n*Ahorro estimado:* ${$json[\"body\"][\"ahorro_estimado\"]} €\\n*Precio:* ${$json[\"body\"][\"precio\"]} €\\n*Slot reservado:* ${$json[\"body\"][\"reserved_slot\"]}\\n*Expediente:* ${$json[\"body\"][\"expediente_id\"]}\\n\\n<https://rentatpymes.aicheckpyme.co/panel-asesor|🔗 Ver en panel de asesores>` }}",
+        "otherOptions": {}
+      },
+      "id": "node_slack_notify",
+      "name": "Slack Notify",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1040, 680],
+      "credentials": {
+        "slackApi": {
+          "id": "PLACEHOLDER_SLACK_CREDENTIAL_ID",
+          "name": "Slack - Renta Fácil TPymes"
+        }
+      },
+      "notes": "Notifica al canal #asesores en Slack.\nAlternativa: usar nodo HTTP Request con Incoming Webhook URL."
     },
     {
       "parameters": {
         "authentication": "oAuth2",
-        "operation": "appendOrUpdate",
+        "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "PLACEHOLDER_GOOGLE_SHEETS_ID",
+          "value": "PLACEHOLDER_SHEETS_ID",
           "mode": "id"
         },
         "sheetName": {
@@ -111,252 +184,91 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "derivacion_id": "={{$('Webhook Trigger').item.json.derivacion_id}}",
-            "expediente_id": "={{$('Webhook Trigger').item.json.expediente_id}}",
-            "nombre": "={{$('Webhook Trigger').item.json.user_contact.nombre}}",
-            "nif": "={{$('Webhook Trigger').item.json.user_contact.nif}}",
-            "email": "={{$('Webhook Trigger').item.json.user_contact.email}}",
-            "telefono": "={{$('Webhook Trigger').item.json.user_contact.phone}}",
-            "motivo": "={{$('Webhook Trigger').item.json.motivo}}",
-            "ahorro_estimado": "={{$('Webhook Trigger').item.json.ahorro_estimado}}",
-            "precio": "={{$('Webhook Trigger').item.json.precio}}",
-            "franja_horaria": "={{$('Webhook Trigger').item.json.franja_horaria}}",
-            "reserved_slot": "={{$('Webhook Trigger').item.json.reserved_slot}}",
-            "estado": "Pendiente",
-            "timestamp": "={{new Date().toLocaleString('es-ES', {timeZone: 'Europe/Madrid'})}}",
-            "calendar_event_id": "={{$('Crear evento Google Calendar (tentative)').item.json.id}}",
+            "derivacion_id": "={{ $json[\"body\"][\"derivacion_id\"] }}",
+            "expediente_id": "={{ $json[\"body\"][\"expediente_id\"] }}",
+            "nombre": "={{ $json[\"body\"][\"contribuyente\"][\"nombre\"] || $json[\"body\"][\"user_contact\"][\"nombre\"] }}",
+            "email": "={{ $json[\"body\"][\"user_contact\"][\"email\"] }}",
+            "telefono": "={{ $json[\"body\"][\"user_contact\"][\"phone\"] }}",
+            "nif": "={{ $json[\"body\"][\"user_contact\"][\"nif\"] }}",
+            "motivo": "={{ $json[\"body\"][\"motivo\"] }}",
+            "ahorro_estimado": "={{ $json[\"body\"][\"ahorro_estimado\"] }}",
+            "precio": "={{ $json[\"body\"][\"precio\"] }}",
+            "franja_horaria": "={{ $json[\"body\"][\"franja_horaria\"] }}",
+            "reserved_slot": "={{ $json[\"body\"][\"reserved_slot\"] }}",
+            "estado": "pending",
+            "timestamp": "={{ new Date().toLocaleString('es-ES', {timeZone: 'Europe/Madrid'}) }}",
+            "calendar_event_id": "={{ $('Create Calendar Event').item.json.id || '' }}",
             "notas_asesor": "",
             "asesor_asignado": ""
           }
         },
         "options": {}
       },
-      "id": "node_append_google_sheets",
-      "name": "Registrar en Google Sheets (hoja Derivaciones)",
+      "id": "node_append_sheets",
+      "name": "Append Row Google Sheets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [940, 300],
+      "position": [1040, 880],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "PLACEHOLDER_GOOGLE_SHEETS_CREDENTIAL_ID",
           "name": "Google Sheets - Renta Fácil TPymes"
         }
-      }
-    },
-    {
-      "parameters": {
-        "url": "PLACEHOLDER_SLACK_WEBHOOK_URL",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "text",
-              "value": "=🔔 *Nuevo caso derivado: {{$('Webhook Trigger').item.json.derivacion_id}}*\n\n*Cliente:* {{$('Webhook Trigger').item.json.user_contact.nombre}} ({{$('Webhook Trigger').item.json.user_contact.email}})\n*NIF:* {{$('Webhook Trigger').item.json.user_contact.nif}}\n*Teléfono:* {{$('Webhook Trigger').item.json.user_contact.phone}}\n*Motivo:* {{$('Webhook Trigger').item.json.motivo}}\n*Ahorro estimado:* {{$('Webhook Trigger').item.json.ahorro_estimado}} €\n*Precio:* {{$('Webhook Trigger').item.json.precio}} €\n*Slot reservado:* {{$('Webhook Trigger').item.json.reserved_slot}}\n*Expediente:* {{$('Webhook Trigger').item.json.expediente_id}}\n\n<https://rentatpymes.aicheckpyme.co/panel-asesor|🔗 Ver en panel de asesores>"
-            }
-          ]
-        },
-        "options": {}
       },
-      "id": "node_slack_notify",
-      "name": "Notificar canal #asesores en Slack",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [940, 460]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "string": [
-            {
-              "value1": "={{$('Crear evento Google Calendar (tentative)').item.json.id}}",
-              "operation": "isNotEmpty"
-            }
-          ]
-        }
-      },
-      "id": "node_check_calendar_ok",
-      "name": "¿Evento creado correctamente?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [940, 160]
-    },
-    {
-      "parameters": {
-        "url": "=https://rentatpymes.aicheckpyme.co/api/trpc/asesor.adminActualizarEstado",
-        "authentication": "none",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "json",
-              "value": "={\"0\":{\"json\":{\"id\":{{$('Webhook Trigger').item.json.derivacion_id.replace('d-','')}},\"slotStatus\":\"retrying\"}}}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "node_mark_retrying",
-      "name": "Marcar slot como retrying (Calendar falló)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [1180, 160]
-    },
-    {
-      "parameters": {
-        "triggerTimes": {
-          "item": [
-            {
-              "mode": "everyDay",
-              "hour": 9,
-              "minute": 0
-            }
-          ]
-        }
-      },
-      "id": "node_daily_check_trigger",
-      "name": "Cron: Revisión diaria 9:00",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1,
-      "position": [240, 600]
-    },
-    {
-      "parameters": {
-        "url": "=https://rentatpymes.aicheckpyme.co/api/trpc/asesor.adminListarSolicitudes",
-        "authentication": "none",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "input",
-              "value": "{\"0\":{\"json\":{\"estado\":\"pendiente\",\"limite\":100}}}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "node_get_pending",
-      "name": "Obtener solicitudes pendientes",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [460, 600]
-    },
-    {
-      "parameters": {
-        "batchSize": 1,
-        "options": {}
-      },
-      "id": "node_split_pending",
-      "name": "Procesar cada solicitud",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
-      "position": [700, 600]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "number": [
-            {
-              "value1": "={{Math.floor((Date.now() - new Date($json.createdAt).getTime()) / 3600000)}}",
-              "operation": "largerEqual",
-              "value2": 24
-            }
-          ]
-        }
-      },
-      "id": "node_check_24h",
-      "name": "¿Lleva más de 24h sin contactar?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [940, 600]
-    },
-    {
-      "parameters": {
-        "fromEmail": "noreply@rentatpymes.aicheckpyme.co",
-        "toEmail": "info@ayudatpymes.com",
-        "subject": "⚠️ ALERTA: Derivación sin gestionar > 24h",
-        "emailType": "text",
-        "message": "=ALERTA: La derivación {{$json.id}} ({{$json.nombre}}, {{$json.email}}) lleva más de 24 horas sin ser contactada.\n\nExpediente: {{$json.expedienteId}}\nSlot reservado: {{$json.reservedSlot}}\nCreada: {{$json.createdAt}}\n\nAccede al panel: https://rentatpymes.aicheckpyme.co/panel-asesor",
-        "options": {}
-      },
-      "id": "node_alert_operaciones",
-      "name": "Alerta a operaciones (>24h sin gestionar)",
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2,
-      "position": [1180, 540],
-      "credentials": {
-        "smtp": {
-          "id": "PLACEHOLDER_SMTP_CREDENTIAL_ID",
-          "name": "SMTP - Renta Fácil TPymes"
-        }
-      }
+      "notes": "Añade fila a la hoja 'Derivaciones' del Google Sheet.\nColumnas: derivacion_id, expediente_id, nombre, email, telefono, nif, motivo, ahorro_estimado, precio, franja_horaria, reserved_slot, estado, timestamp, calendar_event_id, notas_asesor, asesor_asignado"
     }
   ],
   "connections": {
     "Webhook Trigger": {
       "main": [
         [
-          { "node": "Responder inmediatamente (200 OK)", "type": "main", "index": 0 },
-          { "node": "¿Es derivacion_created?", "type": "main", "index": 0 }
+          {
+            "node": "Get Expediente",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "¿Es derivacion_created?": {
+    "Get Expediente": {
       "main": [
         [
-          { "node": "Crear evento Google Calendar (tentative)", "type": "main", "index": 0 },
-          { "node": "Email confirmación provisional al cliente", "type": "main", "index": 0 }
+          {
+            "node": "IF Es Complejo",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "Crear evento Google Calendar (tentative)": {
+    "IF Es Complejo": {
       "main": [
         [
-          { "node": "¿Evento creado correctamente?", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "¿Evento creado correctamente?": {
-      "main": [
-        [
-          { "node": "Registrar en Google Sheets (hoja Derivaciones)", "type": "main", "index": 0 }
-        ],
-        [
-          { "node": "Marcar slot como retrying (Calendar falló)", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Registrar en Google Sheets (hoja Derivaciones)": {
-      "main": [
-        [
-          { "node": "Notificar canal #asesores en Slack", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Cron: Revisión diaria 9:00": {
-      "main": [
-        [
-          { "node": "Obtener solicitudes pendientes", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Obtener solicitudes pendientes": {
-      "main": [
-        [
-          { "node": "Procesar cada solicitud", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Procesar cada solicitud": {
-      "main": [
-        [
-          { "node": "¿Lleva más de 24h sin contactar?", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "¿Lleva más de 24h sin contactar?": {
-      "main": [
-        [
-          { "node": "Alerta a operaciones (>24h sin gestionar)", "type": "main", "index": 0 }
+          {
+            "node": "Create CRM Lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Calendar Event",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Slack Notify",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append Row Google Sheets",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     }
@@ -364,15 +276,12 @@
   "settings": {
     "executionOrder": "v1",
     "saveManualExecutions": true,
-    "callerPolicy": "workflowsFromSameOwner",
-    "errorWorkflow": ""
+    "callerPolicy": "workflowsFromSameOwner"
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": false
   },
   "pinData": {},
-  "versionId": "1.0.0",
-  "triggerCount": 2,
   "tags": ["renta-facil", "derivacion", "asesor"]
 }
