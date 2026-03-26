@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { solicitudesAsesor, declaraciones } from "../../drizzle/schema";
+import { solicitudesAsesor, declaraciones, asesores } from "../../drizzle/schema";
 import { eq, desc, and, or, like } from "drizzle-orm";
 import { notifyOwner } from "../_core/notification";
 
@@ -420,6 +420,189 @@ export const asesorRouter = router({
         .set(updateData as any)
         .where(eq(solicitudesAsesor.id, input.id));
 
+      return { success: true };
+    }),
+
+  /**
+   * ADMIN: Asignar asesor a una derivación y disparar webhook derivacion-confirm a n8n.
+   * Actualiza assigned_advisor_id, assigned_advisor_email, slot_status = confirmed.
+   * Dispara el workflow n8n derivacion-confirm que crea el evento Calendar definitivo.
+   */
+  adminAsignarAsesor: protectedProcedure
+    .input(z.object({
+      solicitudId: z.number(),
+      asesorId: z.number(),
+      reservedSlot: z.string().optional(), // ISO datetime, si se quiere cambiar el slot
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      // 1) Obtener el asesor
+      const [asesor] = await db
+        .select()
+        .from(asesores)
+        .where(eq(asesores.id, input.asesorId))
+        .limit(1);
+
+      if (!asesor) throw new Error("Asesor no encontrado");
+
+      // 2) Obtener la solicitud
+      const [solicitud] = await db
+        .select()
+        .from(solicitudesAsesor)
+        .where(eq(solicitudesAsesor.id, input.solicitudId))
+        .limit(1);
+
+      if (!solicitud) throw new Error("Solicitud no encontrada");
+
+      const slotFinal = input.reservedSlot || solicitud.reservedSlot || calcularReservedSlot(solicitud.franjaHoraria || "flexible");
+      const ahora = new Date().toISOString();
+
+      // 3) Actualizar la solicitud en BD
+      await db
+        .update(solicitudesAsesor)
+        .set({
+          asesorAsignado: asesor.nombre,
+          assignedAdvisorId: String(asesor.id),
+          slotStatus: "confirmed",
+          estado: "contactado",
+          reservedSlot: slotFinal,
+        } as any)
+        .where(eq(solicitudesAsesor.id, input.solicitudId));
+
+      // 4) Disparar webhook derivacion-confirm a n8n
+      const n8nConfirmUrl = (process.env.VITE_WEBHOOK_N8N || "").replace(
+        "derivacion-create",
+        "derivacion-confirm"
+      );
+      const n8nWebhookKey = process.env.N8N_WEBHOOK_KEY;
+      let n8nStatus = "not_configured";
+
+      if (n8nConfirmUrl && n8nConfirmUrl.includes("derivacion-confirm")) {
+        try {
+          const payload = {
+            event: "derivacion_confirmed",
+            derivacion_id: solicitud.n8nExecutionId || `d-${solicitud.id}`,
+            expediente_id: solicitud.expedienteId,
+            assigned_advisor_id: String(asesor.id),
+            assigned_advisor_email: asesor.email,
+            contribuyente: {
+              nombre: solicitud.nombre,
+              nif: solicitud.nif,
+            },
+            user_contact: {
+              nombre: solicitud.nombre,
+              nif: solicitud.nif,
+              email: solicitud.email,
+              phone: solicitud.telefono,
+            },
+            motivo: solicitud.motivoComplejidad,
+            ahorro_estimado: (solicitud.resultadoSimulador as any)?.ahorro_total || 0,
+            precio: solicitud.precioEstimado || 0,
+            reserved_slot: slotFinal,
+            es_complejo: true,
+            timestamp: ahora,
+          };
+
+          const headers: Record<string, string> = { "Content-Type": "application/json" };
+          if (n8nWebhookKey) headers["X-Webhook-Key"] = n8nWebhookKey;
+
+          const resp = await fetch(n8nConfirmUrl, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(payload),
+          });
+          n8nStatus = resp.ok ? "sent" : `error_${resp.status}`;
+
+          // Intentar extraer calendarEventId de la respuesta
+          let calendarEventId: string | null = null;
+          try {
+            const respBody = await resp.json();
+            calendarEventId = respBody?.calendar_event_id || respBody?.data?.calendar_event_id || null;
+          } catch { /* no JSON */ }
+
+          if (calendarEventId) {
+            await db
+              .update(solicitudesAsesor)
+              .set({ calendarEventId, calendarCreatedBy: "shared_calendar" } as any)
+              .where(eq(solicitudesAsesor.id, input.solicitudId));
+          }
+        } catch (err) {
+          console.error("[Asesor] Error enviando webhook derivacion-confirm:", err);
+          n8nStatus = "error_fetch";
+        }
+      }
+
+      return {
+        success: true,
+        asesorNombre: asesor.nombre,
+        asesorEmail: asesor.email,
+        reservedSlot: slotFinal,
+        n8nStatus,
+      };
+    }),
+
+  /**
+   * ADMIN: Listar asesores disponibles
+   */
+  getAsesores: protectedProcedure
+    .query(async () => {
+      const db = await getDb();
+      if (!db) return [];
+      return db
+        .select()
+        .from(asesores)
+        .where(eq(asesores.activo, true))
+        .orderBy(asesores.nombre);
+    }),
+
+  /**
+   * ADMIN: Crear un nuevo asesor
+   */
+  adminCrearAsesor: protectedProcedure
+    .input(z.object({
+      nombre: z.string().min(2),
+      email: z.string().email(),
+      calendarMode: z.enum(["shared_calendar", "personal_oauth"]).default("shared_calendar"),
+      workingHours: z.record(z.string(), z.object({
+        inicio: z.string(),
+        fin: z.string(),
+      })).optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      await db.insert(asesores).values({
+        nombre: input.nombre,
+        email: input.email,
+        calendarMode: input.calendarMode,
+        workingHours: input.workingHours as any || null,
+        activo: true,
+      });
+
+      const [nuevo] = await db
+        .select()
+        .from(asesores)
+        .where(eq(asesores.email, input.email))
+        .limit(1);
+
+      return { success: true, asesor: nuevo };
+    }),
+
+  /**
+   * ADMIN: Eliminar (desactivar) un asesor
+   */
+  adminDesactivarAsesor: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      await db
+        .update(asesores)
+        .set({ activo: false })
+        .where(eq(asesores.id, input.id));
       return { success: true };
     }),
 });

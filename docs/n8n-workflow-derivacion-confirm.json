@@ -1,0 +1,238 @@
+{
+  "name": "derivacion_confirm",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "derivacion-confirm",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "node_webhook_confirm",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "notes": "URL: https://autogr.app.n8n.cloud/webhook/derivacion-confirm\nActivado cuando el asesor jefe asigna un asesor desde el panel."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json[\"headers\"][\"x-webhook-key\"] }}",
+              "operation": "equals",
+              "value2": "={{$env.WEBHOOK_SECRET_KEY}}"
+            }
+          ]
+        }
+      },
+      "id": "node_validate_key_confirm",
+      "name": "Validate Webhook Key",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [480, 300],
+      "notes": "Valida X-Webhook-Key. Para MVP puedes desactivar este nodo."
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "event",
+        "operation": "create",
+        "calendarId": "c_fad4d5afc9e665e79f3278b4b9c3c520d17be52439ca665f015edfb3c57eee88@group.calendar.google.com",
+        "additionalFields": {
+          "attendees": [
+            {
+              "email": "={{ $json[\"body\"][\"assigned_advisor_email\"] || $json[\"body\"][\"advisor_email\"] || 'asesor@ayudatpymes.com' }}"
+            }
+          ],
+          "description": "={{ `Expediente: ${$json[\"body\"][\"expediente_id\"]}\\nMotivo: ${$json[\"body\"][\"motivo\"]}\\nAhorro estimado: ${$json[\"body\"][\"ahorro_estimado\"]} €\\nPrecio: ${$json[\"body\"][\"precio\"]} €\\nAsesor asignado: ${$json[\"body\"][\"assigned_advisor_email\"]}\\nLink admin: https://rentatpymes.aicheckpyme.co/panel-asesor` }}",
+          "sendUpdates": "all",
+          "summary": "={{ `✅ Cita Confirmada - ${$json[\"body\"][\"contribuyente\"][\"nombre\"] || $json[\"body\"][\"user_contact\"][\"nombre\"]} (${$json[\"body\"][\"expediente_id\"]})` }}",
+          "start": "={{ { dateTime: new Date($json[\"body\"][\"reserved_slot\"]).toISOString() } }}",
+          "end": "={{ new Date(new Date($json[\"body\"][\"reserved_slot\"]).getTime() + 60*60000).toISOString() }}",
+          "status": "confirmed"
+        }
+      },
+      "id": "node_create_calendar_confirm",
+      "name": "Create Calendar Event",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1,
+      "position": [720, 300],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Fx3ZoQyii6pMloWF",
+          "name": "Google Calendar account"
+        }
+      },
+      "notes": "Crea evento CONFIRMED (no tentative) en el calendario compartido.\nAttendee = assigned_advisor_email del payload.\nDuración: 60 minutos. sendUpdates: all → notifica al asesor."
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@ecombriefs.ai",
+        "toEmail": "={{ $json[\"body\"][\"user_contact\"][\"email\"] || $json[\"body\"][\"contribuyente\"][\"email\"] }}",
+        "subject": "✅ Cita confirmada con tu asesor — Renta Fácil",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><style>body{font-family:Arial,sans-serif;background:#f7f5f2;margin:0;padding:0}.container{max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}.header{background:#1a365d;padding:32px 40px;text-align:center}.header h1{color:#fff;font-size:22px;margin:0}.header p{color:rgba(255,255,255,.7);font-size:14px;margin:8px 0 0}.body{padding:32px 40px}.slot-box{background:#ecfdf5;border:2px solid #059669;border-radius:8px;padding:16px 20px;margin:20px 0}.slot-box p{margin:0;color:#065f46;font-weight:700;font-size:17px}.slot-box small{color:#047857;font-size:12px}.advisor-box{background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;padding:14px 18px;margin:16px 0}.advisor-box p{margin:0;color:#1e40af;font-weight:600;font-size:15px}.summary{background:#f8fafc;border-radius:8px;padding:16px 20px;margin:20px 0}.summary table{width:100%;border-collapse:collapse}.summary td{padding:6px 0;font-size:14px;color:#374151}.summary td:first-child{color:#6b7280;width:40%}.summary td:last-child{font-weight:600;color:#111827}.cta{text-align:center;margin:28px 0}.cta a{background:#059669;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px}.footer{background:#f1f5f9;padding:20px 40px;text-align:center}.footer p{color:#94a3b8;font-size:12px;margin:4px 0}</style></head><body><div class=\"container\"><div class=\"header\"><h1>✅ Cita Confirmada</h1><p>Renta Fácil TPymes — Tu asesor te está esperando</p></div><div class=\"body\"><p>Hola <strong>{{ $json.body.contribuyente.nombre || $json.body.user_contact.nombre }}</strong>,</p><p>Tu cita con el asesor ha sido <strong>confirmada</strong>. Aquí tienes todos los detalles:</p><div class=\"slot-box\"><p>📅 {{ $json.body.reserved_slot }}</p><small>Estado: ✅ Confirmada</small></div><div class=\"advisor-box\"><p>👤 Asesor: {{ $json.body.assigned_advisor_email }}</p></div><div class=\"summary\"><table><tr><td>Expediente</td><td>{{ $json.body.expediente_id || $json.body.derivacion_id }}</td></tr><tr><td>Motivo</td><td>{{ $json.body.motivo }}</td></tr><tr><td>Ahorro estimado</td><td>{{ $json.body.ahorro_estimado }} €</td></tr><tr><td>Precio estimado</td><td>{{ $json.body.precio }} €</td></tr></table></div><div class=\"cta\"><a href=\"https://rentatpymes.aicheckpyme.co\">Ver mi expediente</a></div><p style=\"font-size:13px;color:#6b7280\">Recibirás un recordatorio 24h antes y 1h antes de la llamada.</p><p style=\"font-size:12px;color:#9ca3af\">¿Necesitas cambiar la cita? Responde a este email o llámanos.</p></div><div class=\"footer\"><p>Renta Fácil TPymes · Ayuda T Pymes</p><p>Este email confirma tu cita definitiva con el asesor.</p></div></div></body></html>",
+        "options": {}
+      },
+      "id": "node_send_email_confirm",
+      "name": "Send Email Confirmed",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [960, 180],
+      "credentials": {
+        "smtp": {
+          "id": "0vPwjyWCCBRXUBAC",
+          "name": "SMTP account 5"
+        }
+      },
+      "notes": "Email de confirmación DEFINITIVA al cliente.\nDiferente al email provisional: asunto con ✅, incluye nombre del asesor."
+    },
+    {
+      "parameters": {
+        "channel": "#asesores",
+        "text": "={{ `✅ *Cita confirmada: ${$json[\"body\"][\"derivacion_id\"]}*\\n\\n*Cliente:* ${$json[\"body\"][\"contribuyente\"][\"nombre\"] || $json[\"body\"][\"user_contact\"][\"nombre\"]} (${$json[\"body\"][\"user_contact\"][\"email\"]})\\n*Asesor asignado:* ${$json[\"body\"][\"assigned_advisor_email\"]}\\n*Slot confirmado:* ${$json[\"body\"][\"reserved_slot\"]}\\n*Expediente:* ${$json[\"body\"][\"expediente_id\"]}\\n\\n<https://rentatpymes.aicheckpyme.co/panel-asesor|🔗 Ver en panel>` }}",
+        "otherOptions": {}
+      },
+      "id": "node_slack_confirm",
+      "name": "Slack Notify Confirmed",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [960, 380],
+      "disabled": true,
+      "credentials": {
+        "slackApi": {
+          "id": "PLACEHOLDER_SLACK_CREDENTIAL_ID",
+          "name": "Slack - Renta Fácil TPymes"
+        }
+      },
+      "notes": "DESACTIVADO por defecto. Activar cuando se configure Slack."
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1YFrvwcJ2MdTMrDa096ublr2pBOMfWs_bpc-gYsIAtZE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Derivaciones",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "derivacion_id": "={{ $json[\"body\"][\"derivacion_id\"] }}",
+            "expediente_id": "={{ $json[\"body\"][\"expediente_id\"] }}",
+            "nombre": "={{ $json[\"body\"][\"contribuyente\"][\"nombre\"] || $json[\"body\"][\"user_contact\"][\"nombre\"] }}",
+            "email": "={{ $json[\"body\"][\"user_contact\"][\"email\"] }}",
+            "telefono": "={{ $json[\"body\"][\"user_contact\"][\"phone\"] }}",
+            "nif": "={{ $json[\"body\"][\"user_contact\"][\"nif\"] }}",
+            "motivo": "={{ $json[\"body\"][\"motivo\"] }}",
+            "ahorro_estimado": "={{ $json[\"body\"][\"ahorro_estimado\"] }}",
+            "precio": "={{ $json[\"body\"][\"precio\"] }}",
+            "reserved_slot": "={{ $json[\"body\"][\"reserved_slot\"] }}",
+            "estado": "confirmed",
+            "timestamp": "={{ new Date().toLocaleString('es-ES', {timeZone: 'Europe/Madrid'}) }}",
+            "calendar_event_id": "={{ $('Create Calendar Event').item.json.id || '' }}",
+            "calendar_created_by": "shared_calendar",
+            "asesor_asignado": "={{ $json[\"body\"][\"assigned_advisor_email\"] }}",
+            "notas_asesor": "Asignado desde panel"
+          },
+          "schema": [
+            {"id":"derivacion_id","displayName":"derivacion_id","type":"string"},
+            {"id":"expediente_id","displayName":"expediente_id","type":"string"},
+            {"id":"nombre","displayName":"nombre","type":"string"},
+            {"id":"email","displayName":"email","type":"string"},
+            {"id":"telefono","displayName":"telefono","type":"string"},
+            {"id":"nif","displayName":"nif","type":"string"},
+            {"id":"motivo","displayName":"motivo","type":"string"},
+            {"id":"ahorro_estimado","displayName":"ahorro_estimado","type":"string"},
+            {"id":"precio","displayName":"precio","type":"string"},
+            {"id":"reserved_slot","displayName":"reserved_slot","type":"string"},
+            {"id":"estado","displayName":"estado","type":"string"},
+            {"id":"timestamp","displayName":"timestamp","type":"string"},
+            {"id":"calendar_event_id","displayName":"calendar_event_id","type":"string"},
+            {"id":"calendar_created_by","displayName":"calendar_created_by","type":"string"},
+            {"id":"asesor_asignado","displayName":"asesor_asignado","type":"string"},
+            {"id":"notas_asesor","displayName":"notas_asesor","type":"string"}
+          ]
+        },
+        "options": {}
+      },
+      "id": "node_append_sheets_confirm",
+      "name": "Append Row Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [960, 580],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fPqoxbPKIoWgejxa",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Añade fila en hoja Derivaciones con estado=confirmed y calendar_event_id del evento creado."
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Webhook Key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Webhook Key": {
+      "main": [
+        [
+          {
+            "node": "Create Calendar Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Calendar Event": {
+      "main": [
+        [
+          {
+            "node": "Send Email Confirmed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Slack Notify Confirmed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append Row Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {},
+  "tags": ["derivacion", "confirm", "renta-facil"]
+}

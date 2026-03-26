@@ -212,3 +212,28 @@ export const solicitudesAsesor = mysqlTable("solicitudes_asesor", {
 
 export type SolicitudAsesor = typeof solicitudesAsesor.$inferSelect;
 export type InsertSolicitudAsesor = typeof solicitudesAsesor.$inferInsert;
+
+/**
+ * Tabla de asesores fiscales del equipo.
+ * Permite asignar asesores a derivaciones desde el panel de administración.
+ */
+export const asesores = mysqlTable("asesores", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Nombre completo del asesor */
+  nombre: varchar("nombre", { length: 255 }).notNull(),
+  /** Email del asesor (también usado como attendee en Google Calendar) */
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  /** Modo de integración con Google Calendar */
+  calendarMode: mysqlEnum("calendarMode", ["shared_calendar", "personal_oauth"]).default("shared_calendar").notNull(),
+  /** ID de credencial OAuth2 de Google Calendar personal (solo si calendarMode = personal_oauth) */
+  googleCredentialId: varchar("googleCredentialId", { length: 128 }),
+  /** Horario de trabajo: {lunes: {inicio: '09:00', fin: '18:00'}, ...} */
+  workingHours: json("workingHours"),
+  /** Si el asesor está activo y disponible para asignaciones */
+  activo: boolean("activo").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Asesor = typeof asesores.$inferSelect;
+export type InsertAsesor = typeof asesores.$inferInsert;

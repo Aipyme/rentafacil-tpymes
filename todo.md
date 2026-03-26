@@ -197,3 +197,10 @@
 - [ ] Workflow n8n: configurar reintentos con backoff en nodos Calendar/Email/Sheets
 - [ ] Workflow n8n: alerta si derivacion.status pending > 24h
 - [ ] UX: añadir link cancelar/reprogramar en email provisional al cliente
+
+## Flujo asignación de asesor (documento pasted_content_5)
+- [x] Schema: añadir tabla asesores (id, nombre, email, calendar_mode, working_hours)
+- [x] Backend: tRPC procedure adminAsignarAsesor (actualiza derivación + dispara derivacion-confirm)
+- [x] Backend: tRPC procedure getAsesores (lista asesores disponibles)
+- [x] Workflow n8n: derivacion-confirm JSON completo e importable
+- [x] Curl de prueba para endpoint de asignación
