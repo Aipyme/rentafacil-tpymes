@@ -53,16 +53,13 @@ export default function AvisoLegal() {
                 En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y Comercio Electrónico (LSSI-CE), se informa al usuario de los datos del titular de este sitio web:
               </p>
               <div className="bg-gray-50 rounded-xl p-5 text-sm text-gray-700 space-y-1.5">
-                <p><strong className="text-[#1a365d]">Denominación social:</strong> [NOMBRE DE LA EMPRESA / AYUDA T PYMES S.L.]</p>
-                <p><strong className="text-[#1a365d]">NIF/CIF:</strong> [B-XXXXXXXX]</p>
-                <p><strong className="text-[#1a365d]">Domicilio social:</strong> [DIRECCIÓN COMPLETA, CP, CIUDAD, PROVINCIA]</p>
-                <p><strong className="text-[#1a365d]">Teléfono:</strong> [NÚMERO DE TELÉFONO]</p>
-                <p><strong className="text-[#1a365d]">Correo electrónico:</strong> [EMAIL DE CONTACTO]</p>
-                <p><strong className="text-[#1a365d]">Inscripción en el Registro Mercantil:</strong> [DATOS REGISTRALES]</p>
-                <p><strong className="text-[#1a365d]">Actividad profesional:</strong> Asesoría fiscal y tributaria</p>
+                <p><strong className="text-[#1a365d]">Nombre comercial:</strong> Renta Fácil TPymes</p>
+                <p><strong className="text-[#1a365d]">Correo electrónico:</strong> hola@ecombriefs.ai</p>
+                <p><strong className="text-[#1a365d]">Sitio web:</strong> rentatpymes.aicheckpyme.co</p>
+                <p><strong className="text-[#1a365d]">Actividad profesional:</strong> Asesoría fiscal y tributaria · Declaración de la Renta IRPF</p>
               </div>
               <p className="text-xs text-amber-600 mt-3 bg-amber-50 p-3 rounded-lg">
-                ⚠ Los datos entre corchetes deben ser sustituidos por los datos reales de la empresa antes de la publicación definitiva.
+                ⚠ Datos identificativos completos (NIF, domicilio social, Registro Mercantil) pendientes de actualización con los datos definitivos del titular. Para cualquier consulta, contacta en hola@ecombriefs.ai
               </p>
             </section>
 

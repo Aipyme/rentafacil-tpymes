@@ -37,7 +37,7 @@ function AppRouter() {
       <Route path="/aviso-legal" component={AvisoLegal} />
       <Route path="/privacidad" component={PoliticaPrivacidad} />
       <Route path="/cookies" component={PoliticaCookies} />
-      <Route path="/demo-alfredo" component={DemoAlfredo} />
+      <Route path="/demo-alfredo"><Redirect to="/404" /></Route>
       <Route path="/andalucia" component={Andalucia} />
       <Route path="/madrid" component={Madrid} />
       <Route path="/cataluna" component={Cataluna} />

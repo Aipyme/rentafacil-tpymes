@@ -39,7 +39,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/empezar" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
+                <Link href="/renta" className="text-sm text-white/50 hover:text-white transition-colors no-underline">
                   Hacer mi renta
                 </Link>
               </li>
@@ -89,10 +89,10 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} Ayuda T Pymes S.L. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} Renta Fácil TPymes. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-white/40">Gestión fiscal para autónomos y pymes</span>
+            <span className="text-xs text-white/40">Campaña Renta 2025 · Declaración IRPF</span>
           </div>
         </div>
       </div>

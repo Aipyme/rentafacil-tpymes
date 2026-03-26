@@ -1427,3 +1427,8 @@
 [2026-03-26T17:23:52.663Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
 [2026-03-26T17:23:55.385Z] [OAuth] Initialized with baseURL: https://api.manus.im
 [2026-03-26T17:23:55.977Z] Server running on http://localhost:3000/
+[2026-03-26T20:23:27.036Z] 4:23:27 PM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=ZrqRmFxwcKnsDIk7-uhna
+[2026-03-26T20:23:46.314Z] 4:23:46 PM [vite] (client) hmr update /src/App.tsx?v=ZrqRmFxwcKnsDIk7-uhna, /src/index.css?v=ZrqRmFxwcKnsDIk7-uhna
+[2026-03-26T20:24:05.890Z] 4:24:05 PM [vite] (client) hmr update /src/components/Footer.tsx, /src/index.css?v=ZrqRmFxwcKnsDIk7-uhna
+[2026-03-26T20:24:45.967Z] 4:24:45 PM [vite] (client) hmr update /src/pages/AvisoLegal.tsx, /src/index.css?v=ZrqRmFxwcKnsDIk7-uhna
+[2026-03-26T20:26:00.162Z] 4:26:00 PM [vite] (client) page reload public/__manus__/version.json
