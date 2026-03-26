@@ -185,3 +185,15 @@
 - [x] Guía de configuración n8n (docs/n8n-derivacion-setup.md) - credenciales, payloads, QA queries
 - [ ] Configurar credenciales en n8n (Google Calendar, SMTP, Slack, Sheets)
 - [ ] Activar workflow derivacion_handler en n8n
+
+## Mejoras seguridad, idempotencia y UX (documento revisión técnica)
+- [x] Backend: añadir campo calendarEventId a solicitudes_asesor en schema
+- [x] Backend: validación X-Webhook-Key en header del webhook saliente
+- [x] Backend: idempotencia por derivacion_id (evitar duplicados si n8n reintenta)
+- [x] Backend: guardar calendarEventId en BD cuando n8n confirma el evento
+- [x] Workflow n8n: attendee dinámico (assigned_advisor_email del payload)
+- [x] Workflow n8n: columnas Sheets sin espacios (telefono, motivo sin espacios delante)
+- [x] Workflow n8n: añadir calendar_event_id, calendar_created_by, assigned_advisor_id a Sheets
+- [ ] Workflow n8n: configurar reintentos con backoff en nodos Calendar/Email/Sheets
+- [ ] Workflow n8n: alerta si derivacion.status pending > 24h
+- [ ] UX: añadir link cancelar/reprogramar en email provisional al cliente

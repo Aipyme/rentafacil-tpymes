@@ -98,6 +98,34 @@ export const asesorRouter = router({
         },
       }];
 
+      // Idempotencia: comprobar si ya existe una solicitud reciente con el mismo expedienteId
+      // (evita duplicados si n8n reintenta el webhook)
+      if (input.expedienteId) {
+        const [existente] = await db
+          .select({ id: solicitudesAsesor.id, derivacionId: solicitudesAsesor.n8nExecutionId })
+          .from(solicitudesAsesor)
+          .where(and(
+            eq(solicitudesAsesor.expedienteId, input.expedienteId),
+            or(
+              eq(solicitudesAsesor.slotStatus, "tentative"),
+              eq(solicitudesAsesor.slotStatus, "confirmed")
+            )
+          ))
+          .limit(1);
+
+        if (existente) {
+          console.log(`[Asesor] Solicitud duplicada detectada para expediente ${input.expedienteId}, devolviendo existente`);
+          return {
+            success: true,
+            solicitudId: existente.id,
+            derivacionId: existente.derivacionId || `d-${existente.id}`,
+            reservedSlot,
+            mensaje: "Ya tienes una solicitud activa. Te contactaremos en menos de 24 horas.",
+            n8nStatus: "duplicate_skipped",
+          };
+        }
+      }
+
       // Crear la solicitud en DB
       await db.insert(solicitudesAsesor).values({
         expedienteId: input.expedienteId || null,
@@ -165,6 +193,7 @@ export const asesorRouter = router({
 
       // Enviar webhook a n8n con payload enriquecido (formato del documento de especificaciones)
       const n8nWebhookUrl = process.env.VITE_WEBHOOK_N8N;
+      const n8nWebhookKey = process.env.N8N_WEBHOOK_KEY; // Clave secreta para autenticar el webhook
       let n8nStatus = "not_configured";
       if (n8nWebhookUrl) {
         try {
@@ -185,13 +214,16 @@ export const asesorRouter = router({
             ahorro_estimado: (input.resultadoSimulador as any)?.ahorro_total || 0,
             precio: input.precioEstimado || 0,
             resultado_simulador: input.resultadoSimulador,
+            // Email del asesor asignado (para attendee dinámico en Calendar)
+            // Si no hay asignación, usa el email del pool de asesores
+            assigned_advisor_email: process.env.ASESOR_EMAIL_POOL || "info@ayudatpymes.com",
             // Datos para crear evento Google Calendar
             google_calendar_event: {
               summary: `Revisión Renta - ${input.nombre} (${input.expedienteId || derivacionId})`,
               description: `Expediente: ${input.expedienteId || "Directo"}\nMotivo: ${input.motivoComplejidad || "No especificado"}\nAhorro estimado: ${ahorroEstimado}\nLink admin: https://rentatpymes.aicheckpyme.co/panel-asesor`,
               start: { dateTime: reservedSlot },
               end: { dateTime: calcularReservedSlot(franjaId).replace(/T\d{2}:/, `T${(FRANJAS_HORARIAS.find(f => f.id === franjaId)?.horaFin || 11).toString().padStart(2, "0")}:`) },
-              attendees: [{ email: "info@ayudatpymes.com" }],
+              attendees: [{ email: process.env.ASESOR_EMAIL_POOL || "info@ayudatpymes.com" }],
               status: "tentative",
             },
             // Plantilla email confirmación provisional
@@ -209,14 +241,26 @@ export const asesorRouter = router({
             timestamp: ahora,
           };
 
+          const fetchHeaders: Record<string, string> = { "Content-Type": "application/json" };
+          if (n8nWebhookKey) {
+            fetchHeaders["X-Webhook-Key"] = n8nWebhookKey;
+          }
+
           const n8nResponse = await fetch(n8nWebhookUrl, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: fetchHeaders,
             body: JSON.stringify(webhookPayload),
           });
           n8nStatus = n8nResponse.ok ? "sent" : `error_${n8nResponse.status}`;
 
-          // Actualizar notificaciones_sent en DB
+          // Intentar extraer calendarEventId de la respuesta de n8n
+          let calendarEventId: string | null = null;
+          try {
+            const n8nBody = await n8nResponse.json();
+            calendarEventId = n8nBody?.calendar_event_id || n8nBody?.data?.calendar_event_id || null;
+          } catch { /* respuesta no es JSON */ }
+
+          // Actualizar notificaciones_sent y calendarEventId en DB
           if (solicitudId) {
             const notif = [{
               type: "n8n_webhook",
@@ -226,7 +270,11 @@ export const asesorRouter = router({
             }];
             await db
               .update(solicitudesAsesor)
-              .set({ notificacionesSent: notif as any, n8nExecutionId: derivacionId })
+              .set({
+                notificacionesSent: notif as any,
+                n8nExecutionId: derivacionId,
+                ...(calendarEventId ? { calendarEventId, calendarCreatedBy: "shared_calendar" } : {}),
+              } as any)
               .where(eq(solicitudesAsesor.id, solicitudId));
           }
         } catch (err) {

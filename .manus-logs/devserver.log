@@ -1385,3 +1385,19 @@
 [2026-03-25T19:24:39.133Z] 3:24:39 PM [tsx] change in ./server/routers/asesor.ts Restarting...
 [2026-03-25T19:24:41.199Z] c[OAuth] Initialized with baseURL: https://api.manus.im
 [2026-03-25T19:24:41.729Z] Server running on http://localhost:3000/
+[2026-03-26T08:53:57.203Z] 4:53:57 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-26T14:50:19.703Z] 10:50:19 AM [tsx] change in ./drizzle/schema.ts Restarting...
+[2026-03-26T14:50:22.522Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-26T14:50:23.091Z] Server running on http://localhost:3000/
+[2026-03-26T14:50:49.166Z] 10:50:49 AM [tsx] change in ./server/routers/asesor.ts Restarting...
+[2026-03-26T14:50:51.031Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-26T14:50:51.557Z] Server running on http://localhost:3000/
+[2026-03-26T14:51:11.933Z] 10:51:11 AM [tsx] change in ./server/routers/asesor.ts Restarting...
+[2026-03-26T14:51:14.029Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-26T14:51:14.608Z] Server running on http://localhost:3000/
+[2026-03-26T14:51:34.408Z] 10:51:34 AM [tsx] change in ./server/routers/asesor.ts Restarting...
+[2026-03-26T14:51:36.394Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-26T14:51:36.942Z] Server running on http://localhost:3000/
+[2026-03-26T14:51:51.972Z] 10:51:51 AM [tsx] change in ./server/routers/asesor.ts Restarting...
+[2026-03-26T14:51:54.131Z] c[OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-26T14:51:54.641Z] Server running on http://localhost:3000/

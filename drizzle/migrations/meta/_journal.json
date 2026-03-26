@@ -43,6 +43,13 @@
       "when": 1774466599622,
       "tag": "0005_hard_mac_gargan",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1774536633375,
+      "tag": "0006_whole_obadiah_stane",
+      "breakpoints": true
     }
   ]
 }

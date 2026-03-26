@@ -196,6 +196,12 @@ export const solicitudesAsesor = mysqlTable("solicitudes_asesor", {
   auditLogs: json("auditLogs"),
   /** Registro de notificaciones enviadas: [{type, timestamp, status, payload}] */
   notificacionesSent: json("notificacionesSent"),
+  /** ID del evento creado en Google Calendar */
+  calendarEventId: varchar("calendarEventId", { length: 255 }),
+  /** Modo de creación del evento Calendar (service_account | advisor_oauth | shared_calendar) */
+  calendarCreatedBy: varchar("calendarCreatedBy", { length: 64 }),
+  /** Asesor asignado (ID interno) */
+  assignedAdvisorId: varchar("assignedAdvisorId", { length: 64 }),
   /** IP del cliente al enviar la solicitud */
   ipAddress: varchar("ipAddress", { length: 64 }),
   /** User agent del cliente */
