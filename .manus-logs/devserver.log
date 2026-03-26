@@ -1445,3 +1445,5 @@
 [2026-03-26T20:39:43.276Z] cServer running on http://localhost:3000/
 [2026-03-26T20:41:04.534Z] 4:41:04 PM [tsx] unlink in ./server/_core/sdk.ts Restarting...
 [2026-03-26T20:41:07.053Z] cServer running on http://localhost:3000/
+[2026-03-26T20:51:14.515Z] 4:51:14 PM [vite] (client) page reload public/__manus__/version.json
+[2026-03-26T21:33:49.579Z] 5:33:49 PM [vite] (client) page reload public/__manus__/version.json
