@@ -120,17 +120,17 @@
         "operation": "create",
         "calendarId": "c_fad4d5afc9e665e79f3278b4b9c3c520d17be52439ca665f015edfb3c57eee88@group.calendar.google.com",
         "additionalFields": {
-          "summary": "={{ `Revisión Renta - ${$json[\"body\"][\"user_contact\"][\"nombre\"] || $json[\"body\"][\"contribuyente\"][\"nombre\"]} (${$json[\"body\"][\"expediente_id\"] || $json[\"body\"][\"derivacion_id\"]})` }}",
-          "description": "={{ `Expediente: ${$json[\"body\"][\"expediente_id\"]}\\nMotivo: ${$json[\"body\"][\"motivo\"]}\\nAhorro estimado: ${$json[\"body\"][\"ahorro_estimado\"]} €\\nPrecio: ${$json[\"body\"][\"precio\"]} €\\nCliente: ${$json[\"body\"][\"user_contact\"][\"email\"]}\\nTeléfono: ${$json[\"body\"][\"user_contact\"][\"phone\"]}\\nLink admin: https://rentatpymes.aicheckpyme.co/panel-asesor` }}",
-          "start": "={{ { dateTime: $json[\"body\"][\"reserved_slot\"], timeZone: 'Europe/Madrid' } }}",
-          "end": "={{ { dateTime: new Date(new Date($json[\"body\"][\"reserved_slot\"]).getTime() + 60*60000).toISOString(), timeZone: 'Europe/Madrid' } }}",
           "attendees": [
             {
-              "email": "={{ $json[\"body\"][\"assigned_advisor_email\"] || $json[\"body\"][\"google_calendar_event\"][\"attendees\"][0][\"email\"] || 'info@ayudatpymes.com' }}"
+              "email": "={{ $json[\"body\"][\"assigned_advisor_email\"] || $json[\"body\"][\"advisor_email\"] || 'asesor@ayudatpymes.com' }}"
             }
           ],
-          "status": "tentative",
-          "sendUpdates": "all"
+          "description": "={{ `Expediente: ${$json[\"body\"][\"expediente_id\"]}\\nMotivo: ${$json[\"body\"][\"motivo\"]}\\nAhorro estimado: ${$json[\"body\"][\"ahorro_estimado\"]} €\\nPrecio: ${$json[\"body\"][\"precio\"]} €\\nLink admin: https://rentatpymes.aicheckpyme.co/panel-asesor` }}",
+          "sendUpdates": "all",
+          "summary": "={{ `Revisión Renta - ${$json[\"body\"][\"user_contact\"][\"nombre\"] || $json[\"body\"][\"contribuyente\"][\"nombre\"]} (${$json[\"body\"][\"expediente_id\"]})` }}",
+          "start": "={{ { dateTime: new Date($json[\"body\"][\"reserved_slot\"]).toISOString() } }}",
+          "end": "={{ new Date(new Date($json[\"body\"][\"reserved_slot\"]).getTime() + 60*60000).toISOString() }}",
+          "status": "tentative"
         }
       },
       "id": "node_create_calendar_event",
@@ -216,14 +216,32 @@
             "precio": "={{ $json[\"body\"][\"precio\"] }}",
             "franja_horaria": "={{ $json[\"body\"][\"franja_horaria\"] }}",
             "reserved_slot": "={{ $json[\"body\"][\"reserved_slot\"] }}",
-            "assigned_advisor": "={{ $json[\"body\"][\"assigned_advisor_email\"] || 'Por asignar' }}",
             "estado": "pending",
+            "timestamp": "={{ new Date().toLocaleString('es-ES', {timeZone: 'Europe/Madrid'}) }}",
             "calendar_event_id": "={{ $('Create Calendar Event').item.json.id || '' }}",
             "calendar_created_by": "shared_calendar",
-            "timestamp": "={{ new Date().toLocaleString('es-ES', {timeZone: 'Europe/Madrid'}) }}",
-            "notas_asesor": "",
-            "asesor_asignado": ""
-          }
+            "asesor_asignado": "={{ $json[\"body\"][\"assigned_advisor_email\"] || 'Por asignar' }}",
+            "notas_asesor": ""
+          },
+          "schema": [
+            {"id":"derivacion_id","displayName":"derivacion_id","type":"string"},
+            {"id":"expediente_id","displayName":"expediente_id","type":"string"},
+            {"id":"nombre","displayName":"nombre","type":"string"},
+            {"id":"email","displayName":"email","type":"string"},
+            {"id":"telefono","displayName":"telefono","type":"string"},
+            {"id":"nif","displayName":"nif","type":"string"},
+            {"id":"motivo","displayName":"motivo","type":"string"},
+            {"id":"ahorro_estimado","displayName":"ahorro_estimado","type":"string"},
+            {"id":"precio","displayName":"precio","type":"string"},
+            {"id":"franja_horaria","displayName":"franja_horaria","type":"string"},
+            {"id":"reserved_slot","displayName":"reserved_slot","type":"string"},
+            {"id":"estado","displayName":"estado","type":"string"},
+            {"id":"timestamp","displayName":"timestamp","type":"string"},
+            {"id":"calendar_event_id","displayName":"calendar_event_id","type":"string"},
+            {"id":"calendar_created_by","displayName":"calendar_created_by","type":"string"},
+            {"id":"asesor_asignado","displayName":"asesor_asignado","type":"string"},
+            {"id":"notas_asesor","displayName":"notas_asesor","type":"string"}
+          ]
         },
         "options": {}
       },

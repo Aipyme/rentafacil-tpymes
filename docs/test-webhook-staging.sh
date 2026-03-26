@@ -1,78 +1,78 @@
 #!/bin/bash
-# ─────────────────────────────────────────────────────────────────────────────
+# ============================================================
 # test-webhook-staging.sh
-# Curl de prueba para disparar el webhook derivacion_handler con el payload
-# de TEST-001. Úsalo en staging para verificar que el workflow n8n funciona
-# correctamente antes de activarlo en producción.
+# Curl de prueba para el webhook derivacion-create (payload exacto del documento)
 #
 # Uso:
 #   chmod +x test-webhook-staging.sh
 #   ./test-webhook-staging.sh
-#
-# Sustituye N8N_WEBHOOK_URL por la URL real de tu webhook en n8n.
-# ─────────────────────────────────────────────────────────────────────────────
+# ============================================================
 
-N8N_WEBHOOK_URL="https://autogr.app.n8n.cloud/webhook/derivacion-create"
+WEBHOOK_URL="https://autogr.app.n8n.cloud/webhook/derivacion-create"
+WEBHOOK_KEY="your_test_key"  # Sustituir por el valor real de N8N_WEBHOOK_KEY
 
-# Calcular el próximo día hábil a las 10:00 (hora Madrid)
-# (Ajustar manualmente si es necesario)
-RESERVED_SLOT="2026-04-02T10:00:00+02:00"
-
-echo "🚀 Disparando webhook derivacion_handler con payload TEST-001..."
-echo "   URL: $N8N_WEBHOOK_URL"
+echo "🚀 Enviando payload de prueba al webhook..."
+echo "URL: $WEBHOOK_URL"
 echo ""
 
-curl -s -X POST "$N8N_WEBHOOK_URL" \
+curl -X POST "$WEBHOOK_URL" \
   -H "Content-Type: application/json" \
+  -H "X-Webhook-Key: $WEBHOOK_KEY" \
   -d '{
-    "event": "derivacion_created",
-    "derivacion_id": "d-TEST-001",
-    "expediente_id": "RF2025-TEST-001",
-    "expediente_url": "https://rentatpymes.aicheckpyme.co/api/trpc/simulador.getExpediente?input=%7B%220%22%3A%7B%22json%22%3A%7B%22expedienteId%22%3A%22RF2025-TEST-001%22%7D%7D%7D",
-    "es_complejo": true,
-    "flag_review": true,
+    "derivacion_id": "d-456",
+    "expediente_id": "TEST-001",
     "contribuyente": {
-      "nombre": "Juan Pérez García",
-      "nif": "12345678Z"
+      "nombre": "Juan Pérez",
+      "email": "juan@test.com"
     },
     "user_contact": {
-      "nombre": "Juan Pérez García",
-      "nif": "12345678Z",
-      "email": "juan.perez.test@ejemplo.com",
-      "phone": "+34666123456"
+      "nombre": "Juan Pérez",
+      "email": "juan@test.com",
+      "phone": "+34666123456",
+      "nif": "12345678Z"
     },
-    "franja_horaria": "manana_temprano",
-    "reserved_slot": "'"$RESERVED_SLOT"'",
+    "assigned_advisor_email": "asesor@tpymes.com",
     "motivo": "Actividad económica como autónomo requiere revisión especializada",
-    "descripcion_situacion": "Soy autónomo a tiempo parcial y también tengo rendimientos del trabajo. Tengo dudas sobre las deducciones aplicables.",
-    "ahorro_estimado": 527.00,
+    "ahorro_estimado": 527,
     "precio": 84,
-    "google_calendar_event": {
-      "summary": "Revisión Renta - Juan Pérez García (RF2025-TEST-001)",
-      "description": "Expediente: RF2025-TEST-001\nMotivo: Actividad económica como autónomo\nAhorro estimado: 527 €\nPrecio: 84 €\nLink admin: https://rentatpymes.aicheckpyme.co/panel-asesor",
-      "start": { "dateTime": "'"$RESERVED_SLOT"'" },
-      "end": { "dateTime": "2026-04-02T11:00:00+02:00" },
-      "attendees": [{ "email": "info@ayudatpymes.com" }],
-      "status": "tentative"
-    },
-    "email_template": {
-      "to": "juan.perez.test@ejemplo.com",
-      "nombre_cliente": "Juan Pérez García",
-      "expediente_id": "RF2025-TEST-001",
-      "motivo": "Actividad económica como autónomo",
-      "ahorro_estimado": 527.00,
-      "precio": 84,
-      "reserved_slot": "'"$RESERVED_SLOT"'",
-      "link_expediente": "https://rentatpymes.aicheckpyme.co/mi-renta/RF2025-TEST-001"
-    },
-    "timestamp": "'"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"'"
+    "franja_horaria": "manana",
+    "reserved_slot": "2026-04-02T10:00:00+02:00",
+    "es_complejo": true,
+    "flag_review": true
   }' \
-  | python3 -m json.tool 2>/dev/null || echo "(respuesta no es JSON válido)"
+  -w "\n\nHTTP Status: %{http_code}\nTiempo total: %{time_total}s\n"
 
 echo ""
-echo "✅ Petición enviada. Verifica en n8n:"
-echo "   1. El evento aparece en Google Calendar como 'tentative'"
-echo "   2. El email llega a juan.perez.test@ejemplo.com"
-echo "   3. El canal #asesores de Slack recibe la notificación"
-echo "   4. La fila aparece en la hoja 'Derivaciones' del Google Sheet"
-echo "   5. El contacto se crea en HubSpot (si está configurado)"
+echo "============================================================"
+echo "✅ CHECKLIST DE VERIFICACIÓN POST-PRUEBA:"
+echo "============================================================"
+echo ""
+echo "[ ] 1. Evento tentative en Google Calendar 'Citas Renta Fácil'"
+echo "       - Título: 'Revisión Renta - Juan Pérez (TEST-001)'"
+echo "       - Duración: 60 min (10:00 - 11:00 Madrid)"
+echo "       - Attendee: asesor@tpymes.com (recibe invitación por email)"
+echo "       - Estado: tentative"
+echo ""
+echo "[ ] 2. Email de confirmación provisional en juan@test.com"
+echo "       - Asunto: 'Confirmación provisional de cita — Renta Fácil'"
+echo "       - Contiene: slot 2026-04-02T10:00, expediente TEST-001, ahorro 527€"
+echo ""
+echo "[ ] 3. Fila en Google Sheets → hoja 'Derivaciones'"
+echo "       - derivacion_id: d-456"
+echo "       - telefono: +34666123456 (SIN espacios delante)"
+echo "       - motivo: texto completo (SIN espacios delante)"
+echo "       - calendar_event_id: ID del evento (no vacío)"
+echo "       - asesor_asignado: asesor@tpymes.com"
+echo ""
+echo "[ ] 4. TEST IDEMPOTENCIA: reenviar el mismo payload"
+echo "       - NO se crea un segundo evento en Calendar"
+echo "       - Backend devuelve 'duplicate_skipped' en n8nStatus"
+echo ""
+echo "[ ] 5. Zona horaria correcta: evento a las 10:00 hora Madrid"
+echo ""
+echo "============================================================"
+echo "Si falla, revisar:"
+echo "  - Credenciales en n8n (Google Calendar, SMTP, Sheets)"
+echo "  - Workflow ACTIVE en n8n"
+echo "  - Logs en n8n → Executions"
+echo "============================================================"
