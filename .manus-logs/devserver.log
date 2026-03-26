@@ -1417,3 +1417,13 @@
 [2026-03-26T15:16:17.515Z] 11:16:17 AM [vite] (client) hmr update /src/components/Footer.tsx, /src/index.css?v=3jWVDjpAZqvcTWOsgQjab
 [2026-03-26T15:16:56.237Z] 11:16:56 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=3jWVDjpAZqvcTWOsgQjab
 [2026-03-26T15:17:50.295Z] 11:17:50 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-26T17:22:32.028Z] Dev server process group stopped
+[2026-03-26T17:22:32.059Z] Dev server exited with code -15
+[2026-03-26T17:22:35.321Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-26T17:22:39.744Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-26T17:22:40.674Z] Server running on http://localhost:3000/
+[2026-03-26T17:23:49.647Z] Dev server process group stopped
+[2026-03-26T17:23:49.688Z] Dev server exited with code -15
+[2026-03-26T17:23:52.663Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-26T17:23:55.385Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-03-26T17:23:55.977Z] Server running on http://localhost:3000/
