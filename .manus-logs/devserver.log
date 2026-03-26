@@ -1411,3 +1411,9 @@
 [2026-03-26T15:02:36.033Z] 11:02:36 AM [tsx] change in ./server/routers/asesor.ts Restarting...
 [2026-03-26T15:02:38.097Z] c[OAuth] Initialized with baseURL: https://api.manus.im
 [2026-03-26T15:02:38.592Z] Server running on http://localhost:3000/
+[2026-03-26T15:07:35.602Z] 11:07:35 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-26T15:15:50.142Z] 11:15:50 AM [vite] (client) hmr update /src/components/Navbar.tsx, /src/index.css?v=3jWVDjpAZqvcTWOsgQjab
+[2026-03-26T15:16:01.109Z] 11:16:01 AM [vite] (client) hmr update /src/App.tsx?v=3jWVDjpAZqvcTWOsgQjab, /src/index.css?v=3jWVDjpAZqvcTWOsgQjab
+[2026-03-26T15:16:17.515Z] 11:16:17 AM [vite] (client) hmr update /src/components/Footer.tsx, /src/index.css?v=3jWVDjpAZqvcTWOsgQjab
+[2026-03-26T15:16:56.237Z] 11:16:56 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=3jWVDjpAZqvcTWOsgQjab
+[2026-03-26T15:17:50.295Z] 11:17:50 AM [vite] (client) page reload public/__manus__/version.json

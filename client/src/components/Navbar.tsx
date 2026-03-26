@@ -68,7 +68,7 @@ export default function Navbar() {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/empezar">
+          <Link href="/renta">
             <Button className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-6 shadow-lg shadow-emerald-200/50 transition-all hover:shadow-emerald-300/50 hover:-translate-y-0.5">
               Empezar
             </Button>
@@ -122,7 +122,7 @@ export default function Navbar() {
               >
                 Blog
               </Link>
-              <Link href="/empezar" onClick={() => setIsOpen(false)}>
+              <Link href="/renta" onClick={() => setIsOpen(false)}>
                 <Button className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold">
                   Empezar
                 </Button>

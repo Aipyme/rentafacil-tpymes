@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import Simulador from "@/pages/Simulador";
 import Triage from "@/pages/Triage";
+import { Redirect } from "wouter";
 import Blog from "@/pages/Blog";
 import BlogArticle from "@/pages/BlogArticle";
 import AvisoLegal from "@/pages/AvisoLegal";
@@ -30,7 +31,7 @@ function AppRouter() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/simulador" component={Simulador} />
-      <Route path="/empezar" component={Triage} />
+      <Route path="/empezar"><Redirect to="/renta" /></Route>
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:slug" component={BlogArticle} />
       <Route path="/aviso-legal" component={AvisoLegal} />

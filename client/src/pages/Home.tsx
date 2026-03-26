@@ -456,44 +456,23 @@ export default function Home() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              {
-                name: "Andalucía",
-                href: "/andalucia",
-                deducciones: 8,
-                destacado: "Hasta 600€ por alquiler",
-                color: "from-yellow-400 to-orange-500",
-                iconBg: "bg-yellow-50",
-                iconColor: "text-yellow-600",
-              },
-              {
-                name: "Comunidad de Madrid",
-                href: "/madrid",
-                deducciones: 8,
-                destacado: "Tipos más bajos de España",
-                color: "from-red-400 to-red-600",
-                iconBg: "bg-red-50",
-                iconColor: "text-red-600",
-              },
-              {
-                name: "Catalunya",
-                href: "/cataluna",
-                deducciones: 8,
-                destacado: "Hasta 6.000€ ángel inversor",
-                color: "from-amber-400 to-red-500",
-                iconBg: "bg-amber-50",
-                iconColor: "text-amber-600",
-              },
-              {
-                name: "Comunitat Valenciana",
-                href: "/valencia",
-                deducciones: 8,
-                destacado: "Hasta 800€ por tercer hijo",
-                color: "from-orange-400 to-orange-600",
-                iconBg: "bg-orange-50",
-                iconColor: "text-orange-600",
-              },
+              { name: "Andalucía", href: "/andalucia", deducciones: 8, destacado: "Hasta 600€ por alquiler", color: "from-yellow-400 to-orange-500", iconBg: "bg-yellow-50", iconColor: "text-yellow-600" },
+              { name: "Comunidad de Madrid", href: "/madrid", deducciones: 8, destacado: "Tipos más bajos de España", color: "from-red-400 to-red-600", iconBg: "bg-red-50", iconColor: "text-red-600" },
+              { name: "Catalunya", href: "/cataluna", deducciones: 8, destacado: "Hasta 6.000€ ángel inversor", color: "from-amber-400 to-red-500", iconBg: "bg-amber-50", iconColor: "text-amber-600" },
+              { name: "Comunitat Valenciana", href: "/valencia", deducciones: 8, destacado: "Hasta 800€ por tercer hijo", color: "from-orange-400 to-orange-600", iconBg: "bg-orange-50", iconColor: "text-orange-600" },
+              { name: "Galicia", href: "/renta", deducciones: 6, destacado: "Deducción por familia numerosa", color: "from-blue-400 to-blue-600", iconBg: "bg-blue-50", iconColor: "text-blue-600" },
+              { name: "Castilla y León", href: "/renta", deducciones: 7, destacado: "Deducción por adquisición vivienda", color: "from-purple-400 to-purple-600", iconBg: "bg-purple-50", iconColor: "text-purple-600" },
+              { name: "Castilla-La Mancha", href: "/renta", deducciones: 5, destacado: "Deducción por discapacidad", color: "from-green-400 to-green-600", iconBg: "bg-green-50", iconColor: "text-green-600" },
+              { name: "Canarias", href: "/renta", deducciones: 7, destacado: "Zona Especial Canaria (ZEC)", color: "from-cyan-400 to-blue-500", iconBg: "bg-cyan-50", iconColor: "text-cyan-600" },
+              { name: "Aragón", href: "/renta", deducciones: 6, destacado: "Deducción por nacimiento", color: "from-red-300 to-yellow-500", iconBg: "bg-red-50", iconColor: "text-red-500" },
+              { name: "Extremadura", href: "/renta", deducciones: 5, destacado: "Deducción por cuidado de mayores", color: "from-lime-400 to-green-600", iconBg: "bg-lime-50", iconColor: "text-lime-600" },
+              { name: "Asturias", href: "/renta", deducciones: 6, destacado: "Deducción por alquiler jóvenes", color: "from-teal-400 to-teal-600", iconBg: "bg-teal-50", iconColor: "text-teal-600" },
+              { name: "Cantabria", href: "/renta", deducciones: 5, destacado: "Deducción por familia numerosa", color: "from-sky-400 to-sky-600", iconBg: "bg-sky-50", iconColor: "text-sky-600" },
+              { name: "Murcia", href: "/renta", deducciones: 5, destacado: "Deducción por inversión empresarial", color: "from-orange-300 to-red-500", iconBg: "bg-orange-50", iconColor: "text-orange-500" },
+              { name: "Illes Balears", href: "/renta", deducciones: 6, destacado: "Deducción por arrendamiento", color: "from-indigo-400 to-blue-600", iconBg: "bg-indigo-50", iconColor: "text-indigo-600" },
+              { name: "La Rioja", href: "/renta", deducciones: 5, destacado: "Deducción por adquisición vivienda", color: "from-rose-400 to-red-600", iconBg: "bg-rose-50", iconColor: "text-rose-600" },
             ].map((region, i) => (
-              <FadeUp key={i} delay={i * 0.1}>
+              <FadeUp key={i} delay={(i % 4) * 0.1}>
                 <Link href={region.href}>
                   <Card className="border-0 shadow-lg shadow-gray-200/50 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer h-full bg-white group overflow-hidden">
                     <div className={`h-1.5 bg-gradient-to-r ${region.color}`} />
@@ -523,7 +502,7 @@ export default function Home() {
 
           <FadeUp delay={0.4}>
             <p className="text-center text-sm text-gray-400 mt-8">
-              Próximamente: País Vasco, Galicia, Canarias y más comunidades.
+              Régimen de territorio foral (País Vasco y Navarra) gestionado directamente por sus haciendas forales.
             </p>
           </FadeUp>
         </div>

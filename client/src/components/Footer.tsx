@@ -92,8 +92,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Ayuda T Pymes S.L. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-white/40">Alianza con</span>
-            <span className="text-xs font-semibold text-white/60">BBVA</span>
+            <span className="text-xs text-white/40">Gestión fiscal para autónomos y pymes</span>
           </div>
         </div>
       </div>

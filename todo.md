@@ -204,3 +204,9 @@
 - [x] Backend: tRPC procedure getAsesores (lista asesores disponibles)
 - [x] Workflow n8n: derivacion-confirm JSON completo e importable
 - [x] Curl de prueba para endpoint de asignación
+
+## Correcciones críticas pre-demo Luis (26/03/2026)
+- [x] Unificar formularios: redirigir /empezar → /renta (o viceversa), menú nav coherente
+- [x] Panel asesor: verificado — ya carga datos reales de BD y ya dice Campaña 2025 (no había hardcoded)
+- [x] Footer: eliminar "Alianza con BBVA" (riesgo legal si no es real)
+- [x] Sección comunidades: mostrar las 15 comunidades reales (excluir País Vasco y Navarra por régimen foral)
