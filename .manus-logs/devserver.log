@@ -1480,3 +1480,156 @@
 [2026-03-27T10:41:16.567Z] 6:41:16 AM [vite] (client) page reload public/__manus__/version.json
 [2026-03-27T10:45:48.901Z] 6:45:48 AM [vite] (client) hmr update /src/components/Navbar.tsx, /src/index.css?v=IosvNt5ySvJtm-Hq8er80
 [2026-03-27T10:46:24.614Z] 6:46:24 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-27T10:47:47.523Z] 6:47:47 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=IosvNt5ySvJtm-Hq8er80
+[2026-03-27T10:47:47.715Z] 6:47:47 AM [vite] Internal server error: /home/ubuntu/renta-facil-tpymes/client/src/pages/Home.tsx: Unexpected token, expected "," (231:12)
+[2026-03-27T10:47:47.716Z] 
+[2026-03-27T10:47:47.716Z] 229 |   const profiles = [
+[2026-03-27T10:47:47.717Z] 230 |     {
+[2026-03-27T10:47:47.717Z] > 231 |       ic    { Icon: Users, color: "#059669", bg: "#edf7f3", title: "Casos habituales",
+[2026-03-27T10:47:47.717Z] |             ^
+[2026-03-27T10:47:47.718Z] 232 |       desc: "Asalariados, pensionistas y personas con situaciones fiscales frecuentes y estructura clara.",
+[2026-03-27T10:47:47.718Z] 233 |       items: ["Asalariados con uno o varios pagadores", "Pensionistas del sistema público o privado", "Propietarios con ingresos de alquiler"],
+[2026-03-27T10:47:47.718Z] 234 |     },
+[2026-03-27T10:47:47.718Z] Plugin: vite:react-babel
+[2026-03-27T10:47:47.719Z] File: /home/ubuntu/renta-facil-tpymes/client/src/pages/Home.tsx:231:12
+[2026-03-27T10:47:47.719Z] 229|    const profiles = [
+[2026-03-27T10:47:47.719Z] 230|      {
+[2026-03-27T10:47:47.720Z] 231|        ic    { Icon: Users, color: "#059669", bg: "#edf7f3", title: "Casos habituales",
+[2026-03-27T10:47:47.720Z] |              ^
+[2026-03-27T10:47:47.720Z] 232|        desc: "Asalariados, pensionistas y personas con situaciones fiscales frecuentes y estructura clara.",
+[2026-03-27T10:47:47.721Z] 233|        items: ["Asalariados con uno o varios pagadores", "Pensionistas del sistema público o privado", "Propietarios con ingresos de alquiler"],
+[2026-03-27T10:47:47.721Z] at toParseError (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parse-error.ts:95:45)
+[2026-03-27T10:47:47.721Z] at raise (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/tokenizer/index.ts:1504:19)
+[2026-03-27T10:47:47.722Z] at unexpected (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/tokenizer/index.ts:1544:16)
+[2026-03-27T10:47:47.722Z] at expect (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/util.ts:157:12)
+[2026-03-27T10:47:47.722Z] at parseObjectLike (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2084:14)
+[2026-03-27T10:47:47.723Z] at parseExprAtom (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:1181:21)
+[2026-03-27T10:47:47.723Z] at parseExprAtom (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/jsx/index.ts:583:22)
+[2026-03-27T10:47:47.724Z] at parseExprSubscripts (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:742:23)
+[2026-03-27T10:47:47.724Z] at parseUpdate (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:721:21)
+[2026-03-27T10:47:47.725Z] at parseMaybeUnary (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:683:23)
+[2026-03-27T10:47:47.725Z] at parseMaybeUnary (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3893:20)
+[2026-03-27T10:47:47.725Z] at parseMaybeUnaryOrPrivate (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:417:14)
+[2026-03-27T10:47:47.726Z] at parseExprOps (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:429:23)
+[2026-03-27T10:47:47.726Z] at parseMaybeConditional (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:384:23)
+[2026-03-27T10:47:47.729Z] at parseMaybeAssign (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:301:21)
+[2026-03-27T10:47:47.729Z] at parseMaybeAssign (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3764:22)
+[2026-03-27T10:47:47.729Z] at callback (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:257:12)
+[2026-03-27T10:47:47.730Z] at allowInAnd (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:3194:12)
+[2026-03-27T10:47:47.730Z] at parseMaybeAssignAllowIn (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:256:17)
+[2026-03-27T10:47:47.730Z] at parseMaybeAssignAllowInOrVoidPattern (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:3308:17)
+[2026-03-27T10:47:47.731Z] at parseExprListItem (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2790:18)
+[2026-03-27T10:47:47.731Z] at parseExprList (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2734:22)
+[2026-03-27T10:47:47.731Z] at parseArrayLike (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2515:26)
+[2026-03-27T10:47:47.732Z] at parseArrayLike (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:2650:26)
+[2026-03-27T10:47:47.732Z] at parseExprAtom (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:1174:21)
+[2026-03-27T10:47:47.732Z] at parseExprAtom (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/jsx/index.ts:583:22)
+[2026-03-27T10:47:47.733Z] at parseExprSubscripts (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:742:23)
+[2026-03-27T10:47:47.733Z] at parseUpdate (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:721:21)
+[2026-03-27T10:47:47.733Z] at parseMaybeUnary (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:683:23)
+[2026-03-27T10:47:47.734Z] at parseMaybeUnary (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3893:20)
+[2026-03-27T10:47:47.734Z] at parseMaybeUnaryOrPrivate (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:417:14)
+[2026-03-27T10:47:47.734Z] at parseExprOps (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:429:23)
+[2026-03-27T10:47:47.734Z] at parseMaybeConditional (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:384:23)
+[2026-03-27T10:47:47.735Z] at parseMaybeAssign (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:301:21)
+[2026-03-27T10:47:47.735Z] at parseMaybeAssign (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3764:22)
+[2026-03-27T10:47:47.735Z] at callback (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:257:12)
+[2026-03-27T10:47:47.736Z] at allowInAnd (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:3189:16)
+[2026-03-27T10:47:47.736Z] at parseMaybeAssignAllowIn (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:256:17)
+[2026-03-27T10:47:47.736Z] at parseVar (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1587:18)
+[2026-03-27T10:47:47.737Z] at parseVarStatement (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1251:10)
+[2026-03-27T10:47:47.737Z] at parseVarStatement (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3085:33)
+[2026-03-27T10:47:47.737Z] at parseStatementContent (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:612:21)
+[2026-03-27T10:47:47.738Z] at parseStatementContent (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3220:20)
+[2026-03-27T10:47:47.738Z] at parseStatementLike (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:482:17)
+[2026-03-27T10:47:47.738Z] at parseStatementListItem (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:431:17)
+[2026-03-27T10:47:47.739Z] at parseBlockOrModuleBlockBody (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1444:16)
+[2026-03-27T10:47:47.739Z] at parseBlockBody (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1417:10)
+[2026-03-27T10:47:47.739Z] at parseBlock (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1385:10)
+[2026-03-27T10:47:47.740Z] at parseFunctionBody (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2618:24)
+[2026-03-27T10:47:47.740Z] at parseFunctionBodyAndFinish (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2587:10)
+[2026-03-27T10:47:47.779Z] 6:47:47 AM [vite] (client) Pre-transform error: /home/ubuntu/renta-facil-tpymes/client/src/pages/Home.tsx: Unexpected token, expected "," (231:12)
+[2026-03-27T10:47:47.779Z] 
+[2026-03-27T10:47:47.780Z] 229 |   const profiles = [
+[2026-03-27T10:47:47.780Z] 230 |     {
+[2026-03-27T10:47:47.780Z] > 231 |       ic    { Icon: Users, color: "#059669", bg: "#edf7f3", title: "Casos habituales",
+[2026-03-27T10:47:47.781Z] |             ^
+[2026-03-27T10:47:47.786Z] 232 |       desc: "Asalariados, pensionistas y personas con situaciones fiscales frecuentes y estructura clara.",
+[2026-03-27T10:47:47.786Z] 233 |       items: ["Asalariados con uno o varios pagadores", "Pensionistas del sistema público o privado", "Propietarios con ingresos de alquiler"],
+[2026-03-27T10:47:47.786Z] 234 |     },
+[2026-03-27T10:47:47.787Z] Plugin: vite:react-babel
+[2026-03-27T10:47:47.787Z] File: /home/ubuntu/renta-facil-tpymes/client/src/pages/Home.tsx:231:12
+[2026-03-27T10:47:47.788Z] 229|    const profiles = [
+[2026-03-27T10:47:47.788Z] 230|      {
+[2026-03-27T10:47:47.788Z] 231|        ic    { Icon: Users, color: "#059669", bg: "#edf7f3", title: "Casos habituales",
+[2026-03-27T10:47:47.789Z] |              ^
+[2026-03-27T10:47:47.789Z] 232|        desc: "Asalariados, pensionistas y personas con situaciones fiscales frecuentes y estructura clara.",
+[2026-03-27T10:47:47.789Z] 233|        items: ["Asalariados con uno o varios pagadores", "Pensionistas del sistema público o privado", "Propietarios con ingresos de alquiler"],
+[2026-03-27T10:47:57.323Z] 6:47:57 AM [vite] Internal server error: /home/ubuntu/renta-facil-tpymes/client/src/pages/Home.tsx: Unexpected token, expected "," (231:12)
+[2026-03-27T10:47:57.324Z] 
+[2026-03-27T10:47:57.324Z] 229 |   const profiles = [
+[2026-03-27T10:47:57.325Z] 230 |     {
+[2026-03-27T10:47:57.325Z] > 231 |       ic    { Icon: Users, color: "#059669", bg: "#edf7f3", title: "Casos habituales",
+[2026-03-27T10:47:57.325Z] |             ^
+[2026-03-27T10:47:57.326Z] 232 |       desc: "Asalariados, pensionistas y personas con situaciones fiscales frecuentes y estructura clara.",
+[2026-03-27T10:47:57.326Z] 233 |       items: ["Asalariados con uno o varios pagadores", "Pensionistas del sistema público o privado", "Propietarios con ingresos de alquiler"],
+[2026-03-27T10:47:57.327Z] 234 |     },
+[2026-03-27T10:47:57.327Z] Plugin: vite:react-babel
+[2026-03-27T10:47:57.327Z] File: /home/ubuntu/renta-facil-tpymes/client/src/pages/Home.tsx:231:12
+[2026-03-27T10:47:57.328Z] 229|    const profiles = [
+[2026-03-27T10:47:57.328Z] 230|      {
+[2026-03-27T10:47:57.328Z] 231|        ic    { Icon: Users, color: "#059669", bg: "#edf7f3", title: "Casos habituales",
+[2026-03-27T10:47:57.329Z] |              ^
+[2026-03-27T10:47:57.329Z] 232|        desc: "Asalariados, pensionistas y personas con situaciones fiscales frecuentes y estructura clara.",
+[2026-03-27T10:47:57.329Z] 233|        items: ["Asalariados con uno o varios pagadores", "Pensionistas del sistema público o privado", "Propietarios con ingresos de alquiler"],
+[2026-03-27T10:47:57.329Z] at toParseError (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parse-error.ts:95:45)
+[2026-03-27T10:47:57.330Z] at raise (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/tokenizer/index.ts:1504:19)
+[2026-03-27T10:47:57.330Z] at unexpected (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/tokenizer/index.ts:1544:16)
+[2026-03-27T10:47:57.330Z] at expect (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/util.ts:157:12)
+[2026-03-27T10:47:57.331Z] at parseObjectLike (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2084:14)
+[2026-03-27T10:47:57.331Z] at parseExprAtom (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:1181:21)
+[2026-03-27T10:47:57.331Z] at parseExprAtom (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/jsx/index.ts:583:22)
+[2026-03-27T10:47:57.332Z] at parseExprSubscripts (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:742:23)
+[2026-03-27T10:47:57.332Z] at parseUpdate (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:721:21)
+[2026-03-27T10:47:57.332Z] at parseMaybeUnary (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:683:23)
+[2026-03-27T10:47:57.333Z] at parseMaybeUnary (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3893:20)
+[2026-03-27T10:47:57.333Z] at parseMaybeUnaryOrPrivate (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:417:14)
+[2026-03-27T10:47:57.333Z] at parseExprOps (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:429:23)
+[2026-03-27T10:47:57.334Z] at parseMaybeConditional (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:384:23)
+[2026-03-27T10:47:57.334Z] at parseMaybeAssign (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:301:21)
+[2026-03-27T10:47:57.335Z] at parseMaybeAssign (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3764:22)
+[2026-03-27T10:47:57.335Z] at callback (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:257:12)
+[2026-03-27T10:47:57.336Z] at allowInAnd (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:3194:12)
+[2026-03-27T10:47:57.336Z] at parseMaybeAssignAllowIn (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:256:17)
+[2026-03-27T10:47:57.336Z] at parseMaybeAssignAllowInOrVoidPattern (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:3308:17)
+[2026-03-27T10:47:57.337Z] at parseExprListItem (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2790:18)
+[2026-03-27T10:47:57.337Z] at parseExprList (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2734:22)
+[2026-03-27T10:47:57.337Z] at parseArrayLike (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2515:26)
+[2026-03-27T10:47:57.338Z] at parseArrayLike (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:2650:26)
+[2026-03-27T10:47:57.338Z] at parseExprAtom (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:1174:21)
+[2026-03-27T10:47:57.339Z] at parseExprAtom (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/jsx/index.ts:583:22)
+[2026-03-27T10:47:57.339Z] at parseExprSubscripts (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:742:23)
+[2026-03-27T10:47:57.339Z] at parseUpdate (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:721:21)
+[2026-03-27T10:47:57.340Z] at parseMaybeUnary (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:683:23)
+[2026-03-27T10:47:57.340Z] at parseMaybeUnary (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3893:20)
+[2026-03-27T10:47:57.340Z] at parseMaybeUnaryOrPrivate (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:417:14)
+[2026-03-27T10:47:57.341Z] at parseExprOps (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:429:23)
+[2026-03-27T10:47:57.341Z] at parseMaybeConditional (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:384:23)
+[2026-03-27T10:47:57.342Z] at parseMaybeAssign (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:301:21)
+[2026-03-27T10:47:57.342Z] at parseMaybeAssign (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3764:22)
+[2026-03-27T10:47:57.343Z] at callback (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:257:12)
+[2026-03-27T10:47:57.343Z] at allowInAnd (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:3189:16)
+[2026-03-27T10:47:57.344Z] at parseMaybeAssignAllowIn (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:256:17)
+[2026-03-27T10:47:57.344Z] at parseVar (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1587:18)
+[2026-03-27T10:47:57.345Z] at parseVarStatement (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1251:10)
+[2026-03-27T10:47:57.345Z] at parseVarStatement (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3085:33)
+[2026-03-27T10:47:57.346Z] at parseStatementContent (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:612:21)
+[2026-03-27T10:47:57.346Z] at parseStatementContent (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/plugins/typescript/index.ts:3220:20)
+[2026-03-27T10:47:57.349Z] at parseStatementLike (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:482:17)
+[2026-03-27T10:47:57.349Z] at parseStatementListItem (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:431:17)
+[2026-03-27T10:47:57.350Z] at parseBlockOrModuleBlockBody (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1444:16)
+[2026-03-27T10:47:57.351Z] at parseBlockBody (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1417:10)
+[2026-03-27T10:47:57.351Z] at parseBlock (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/statement.ts:1385:10)
+[2026-03-27T10:47:57.352Z] at parseFunctionBody (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2618:24)
+[2026-03-27T10:47:57.352Z] at parseFunctionBodyAndFinish (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2587:10)
+[2026-03-27T10:48:01.538Z] 6:48:01 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=IosvNt5ySvJtm-Hq8er80

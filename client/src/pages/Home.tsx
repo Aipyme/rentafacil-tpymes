@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSEO } from "@/hooks/useSEO";
+import { useState } from "react";
 import {
   Shield, Clock, Users, TrendingUp, CheckCircle2,
   ArrowRight, FileText, Search, Eye, UserCheck,
+  Briefcase, AlertCircle, ChevronDown,
 } from "lucide-react";
 
 function HeroSection() {
@@ -225,18 +227,15 @@ function HowItWorks() {
 
 function ForWhom() {
   const profiles = [
-    {
-      icon: "A", title: "Casos habituales",
+    { Icon: Users, color: "#059669", bg: "#edf7f3", title: "Casos habituales",
       desc: "Asalariados, pensionistas y personas con situaciones fiscales frecuentes y estructura clara.",
       items: ["Asalariados con uno o varios pagadores", "Pensionistas del sistema público o privado", "Propietarios con ingresos de alquiler"],
     },
-    {
-      icon: "R", title: "Casos con revisión",
+    { Icon: Search, color: "#1a365d", bg: "#eef4fb", title: "Casos con revisión",
       desc: "Cuando hay circunstancias que requieren validación adicional antes de continuar.",
       items: ["Deducción por vivienda habitual pre-2013", "Segundo pagador con importe > 1.500€", "Deducciones por discapacidad o donativos"],
     },
-    {
-      icon: "!", title: "Casos fuera de alcance",
+    { Icon: AlertCircle, color: "#b45309", bg: "#fef3c7", title: "Casos fuera de alcance",
       desc: "Si tu caso no encaja en esta fase del servicio, te lo diremos desde el principio y te derivamos al equipo especializado.",
       items: ["Autónomos con actividad económica compleja", "Criptoactivos, herencias, operaciones extranjero", "Módulos o estimación objetiva"],
     },
@@ -256,8 +255,8 @@ function ForWhom() {
         <div className="grid md:grid-cols-3 gap-5">
           {profiles.map((p, i) => (
             <div key={i} className="rounded-2xl p-6" style={{ background: "#fff", border: "1px solid #e6edf5", boxShadow: "0 12px 40px rgba(26,54,93,.07)" }}>
-              <div className="w-12 h-12 rounded-2xl grid place-items-center font-bold text-lg mb-4" style={{ background: "#eef4fb", color: "#1a365d" }}>
-                {p.icon}
+              <div className="w-12 h-12 rounded-2xl grid place-items-center mb-4" style={{ background: p.bg }}>
+                <p.Icon className="w-6 h-6" style={{ color: p.color }} />
               </div>
               <h3 className="font-bold mb-2" style={{ fontSize: 20, color: "#1a365d", letterSpacing: "-0.02em" }}>{p.title}</h3>
               <p className="mb-4" style={{ color: "#5b677a", fontSize: 15 }}>{p.desc}</p>
@@ -279,12 +278,11 @@ function ForWhom() {
 
 function Pricing() {
   const plans = [
-    {
-      badge: "Primer paso", name: "Simulación inicial", price: "Gratis",
+    { badge: "Primer paso", name: "Simulación inicial", price: "Gratis",
       desc: "El primer paso para saber si tu caso encaja dentro del alcance actual del servicio.",
       items: ["Recogida inicial de información", "Clasificación del caso", "Orientación sobre el siguiente paso", "Visión clara antes de decidir"],
       cta: "Empezar gratis", featured: false,
-      btnStyle: { background: "#fff", color: "#1a365d", border: "1px solid #e6edf5" } as React.CSSProperties,
+      btnStyle: { background: "#1a365d", color: "#fff", border: "none", boxShadow: "0 6px 18px rgba(26,54,93,.18)" } as React.CSSProperties,
     },
     {
       badge: "Más habitual", name: "Renta Ágil", price: "39 €",
@@ -298,7 +296,7 @@ function Pricing() {
       desc: "Para casos que necesitan una validación adicional antes de cerrar la gestión.",
       items: ["Revisión más detallada", "Validación de circunstancias del expediente", "Seguimiento y comunicación del caso", "Mayor acompañamiento en el proceso"],
       cta: "Entender mi siguiente paso", featured: false,
-      btnStyle: { background: "#fff", color: "#1a365d", border: "1px solid #e6edf5" } as React.CSSProperties,
+      btnStyle: { background: "linear-gradient(135deg,#0f7a52,#1a365d)", color: "#fff", border: "none", boxShadow: "0 6px 18px rgba(26,54,93,.18)" } as React.CSSProperties,
     },
   ];
   return (
@@ -356,6 +354,7 @@ function Pricing() {
 }
 
 function FAQs() {
+  const [open, setOpen] = useState<number | null>(null);
   const faqs = [
     { q: "¿La simulación inicial tiene coste?", a: "No. La simulación inicial es gratuita y sirve para entender si tu caso encaja dentro del servicio." },
     { q: "¿Sabré el precio antes de continuar?", a: "Sí. Antes de avanzar te mostraremos cómo encaja tu caso y cuál es el precio correspondiente. Sin sorpresas." },
@@ -377,11 +376,29 @@ function FAQs() {
         <p className="mb-10" style={{ color: "#5b677a", fontSize: 18, maxWidth: 760 }}>
           Resolvemos las dudas más habituales sobre el proceso, el precio, la documentación y el encaje del servicio.
         </p>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {faqs.map((faq, i) => (
-            <div key={i} className="rounded-2xl p-6" style={{ background: "#fff", border: "1px solid #e6edf5", boxShadow: "0 12px 40px rgba(26,54,93,.07)" }}>
-              <h3 className="font-bold mb-2" style={{ fontSize: 18, color: "#1a365d", letterSpacing: "-0.02em" }}>{faq.q}</h3>
-              <p style={{ color: "#5b677a", margin: 0 }}>{faq.a}</p>
+            <div
+              key={i}
+              className="rounded-2xl overflow-hidden"
+              style={{ background: "#fff", border: "1px solid #e6edf5", boxShadow: "0 4px 16px rgba(26,54,93,.06)" }}
+            >
+              <button
+                className="w-full flex items-center justify-between p-6 text-left"
+                style={{ background: "transparent", border: "none", cursor: "pointer" }}
+                onClick={() => setOpen(open === i ? null : i)}
+              >
+                <span className="font-bold pr-4" style={{ fontSize: 17, color: "#1a365d", letterSpacing: "-0.02em" }}>{faq.q}</span>
+                <ChevronDown
+                  className="flex-shrink-0 w-5 h-5 transition-transform"
+                  style={{ color: "#059669", transform: open === i ? "rotate(180deg)" : "rotate(0deg)" }}
+                />
+              </button>
+              {open === i && (
+                <div className="px-6 pb-5" style={{ color: "#5b677a", fontSize: 15, lineHeight: 1.7 }}>
+                  {faq.a}
+                </div>
+              )}
             </div>
           ))}
         </div>
