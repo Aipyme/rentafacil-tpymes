@@ -10,9 +10,11 @@ import { getDb } from "./db";
 import { declaraciones } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2026-02-25.clover",
-});
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null as any; // Stripe no configurado aún
+  return new Stripe(key, { apiVersion: "2026-02-25.clover" });
+}
 
 export async function handleStripeWebhook(req: Request, res: Response) {
   const sig = req.headers["stripe-signature"] as string;
@@ -21,7 +23,11 @@ export async function handleStripeWebhook(req: Request, res: Response) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    const stripeClient = getStripe();
+    if (!stripeClient) {
+      return res.status(503).json({ error: "Stripe no configurado" });
+    }
+    event = stripeClient.webhooks.constructEvent(req.body, sig, webhookSecret);
   } catch (err: any) {
     console.error("[Stripe Webhook] Signature verification failed:", err.message);
     return res.status(400).json({ error: `Webhook Error: ${err.message}` });

@@ -12,9 +12,11 @@ import { declaraciones } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { ENV } from "../_core/env";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2026-02-25.clover",
-});
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY || "";
+  if (!key) throw new Error("STRIPE_SECRET_KEY no configurada");
+  return new Stripe(key, { apiVersion: "2026-02-25.clover" });
+}
 
 export const pagosRouter = router({
   /**
@@ -49,7 +51,7 @@ export const pagosRouter = router({
         ? suplementos.map((s: any) => s.descripcion).join(", ")
         : "Declaración de la Renta 2025";
 
-      const session = await stripe.checkout.sessions.create({
+      const session = await getStripe().checkout.sessions.create({
         payment_method_types: ["card"],
         payment_method_options: {
           card: {
