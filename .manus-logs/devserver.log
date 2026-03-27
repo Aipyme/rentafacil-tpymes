@@ -1633,3 +1633,10 @@
 [2026-03-27T10:47:57.352Z] at parseFunctionBody (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2618:24)
 [2026-03-27T10:47:57.352Z] at parseFunctionBodyAndFinish (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/@babel+parser@7.29.0/node_modules/@babel/parser/src/parser/expression.ts:2587:10)
 [2026-03-27T10:48:01.538Z] 6:48:01 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=IosvNt5ySvJtm-Hq8er80
+[2026-03-27T10:48:57.255Z] 6:48:57 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-27T11:22:19.563Z] 7:22:19 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=IosvNt5ySvJtm-Hq8er80
+[2026-03-27T11:23:36.531Z] 7:23:36 AM [tsx] change in ./drizzle/schema.ts Restarting...
+[2026-03-27T11:23:41.353Z] cServer running on http://localhost:3000/
+[2026-03-27T11:26:16.223Z] 7:26:16 AM [vite] (client) page reload src/pages/Canarias.tsx
+[2026-03-27T11:26:29.324Z] 7:26:29 AM [vite] (client) hmr update /src/App.tsx?v=Bms-17YXF58v-jPnYbYSR, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
+[2026-03-27T11:27:43.683Z] 7:27:43 AM [vite] (client) page reload public/__manus__/version.json

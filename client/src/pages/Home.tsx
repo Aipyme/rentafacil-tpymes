@@ -233,7 +233,7 @@ function ForWhom() {
     },
     { Icon: Search, color: "#1a365d", bg: "#eef4fb", title: "Casos con revisión",
       desc: "Cuando hay circunstancias que requieren validación adicional antes de continuar.",
-      items: ["Deducción por vivienda habitual pre-2013", "Segundo pagador con importe > 1.500€", "Deducciones por discapacidad o donativos"],
+      items: ["Deducción por vivienda habitual pre-2013", "Segundo pagador con importe superior a 1.500€", "Deducciones por discapacidad o donativos"],
     },
     { Icon: AlertCircle, color: "#b45309", bg: "#fef3c7", title: "Casos fuera de alcance",
       desc: "Si tu caso no encaja en esta fase del servicio, te lo diremos desde el principio y te derivamos al equipo especializado.",

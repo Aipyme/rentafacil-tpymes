@@ -145,7 +145,17 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           break;
         }
 
-        // Idempotencia: verificar estado actual
+        // Idempotencia fuerte: verificar por stripeEventId (evita duplicados aunque Stripe reintente)
+        const [yaProcessado] = await db
+          .select({ id: declaraciones.id })
+          .from(declaraciones)
+          .where(eq(declaraciones.stripeEventId, event.id));
+        if (yaProcessado) {
+          console.log(`[Stripe Webhook] Evento ${event.id} ya procesado — idempotencia OK`);
+          break;
+        }
+
+        // Verificar estado actual del expediente
         const [expediente] = await db
           .select({ estado: declaraciones.estado })
           .from(declaraciones)
@@ -156,12 +166,19 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           break;
         }
 
-        // Actualizar estado en BD
+        const isTestEvent = !event.livemode;
+        // Actualizar estado en BD con audit trail completo
         await db
           .update(declaraciones)
           .set({
             estado: "pagado",
+            subestado: "pendiente_documentacion",
             stripePaymentIntentId: (session.payment_intent as string) || null,
+            stripeEventId: event.id,
+            paymentConfirmedAt: new Date(),
+            environment: isTestEvent ? "test" : "prod",
+            estadoUpdatedAt: new Date(),
+            estadoUpdatedBy: "stripe_webhook",
           })
           .where(eq(declaraciones.expedienteId, expedienteId));
 

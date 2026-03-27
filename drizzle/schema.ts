@@ -92,16 +92,36 @@ export const declaraciones = mysqlTable("declaraciones", {
   expedienteId: varchar("expedienteId", { length: 32 }).notNull().unique(),
   /** Usuario registrado (null si aún no ha pagado/registrado) */
   userId: int("userId"),
-  /** Estado del expediente */
+  /** Estado del expediente (máquina de estados) */
   estado: mysqlEnum("estado", [
-    "simulacion",
+    "recibido",
+    "pendiente_clasificacion",
+    "clasificado",
     "pendiente_pago",
     "pagado",
+    "pendiente_documentacion",
+    "derivado_asesor",
+    "cita_propuesta",
+    "cita_confirmada",
+    "en_preparacion",
+    "pendiente_validacion_cliente",
+    "cerrado",
+    "incidencia",
+    // legacy (compatibilidad hacia atrás)
+    "simulacion",
     "en_proceso",
     "completado",
     "derivado",
     "cancelado"
-  ]).default("simulacion").notNull(),
+  ]).default("recibido").notNull(),
+  /** Subestado granular para uso interno */
+  subestado: varchar("subestado", { length: 64 }),
+  /** Entorno: test | prod (para separar casos de prueba en Google Sheets) */
+  environment: varchar("environment", { length: 8 }).default("prod").notNull(),
+  /** Última actualización de estado (audit trail) */
+  estadoUpdatedAt: timestamp("estadoUpdatedAt"),
+  /** Quién actualizó el estado (audit trail: n8n_wf01, stripe_webhook, asesor, etc.) */
+  estadoUpdatedBy: varchar("estadoUpdatedBy", { length: 64 }),
   /** Datos del contribuyente (JSON con todas las respuestas del simulador) */
   datosContribuyente: json("datosContribuyente"),
   /** Resultado del cálculo fiscal (JSON con casillas y valores) */
@@ -120,6 +140,10 @@ export const declaraciones = mysqlTable("declaraciones", {
   stripeSessionId: varchar("stripeSessionId", { length: 255 }),
   /** ID de pago de Stripe confirmado */
   stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }),
+  /** ID del evento Stripe — clave de idempotencia: evita duplicar efectos si Stripe reintenta */
+  stripeEventId: varchar("stripeEventId", { length: 255 }).unique(),
+  /** Timestamp exacto de confirmación del pago (UTC) */
+  paymentConfirmedAt: timestamp("paymentConfirmedAt"),
   /** URL del informe PDF generado */
   informePdfUrl: text("informePdfUrl"),
   /** Clave S3 del informe PDF */
