@@ -68,7 +68,15 @@ export default function Navbar() {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/renta">
+          <a
+            href="https://rentatpymes.aicheckpyme.co/panel-asesor"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-gray-500 hover:text-[#1a365d] transition-colors no-underline"
+          >
+            Acceso asesor
+          </a>
+          <Link href="/empezar">
             <Button className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-6 shadow-lg shadow-emerald-200/50 transition-all hover:shadow-emerald-300/50 hover:-translate-y-0.5">
               Empezar
             </Button>
@@ -122,7 +130,16 @@ export default function Navbar() {
               >
                 Blog
               </Link>
-              <Link href="/renta" onClick={() => setIsOpen(false)}>
+              <a
+                href="https://rentatpymes.aicheckpyme.co/panel-asesor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-gray-700 py-2 no-underline"
+                onClick={() => setIsOpen(false)}
+              >
+                Acceso asesor
+              </a>
+              <Link href="/empezar" onClick={() => setIsOpen(false)}>
                 <Button className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold">
                   Empezar
                 </Button>
