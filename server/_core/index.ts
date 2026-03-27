@@ -8,6 +8,8 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { handleStripeWebhook } from "../stripeWebhook";
+import { handlePresupuesto } from "../presupuesto";
+import { handleGenerateXml, requireInternalKey } from "../generateXml";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -37,6 +39,12 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Presupuesto — público, llamado desde n8n y desde el simulador
+  app.post("/api/presupuesto", handlePresupuesto);
+
+  // Generate XML — solo uso interno (n8n, panel asesor)
+  app.post("/api/generate-xml", requireInternalKey, handleGenerateXml);
+
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API

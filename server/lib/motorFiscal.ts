@@ -6,11 +6,31 @@
 
 export interface RespuestasSimulador {
   // Sección A - Clasificación inicial
-  situacion: "Asalariado" | "Pensionista" | "Autónomo" | "Desempleado";
+  situacion: "Asalariado" | "Pensionista" | "Autónomo" | "Desempleado" | "Mixto";
   mas_de_un_pagador?: boolean;
+  segundo_pagador_importe?: number;       // importe del segundo pagador (umbral 1.500€)
   compra_vivienda?: boolean;
   personas_a_cargo?: boolean;
   deducciones_check?: string[];
+
+  // Bloque Autónomo
+  regimen_autonomo?: "estimacion_directa" | "estimacion_objetiva" | "ambos";
+  tiene_trabajadores?: boolean;           // trabajadores a cargo o subcontrataciones
+
+  // Prestaciones y otros rendimientos del trabajo
+  tiene_prestaciones?: boolean;           // desempleo, maternidad, IT...
+  tipo_prestacion?: string;               // detalle de la prestación
+
+  // Rendimientos del capital
+  tiene_capital_mobiliario?: boolean;     // dividendos, intereses, fondos...
+  importe_capital_mobiliario?: number;
+  tiene_capital_inmobiliario?: boolean;   // alquiler de inmuebles (propietario)
+  importe_capital_inmobiliario?: number;
+  tiene_ganancias_patrimoniales?: boolean; // venta de acciones, inmuebles, criptos
+  importe_ganancias_patrimoniales?: number;
+
+  // Imputaciones de renta
+  tiene_imputacion_rentas?: boolean;      // inmuebles a disposición, transparencia fiscal
 
   // Sección B - Datos cuantificados
   ingresos_brutos?: number;
@@ -34,7 +54,7 @@ export interface RespuestasSimulador {
     apellidos?: string;
     edad?: number;
     discapacidad?: boolean;
-    porcentaje_discapacidad?: number;
+    porcentaje_discapacidad?: number;     // 0, 33, 65
   };
 }
 
@@ -80,7 +100,9 @@ export interface ResultadoCalculo {
   // Flags de complejidad
   flags: string[];
   es_complejo: boolean;
+  flag_review: boolean;           // revisión humana recomendada aunque no sea complejo
   motivo_complejidad?: string;
+  plan_code: "SIMPLE" | "SIMPLE_REVIEW" | "COMPLEJA" | "CRM"; // contrato MOTOE
 
   // Desglose de deducciones para mostrar al usuario
   desglose_deducciones: Array<{
@@ -369,26 +391,125 @@ function calcularDeduccionesAutonomicas(
 
 // ============================================================
 // DETECCIÓN DE CASOS COMPLEJOS
+// Implementa las reglas del árbol de decisión v2 (validado con Cristina)
 // ============================================================
-function detectarComplejidad(datos: RespuestasSimulador): { esComplejo: boolean; motivo?: string; flags: string[] } {
+function detectarComplejidad(datos: RespuestasSimulador): { esComplejo: boolean; motivo?: string; flags: string[]; flag_review: boolean } {
   const flags: string[] = [];
+  const motivos: string[] = [];
 
-  if (datos.situacion === "Autónomo") flags.push("autonomo");
-  if (datos.mas_de_un_pagador) flags.push("varios_pagadores");
+  // --- Bloque Asalariado ---
+  if (datos.mas_de_un_pagador) {
+    flags.push("varios_pagadores");
+    // Segundo pagador > 1.500€ activa flag_review (posible obligación de declarar)
+    if ((datos.segundo_pagador_importe || 0) > 1500) {
+      flags.push("segundo_pagador_relevante");
+      motivos.push("Segundo pagador superior a 1.500€");
+    }
+  }
+
+  if (datos.tiene_prestaciones) {
+    flags.push("prestaciones");
+    // Prestaciones + actividad económica simultánea = complejo
+    if (datos.situacion === "Autónomo" || datos.situacion === "Mixto") {
+      flags.push("prestaciones_con_actividad");
+      motivos.push("Prestaciones compatibles con actividad económica");
+    }
+  }
+
+  // --- Bloque Autónomo ---
+  if (datos.situacion === "Autónomo" || datos.situacion === "Mixto") {
+    flags.push("autonomo");
+    motivos.push("Actividad económica por cuenta propia");
+
+    if (datos.regimen_autonomo === "ambos") {
+      flags.push("regimen_mixto_autonomo");
+      motivos.push("Estimación directa y módulos simultáneos");
+    }
+    if (datos.tiene_trabajadores) {
+      flags.push("trabajadores_a_cargo");
+      motivos.push("Trabajadores a cargo o subcontrataciones");
+    }
+  }
+
+  if (datos.situacion === "Mixto") {
+    flags.push("contribuyente_mixto");
+    motivos.push("Rendimientos del trabajo y actividad económica simultáneos");
+  }
+
+  // --- Bloque Vivienda ---
   if (datos.compra_vivienda && datos.vivienda_fecha) {
     const year = new Date(datos.vivienda_fecha).getFullYear();
-    if (year >= 2013) flags.push("vivienda_post2013");
+    if (year >= 2013) {
+      flags.push("vivienda_post2013");
+    } else {
+      flags.push("vivienda_pre2013");
+    }
   }
-  if ((datos.ingresos_brutos || 0) > 60000) flags.push("ingresos_altos");
 
-  const esComplejo = flags.includes("autonomo") || flags.includes("ingresos_altos");
-  const motivo = esComplejo
-    ? flags.includes("autonomo")
-      ? "Actividad económica como autónomo requiere revisión especializada"
-      : "Ingresos superiores a 60.000€ requieren revisión especializada"
-    : undefined;
+  // --- Rendimientos del capital ---
+  if (datos.tiene_capital_mobiliario) {
+    flags.push("capital_mobiliario");
+    if ((datos.importe_capital_mobiliario || 0) > 1600) {
+      flags.push("capital_mobiliario_relevante");
+      motivos.push("Rendimientos del capital mobiliario superiores a 1.600€");
+    }
+  }
 
-  return { esComplejo, motivo, flags };
+  if (datos.tiene_capital_inmobiliario) {
+    flags.push("capital_inmobiliario");
+    motivos.push("Rendimientos de alquiler de inmuebles");
+    // Alquiler + actividad económica = complejidad adicional
+    if (datos.situacion === "Autónomo" || datos.situacion === "Mixto") {
+      flags.push("capital_inmobiliario_con_actividad");
+      motivos.push("Rentas inmobiliarias con actividad económica simultánea");
+    }
+  }
+
+  if (datos.tiene_ganancias_patrimoniales) {
+    flags.push("ganancias_patrimoniales");
+    motivos.push("Ganancias o pérdidas patrimoniales (venta de activos)");
+  }
+
+  if (datos.tiene_imputacion_rentas) {
+    flags.push("imputacion_rentas");
+    motivos.push("Imputación de rentas inmobiliarias");
+  }
+
+  // --- Ingresos altos ---
+  if ((datos.ingresos_brutos || 0) > 60000) {
+    flags.push("ingresos_altos");
+    motivos.push("Ingresos superiores a 60.000€");
+  }
+
+  // --- Discapacidad relevante ---
+  if ((datos.contribuyente?.porcentaje_discapacidad || 0) >= 65) {
+    flags.push("discapacidad_severa");
+    motivos.push("Discapacidad ≥65% con reglas adicionales");
+  }
+
+  // --- Regla de complejidad final (cualquiera de estas condiciones) ---
+  const esComplejo =
+    flags.includes("autonomo") ||
+    flags.includes("contribuyente_mixto") ||
+    flags.includes("regimen_mixto_autonomo") ||
+    flags.includes("capital_inmobiliario") ||
+    flags.includes("ganancias_patrimoniales") ||
+    flags.includes("imputacion_rentas") ||
+    flags.includes("prestaciones_con_actividad") ||
+    flags.includes("capital_inmobiliario_con_actividad") ||
+    (flags.includes("ingresos_altos") && flags.includes("capital_mobiliario_relevante"));
+
+  // --- flag_review: revisión humana aunque no sea complejo ---
+  const flag_review =
+    esComplejo ||
+    flags.includes("segundo_pagador_relevante") ||
+    flags.includes("trabajadores_a_cargo") ||
+    flags.includes("discapacidad_severa") ||
+    flags.includes("ingresos_altos");
+
+  const motivo = motivos.length > 0 ? motivos.join(" | ") : undefined;
+
+  return { esComplejo, motivo, flags, flag_review };
 }
 
 // ============================================================
@@ -443,7 +564,7 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
   const ahorroVsBorrador = Math.round((resultadoBorrador - resultado) * 100) / 100;
 
   // 11. Complejidad
-  const { esComplejo, motivo, flags } = detectarComplejidad(datos);
+  const { esComplejo, motivo, flags, flag_review } = detectarComplejidad(datos);
 
   // 12. Casillas principales del modelo 100
   const casillas: Record<string, number> = {
@@ -496,7 +617,9 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
     casillas,
     flags,
     es_complejo: esComplejo,
+    flag_review,
     motivo_complejidad: motivo,
+    plan_code: esComplejo ? "COMPLEJA" : flag_review ? "SIMPLE_REVIEW" : "SIMPLE",
     desglose_deducciones: [...desgloseEstatales, ...desgloseAutonomicasTyped],
   };
 }

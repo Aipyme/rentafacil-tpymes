@@ -1,7 +1,24 @@
 /**
- * Stripe Webhook Handler
- * Procesa eventos de Stripe para confirmar pagos automáticamente.
- * IMPORTANTE: debe registrarse ANTES del middleware express.json()
+ * Handler: POST /api/stripe/webhook
+ * Versión mejorada del stripeWebhook.ts existente.
+ *
+ * MEJORAS respecto al handler actual (server/stripeWebhook.ts):
+ *  1. Guardia explícita si STRIPE_WEBHOOK_SECRET está vacío → 503.
+ *  2. Guardia explícita si stripe-signature header está ausente → 400.
+ *  3. Notificación a n8n WF08 (pago_confirmado) con payload enriquecido.
+ *  4. Log estructurado con event.id, type y expediente_id.
+ *  5. Idempotencia: no actualiza si el estado ya es "pagado".
+ *
+ * INTEGRACIÓN:
+ *  Este archivo reemplaza server/stripeWebhook.ts.
+ *  El registro en _core/index.ts ya es correcto:
+ *    app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), handleStripeWebhook);
+ *
+ * VARIABLES DE ENTORNO REQUERIDAS:
+ *  STRIPE_SECRET_KEY          — clave secreta Stripe
+ *  STRIPE_WEBHOOK_SECRET      — secreto del endpoint webhook en Stripe Dashboard
+ *  N8N_PAGO_CONFIRMADO_WEBHOOK — URL del webhook n8n WF08
+ *  INTERNAL_WORKFLOW_KEY      — secreto compartido entre backend y n8n
  */
 
 import { Request, Response } from "express";
@@ -10,87 +27,219 @@ import { getDb } from "./db";
 import { declaraciones } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
-function getStripe(): Stripe {
+// ============================================================
+// HELPERS
+// ============================================================
+
+function getStripe(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) return null as any; // Stripe no configurado aún
+  if (!key) return null;
   return new Stripe(key, { apiVersion: "2026-02-25.clover" });
 }
 
-export async function handleStripeWebhook(req: Request, res: Response) {
-  const sig = req.headers["stripe-signature"] as string;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
+async function notifyN8n(payload: Record<string, unknown>): Promise<void> {
+  const webhookUrl = process.env.N8N_PAGO_CONFIRMADO_WEBHOOK;
+  const internalKey = process.env.INTERNAL_WORKFLOW_KEY;
 
-  let event: Stripe.Event;
+  if (!webhookUrl) {
+    console.warn("[Stripe Webhook] N8N_PAGO_CONFIRMADO_WEBHOOK no configurado — omitiendo notificación");
+    return;
+  }
 
   try {
-    const stripeClient = getStripe();
-    if (!stripeClient) {
-      return res.status(503).json({ error: "Stripe no configurado" });
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(internalKey ? { "x-internal-key": internalKey } : {}),
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(10_000), // 10s timeout
+    });
+
+    if (!res.ok) {
+      console.error(`[Stripe Webhook] Error notificando a n8n: HTTP ${res.status}`);
+    } else {
+      console.log(`[Stripe Webhook] n8n notificado correctamente para expediente ${payload.expediente_id}`);
     }
+  } catch (err: any) {
+    // No lanzar — la notificación a n8n es best-effort, no debe bloquear la respuesta a Stripe
+    console.error("[Stripe Webhook] Error en notificación a n8n:", err.message);
+  }
+}
+
+// ============================================================
+// HANDLER PRINCIPAL
+// ============================================================
+
+export async function handleStripeWebhook(req: Request, res: Response): Promise<void> {
+  // 1. Verificar que el secret está configurado
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
+  if (!webhookSecret) {
+    console.error("[Stripe Webhook] STRIPE_WEBHOOK_SECRET no configurado — rechazando petición");
+    res.status(503).json({ error: "Webhook not configured" });
+    return;
+  }
+
+  // 2. Verificar que el header de firma está presente
+  const sig = req.headers["stripe-signature"] as string | undefined;
+  if (!sig) {
+    console.error("[Stripe Webhook] stripe-signature header ausente");
+    res.status(400).json({ error: "Missing stripe-signature header" });
+    return;
+  }
+
+  // 3. Verificar que Stripe está configurado
+  const stripeClient = getStripe();
+  if (!stripeClient) {
+    console.error("[Stripe Webhook] STRIPE_SECRET_KEY no configurado");
+    res.status(503).json({ error: "Stripe not configured" });
+    return;
+  }
+
+  // 4. Verificar firma del evento
+  let event: Stripe.Event;
+  try {
     event = stripeClient.webhooks.constructEvent(req.body, sig, webhookSecret);
   } catch (err: any) {
     console.error("[Stripe Webhook] Signature verification failed:", err.message);
-    return res.status(400).json({ error: `Webhook Error: ${err.message}` });
+    res.status(400).json({ error: `Webhook Error: ${err.message}` });
+    return;
   }
 
-  // Test events - return verification response
+  // 5. Detectar test events (Stripe CLI o Dashboard test)
   if (event.id.startsWith("evt_test_")) {
     console.log("[Stripe Webhook] Test event detected, returning verification response");
-    return res.json({ verified: true });
+    res.json({ verified: true });
+    return;
   }
 
   console.log(`[Stripe Webhook] Event: ${event.type} | ID: ${event.id}`);
 
+  // 6. Obtener BD
   const db = await getDb();
   if (!db) {
     console.error("[Stripe Webhook] Database not available");
-    return res.status(500).json({ error: "Database not available" });
+    res.status(500).json({ error: "Database not available" });
+    return;
   }
 
   try {
     switch (event.type) {
+      // -------------------------------------------------------
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        const expedienteId = session.client_reference_id || session.metadata?.expedienteId;
+        const expedienteId =
+          session.client_reference_id || session.metadata?.expedienteId;
+        const emailCliente =
+          session.customer_details?.email || session.metadata?.email_cliente || "";
+        const nombreCliente = session.metadata?.nombre_cliente || "";
 
-        if (expedienteId && session.payment_status === "paid") {
-          await db
-            .update(declaraciones)
-            .set({
-              estado: "pagado",
-              stripePaymentIntentId: session.payment_intent as string || null,
-            })
-            .where(eq(declaraciones.expedienteId, expedienteId));
-
-          console.log(`[Stripe Webhook] Expediente ${expedienteId} marcado como PAGADO`);
+        if (!expedienteId) {
+          console.warn("[Stripe Webhook] checkout.session.completed sin expedienteId — ignorando");
+          break;
         }
+
+        if (session.payment_status !== "paid") {
+          console.log(`[Stripe Webhook] Session ${session.id} no está pagada (${session.payment_status}) — ignorando`);
+          break;
+        }
+
+        // Idempotencia: verificar estado actual
+        const [expediente] = await db
+          .select({ estado: declaraciones.estado })
+          .from(declaraciones)
+          .where(eq(declaraciones.expedienteId, expedienteId));
+
+        if (expediente?.estado === "pagado") {
+          console.log(`[Stripe Webhook] Expediente ${expedienteId} ya estaba en estado PAGADO — idempotencia OK`);
+          break;
+        }
+
+        // Actualizar estado en BD
+        await db
+          .update(declaraciones)
+          .set({
+            estado: "pagado",
+            stripePaymentIntentId: (session.payment_intent as string) || null,
+          })
+          .where(eq(declaraciones.expedienteId, expedienteId));
+
+        console.log(`[Stripe Webhook] Expediente ${expedienteId} marcado como PAGADO`);
+
+        // Notificar a n8n WF08
+        await notifyN8n({
+          expediente_id: expedienteId,
+          payment_intent_id: session.payment_intent as string || "",
+          amount_total: (session.amount_total || 0) / 100,
+          currency: session.currency,
+          email_cliente: emailCliente,
+          nombre_cliente: nombreCliente,
+          paid_at: new Date().toISOString(),
+          event_type: "checkout.session.completed",
+          stripe_event_id: event.id,
+        });
+
         break;
       }
 
+      // -------------------------------------------------------
       case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        const expedienteId = paymentIntent.metadata?.expedienteId;
+        const pi = event.data.object as Stripe.PaymentIntent;
+        const expedienteId = pi.metadata?.expedienteId || pi.metadata?.expediente_id;
+        const emailCliente = pi.metadata?.email_cliente || pi.metadata?.customer_email || "";
+        const nombreCliente = pi.metadata?.nombre_cliente || pi.metadata?.customer_name || "";
 
-        if (expedienteId) {
-          await db
-            .update(declaraciones)
-            .set({
-              estado: "pagado",
-              stripePaymentIntentId: paymentIntent.id,
-            })
-            .where(eq(declaraciones.expedienteId, expedienteId));
-
-          console.log(`[Stripe Webhook] PaymentIntent ${paymentIntent.id} para expediente ${expedienteId} COMPLETADO`);
+        if (!expedienteId) {
+          console.warn("[Stripe Webhook] payment_intent.succeeded sin expedienteId — ignorando");
+          break;
         }
+
+        // Idempotencia
+        const [expediente] = await db
+          .select({ estado: declaraciones.estado })
+          .from(declaraciones)
+          .where(eq(declaraciones.expedienteId, expedienteId));
+
+        if (expediente?.estado === "pagado") {
+          console.log(`[Stripe Webhook] Expediente ${expedienteId} ya estaba PAGADO — idempotencia OK`);
+          break;
+        }
+
+        await db
+          .update(declaraciones)
+          .set({
+            estado: "pagado",
+            stripePaymentIntentId: pi.id,
+          })
+          .where(eq(declaraciones.expedienteId, expedienteId));
+
+        console.log(`[Stripe Webhook] PaymentIntent ${pi.id} para expediente ${expedienteId} COMPLETADO`);
+
+        await notifyN8n({
+          expediente_id: expedienteId,
+          payment_intent_id: pi.id,
+          amount_total: (pi.amount_received || pi.amount || 0) / 100,
+          currency: pi.currency,
+          email_cliente: emailCliente,
+          nombre_cliente: nombreCliente,
+          paid_at: new Date().toISOString(),
+          event_type: "payment_intent.succeeded",
+          stripe_event_id: event.id,
+        });
+
         break;
       }
 
+      // -------------------------------------------------------
       case "payment_intent.payment_failed": {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        console.log(`[Stripe Webhook] Pago fallido: ${paymentIntent.id}`);
+        const pi = event.data.object as Stripe.PaymentIntent;
+        const expedienteId = pi.metadata?.expedienteId || pi.metadata?.expediente_id;
+        console.log(`[Stripe Webhook] Pago fallido: ${pi.id} | Expediente: ${expedienteId || "desconocido"}`);
         break;
       }
 
+      // -------------------------------------------------------
       default:
         console.log(`[Stripe Webhook] Evento no manejado: ${event.type}`);
     }
