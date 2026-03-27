@@ -157,12 +157,31 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
 
         // Verificar estado actual del expediente
         const [expediente] = await db
-          .select({ estado: declaraciones.estado })
+          .select({ id: declaraciones.id, estado: declaraciones.estado, stripeEventId: declaraciones.stripeEventId })
           .from(declaraciones)
           .where(eq(declaraciones.expedienteId, expedienteId));
 
-        if (expediente?.estado === "pagado") {
-          console.log(`[Stripe Webhook] Expediente ${expedienteId} ya estaba en estado PAGADO — idempotencia OK`);
+        if (expediente?.estado === "pagado" && expediente?.stripeEventId) {
+          console.log(`[Stripe Webhook] Expediente ${expedienteId} ya estaba en estado PAGADO con eventId — idempotencia OK`);
+          break;
+        }
+
+        // Si ya está pagado pero sin stripeEventId/paymentConfirmedAt, completar el audit trail
+        if (expediente?.estado === "pagado" && !expediente?.stripeEventId) {
+          console.log(`[Stripe Webhook] Expediente ${expedienteId} ya PAGADO — completando audit trail (stripeEventId, paymentConfirmedAt)`);
+          const isTestEventAudit = !event.livemode;
+          await db
+            .update(declaraciones)
+            .set({
+              stripePaymentIntentId: (session.payment_intent as string) || null,
+              stripeEventId: event.id,
+              paymentConfirmedAt: new Date(),
+              environment: isTestEventAudit ? "test" : "prod",
+              estadoUpdatedAt: new Date(),
+              estadoUpdatedBy: "stripe_webhook",
+            })
+            .where(eq(declaraciones.expedienteId, expedienteId));
+          console.log(`[Stripe Webhook] Audit trail completado para ${expedienteId}`);
           break;
         }
 

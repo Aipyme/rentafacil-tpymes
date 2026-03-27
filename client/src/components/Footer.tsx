@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#1a365d] text-white">
       <div className="container py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
@@ -58,6 +58,20 @@ export default function Footer() {
                   Blog fiscal
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          {/* Comunidades */}
+          <div>
+            <h4 className="font-['DM_Sans'] font-semibold text-sm text-white/80 mb-4 uppercase tracking-wider">
+              Comunidades
+            </h4>
+            <ul className="space-y-2.5">
+              <li><Link href="/andalucia" className="text-sm text-white/50 hover:text-white transition-colors no-underline">Andalucía</Link></li>
+              <li><Link href="/madrid" className="text-sm text-white/50 hover:text-white transition-colors no-underline">Madrid</Link></li>
+              <li><Link href="/cataluna" className="text-sm text-white/50 hover:text-white transition-colors no-underline">Cataluña</Link></li>
+              <li><Link href="/valencia" className="text-sm text-white/50 hover:text-white transition-colors no-underline">Comunidad Valenciana</Link></li>
+              <li><Link href="/canarias" className="text-sm text-white/50 hover:text-white transition-colors no-underline">Canarias</Link></li>
             </ul>
           </div>
 

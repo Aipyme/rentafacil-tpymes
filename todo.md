@@ -210,3 +210,10 @@
 - [x] Panel asesor: verificado — ya carga datos reales de BD y ya dice Campaña 2025 (no había hardcoded)
 - [x] Footer: eliminar "Alianza con BBVA" (riesgo legal si no es real)
 - [x] Sección comunidades: mostrar las 15 comunidades reales (excluir País Vasco y Navarra por régimen foral)
+
+## E2E y correcciones post-demo (sesión 27/03/2026)
+- [x] Test E2E completo: simulador → pago Stripe → webhook → BD → /mi-renta (PASS)
+- [x] Webhook Stripe: corregir idempotencia para completar audit trail (stripeEventId, paymentConfirmedAt) si ya estaba pagado sin eventId
+- [x] Footer: añadir sección Comunidades con las 5 comunidades con página propia (Andalucía, Madrid, Cataluña, C. Valenciana, Canarias)
+- [x] Home: añadir sección SEO de comunidades autónomas (15 CCAA) entre Precios y FAQs
+- [x] BD: audit trail del expediente de test RF2025-989FZU completado manualmente

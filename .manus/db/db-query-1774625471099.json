@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE declaraciones SET stripeEventId = 'evt_1TFbkXB82mGAf12QIJlqdUIr', paymentConfirmedAt = '2026-03-27 14:52:38', subestado = 'pendiente_documentacion', estadoUpdatedAt = '2026-03-27 14:52:38', estadoUpdatedBy = 'stripe_webhook', environment = 'test' WHERE expedienteId = 'RF2025-989FZU' AND stripeEventId IS NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2zrRhVcSN3Qvfns.root --database 9cYuQahZqTNwQkcjbW6hjA --execute UPDATE declaraciones SET stripeEventId = 'evt_1TFbkXB82mGAf12QIJlqdUIr', paymentConfirmedAt = '2026-03-27 14:52:38', subestado = 'pendiente_documentacion', estadoUpdatedAt = '2026-03-27 14:52:38', estadoUpdatedBy = 'stripe_webhook', environment = 'test' WHERE expedienteId = 'RF2025-989FZU' AND stripeEventId IS NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 5835
+}

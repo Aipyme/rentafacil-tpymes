@@ -353,6 +353,57 @@ function Pricing() {
   );
 }
 
+function Comunidades() {
+  const comunidades = [
+    { nombre: "Andalucía", href: "/andalucia", flag: "🇪🇸" },
+    { nombre: "Madrid", href: "/madrid", flag: "🇪🇸" },
+    { nombre: "Cataluña", href: "/cataluna", flag: "🇪🇸" },
+    { nombre: "C. Valenciana", href: "/valencia", flag: "🇪🇸" },
+    { nombre: "Canarias", href: "/canarias", flag: "🇪🇸" },
+    { nombre: "Castilla y León", href: "/renta", flag: "🇪🇸" },
+    { nombre: "Galicia", href: "/renta", flag: "🇪🇸" },
+    { nombre: "Aragón", href: "/renta", flag: "🇪🇸" },
+    { nombre: "Extremadura", href: "/renta", flag: "🇪🇸" },
+    { nombre: "Murcia", href: "/renta", flag: "🇪🇸" },
+    { nombre: "Asturias", href: "/renta", flag: "🇪🇸" },
+    { nombre: "Cantabria", href: "/renta", flag: "🇪🇸" },
+    { nombre: "La Rioja", href: "/renta", flag: "🇪🇸" },
+    { nombre: "Baleares", href: "/renta", flag: "🇪🇸" },
+    { nombre: "Castilla-La Mancha", href: "/renta", flag: "🇪🇸" },
+  ];
+  return (
+    <section style={{ padding: "60px 0", background: "#f6f9fc" }}>
+      <div className="container" style={{ maxWidth: 1180, margin: "0 auto" }}>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-5" style={{ background: "#eaf7f2", color: "#059669" }}>
+          Disponible en toda España
+        </div>
+        <h2 className="font-bold mb-3" style={{ fontSize: "clamp(24px,3vw,36px)", letterSpacing: "-0.03em", color: "#1a365d", lineHeight: 1.1 }}>
+          Declaración de la renta en todas las comunidades autónomas
+        </h2>
+        <p className="mb-8" style={{ color: "#5b677a", fontSize: 16, maxWidth: 700 }}>
+          Aplicamos las deducciones autonómicas de cada territorio para que no te pierdas ninguna ventaja fiscal.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {comunidades.map((c, i) => (
+            <Link
+              key={i}
+              href={c.href}
+              className="no-underline"
+            >
+              <div
+                className="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5"
+                style={{ background: "#fff", border: "1px solid #e6edf5", color: "#1a365d", boxShadow: "0 4px 12px rgba(26,54,93,.07)" }}
+              >
+                📍 {c.nombre}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function FAQs() {
   const [open, setOpen] = useState<number | null>(null);
   const faqs = [
@@ -462,6 +513,7 @@ export default function Home() {
         <HowItWorks />
         <ForWhom />
         <Pricing />
+        <Comunidades />
         <FAQs />
         <CTABand />
       </main>

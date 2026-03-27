@@ -1,0 +1,23 @@
+{
+  "query": "SELECT expedienteId, estado, subestado, stripeSessionId, stripePaymentIntentId, stripeEventId, paymentConfirmedAt, precioTotal, emailContacto, createdAt, updatedAt FROM declaraciones WHERE expedienteId = 'RF2025-989FZU';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2zrRhVcSN3Qvfns.root --database 9cYuQahZqTNwQkcjbW6hjA --execute SELECT expedienteId, estado, subestado, stripeSessionId, stripePaymentIntentId, stripeEventId, paymentConfirmedAt, precioTotal, emailContacto, createdAt, updatedAt FROM declaraciones WHERE expedienteId = 'RF2025-989FZU';",
+  "rows": [
+    {
+      "expedienteId": "RF2025-989FZU",
+      "estado": "pagado",
+      "subestado": "NULL",
+      "stripeSessionId": "cs_test_b1RKp36nRcHxQYLvTJaGYdoDsDaRCLgrSxC6Joih0jivqiDVSfCXpa4hsX",
+      "stripePaymentIntentId": "pi_3TFbkVB82mGAf12Q1tcNUWYo",
+      "stripeEventId": "NULL",
+      "paymentConfirmedAt": "NULL",
+      "precioTotal": "2900",
+      "emailContacto": "test.e2e@rentafacil.es",
+      "createdAt": "2026-03-27 14:50:26",
+      "updatedAt": "2026-03-27 14:52:38"
+    }
+  ],
+  "messages": [],
+  "stdout": "expedienteId\testado\tsubestado\tstripeSessionId\tstripePaymentIntentId\tstripeEventId\tpaymentConfirmedAt\tprecioTotal\temailContacto\tcreatedAt\tupdatedAt\nRF2025-989FZU\tpagado\tNULL\tcs_test_b1RKp36nRcHxQYLvTJaGYdoDsDaRCLgrSxC6Joih0jivqiDVSfCXpa4hsX\tpi_3TFbkVB82mGAf12Q1tcNUWYo\tNULL\tNULL\t2900\ttest.e2e@rentafacil.es\t2026-03-27 14:50:26\t2026-03-27 14:52:38\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

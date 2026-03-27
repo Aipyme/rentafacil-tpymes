@@ -1,0 +1,20 @@
+{
+  "query": "SELECT expedienteId, estado, subestado, precioTotal, emailContacto, stripeEventId, paymentConfirmedAt, createdAt FROM declaraciones ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2zrRhVcSN3Qvfns.root --database 9cYuQahZqTNwQkcjbW6hjA --execute SELECT expedienteId, estado, subestado, precioTotal, emailContacto, stripeEventId, paymentConfirmedAt, createdAt FROM declaraciones ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "expedienteId": "RF2025-989FZU",
+      "estado": "pagado",
+      "subestado": "NULL",
+      "precioTotal": "2900",
+      "emailContacto": "test.e2e@rentafacil.es",
+      "stripeEventId": "NULL",
+      "paymentConfirmedAt": "NULL",
+      "createdAt": "2026-03-27 14:50:26"
+    }
+  ],
+  "messages": [],
+  "stdout": "expedienteId\testado\tsubestado\tprecioTotal\temailContacto\tstripeEventId\tpaymentConfirmedAt\tcreatedAt\nRF2025-989FZU\tpagado\tNULL\t2900\ttest.e2e@rentafacil.es\tNULL\tNULL\t2026-03-27 14:50:26\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}

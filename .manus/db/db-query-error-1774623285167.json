@@ -1,0 +1,8 @@
+{
+  "query": "SELECT expediente_id, estado, subestado, stripe_session_id, stripe_payment_intent_id, stripe_event_id, payment_confirmed_at, precio_total, email_contacto, created_at, updated_at FROM expedientes WHERE expediente_id = 'RF2025-989FZU';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2zrRhVcSN3Qvfns.root --database 9cYuQahZqTNwQkcjbW6hjA --execute SELECT expediente_id, estado, subestado, stripe_session_id, stripe_payment_intent_id, stripe_event_id, payment_confirmed_at, precio_total, email_contacto, created_at, updated_at FROM expedientes WHERE expediente_id = 'RF2025-989FZU';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table '9cyuqahzqtnwqkcjbw6hja.expedientes' doesn't exist"
+  ]
+}

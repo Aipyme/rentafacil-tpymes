@@ -1641,3 +1641,14 @@
 [2026-03-27T11:26:29.324Z] 7:26:29 AM [vite] (client) hmr update /src/App.tsx?v=Bms-17YXF58v-jPnYbYSR, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
 [2026-03-27T11:27:43.683Z] 7:27:43 AM [vite] (client) page reload public/__manus__/version.json
 [2026-03-27T11:34:50.617Z] 7:34:50 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
+[2026-03-27T11:35:22.801Z] 7:35:22 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-27T14:52:37.886Z] [Stripe Webhook] Event: payment_intent.succeeded | ID: evt_3TFbkVB82mGAf12Q1Pp2OXKS
+[2026-03-27T14:52:37.999Z] [Stripe Webhook] payment_intent.succeeded sin expedienteId — ignorando
+[2026-03-27T14:52:38.024Z] [Stripe Webhook] Event: checkout.session.completed | ID: evt_1TFbkXB82mGAf12QIJlqdUIr
+[2026-03-27T14:52:38.448Z] [Stripe Webhook] Expediente RF2025-989FZU marcado como PAGADO
+[2026-03-27T14:52:38.449Z] [Stripe Webhook] N8N_PAGO_CONFIRMADO_WEBHOOK no configurado — omitiendo notificación
+[2026-03-27T15:31:47.224Z] 11:31:47 AM [vite] (client) hmr update /src/components/Footer.tsx, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
+[2026-03-27T15:31:55.010Z] 11:31:55 AM [vite] (client) hmr update /src/components/Footer.tsx, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
+[2026-03-27T15:33:00.854Z] 11:33:00 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
+[2026-03-27T15:33:10.218Z] 11:33:10 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
+[2026-03-27T15:34:48.526Z] 11:34:48 AM [vite] (client) page reload public/__manus__/version.json
