@@ -1640,3 +1640,4 @@
 [2026-03-27T11:26:16.223Z] 7:26:16 AM [vite] (client) page reload src/pages/Canarias.tsx
 [2026-03-27T11:26:29.324Z] 7:26:29 AM [vite] (client) hmr update /src/App.tsx?v=Bms-17YXF58v-jPnYbYSR, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
 [2026-03-27T11:27:43.683Z] 7:27:43 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-27T11:34:50.617Z] 7:34:50 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=Bms-17YXF58v-jPnYbYSR

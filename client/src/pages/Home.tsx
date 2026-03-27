@@ -235,9 +235,9 @@ function ForWhom() {
       desc: "Cuando hay circunstancias que requieren validación adicional antes de continuar.",
       items: ["Deducción por vivienda habitual pre-2013", "Segundo pagador con importe superior a 1.500€", "Deducciones por discapacidad o donativos"],
     },
-    { Icon: AlertCircle, color: "#b45309", bg: "#fef3c7", title: "Casos fuera de alcance",
-      desc: "Si tu caso no encaja en esta fase del servicio, te lo diremos desde el principio y te derivamos al equipo especializado.",
-      items: ["Autónomos con actividad económica compleja", "Criptoactivos, herencias, operaciones extranjero", "Módulos o estimación objetiva"],
+    { Icon: AlertCircle, color: "#b45309", bg: "#fef3c7", title: "Fuera del alcance actual",
+      desc: "Si tu caso no encaja en esta fase del servicio, te lo diremos desde el principio y te orientaremos sobre cómo avanzar.",
+      items: ["Situaciones fiscales con alta complejidad técnica", "Operaciones internacionales o de gran volumen", "Casos que requieren asesoramiento especializado"],
     },
   ];
   return (
