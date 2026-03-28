@@ -1695,3 +1695,6 @@
 [2026-03-28T16:01:55.439Z] cServer running on http://localhost:3000/
 [2026-03-28T16:02:54.314Z] 12:02:54 PM [tsx] change in ./server/lib/googleSheets.ts Restarting...
 [2026-03-28T16:02:59.020Z] cServer running on http://localhost:3000/
+[2026-03-28T16:03:44.230Z] 12:03:44 PM [vite] (client) page reload public/__manus__/version.json
+[2026-03-28T16:07:49.417Z] 12:07:49 PM [tsx] change in ./vite.config.ts Restarting...
+[2026-03-28T16:07:51.847Z] cServer running on http://localhost:3000/

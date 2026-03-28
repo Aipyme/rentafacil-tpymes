@@ -217,3 +217,8 @@
 - [x] Footer: añadir sección Comunidades con las 5 comunidades con página propia (Andalucía, Madrid, Cataluña, C. Valenciana, Canarias)
 - [x] Home: añadir sección SEO de comunidades autónomas (15 CCAA) entre Precios y FAQs
 - [x] BD: audit trail del expediente de test RF2025-989FZU completado manualmente
+
+## Pendientes sesión 28/03/2026
+- [ ] Corregir página en blanco /mi-renta/[id] en producción (Railway — bundle JS no carga)
+- [ ] Activar WF09/WF10 Calendar en n8n para crear evento de cita tras el pago
+- [ ] Idempotencia del Sheet: comprobación previa en n8n para evitar filas duplicadas
