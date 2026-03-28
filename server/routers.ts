@@ -7,6 +7,7 @@ import { casosRouter } from "./routers/casos";
 import { documentosRouter } from "./routers/documentos";
 import { firmasRouter } from "./routers/firmas";
 import { simuladorRouter } from "./routers/simulador";
+console.log("[ROUTERS] simuladorRouter loaded, keys:", Object.keys(simuladorRouter._def.procedures || {}).join(", "));
 import { pagosRouter } from "./routers/pagos";
 import { asesorRouter } from "./routers/asesor";
 import { ENV } from "./_core/env";
