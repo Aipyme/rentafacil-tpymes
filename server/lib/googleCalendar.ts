@@ -130,14 +130,31 @@ async function getCalendarAccessToken(sa: ServiceAccountKey): Promise<string> {
 }
 
 function getServiceAccount(): ServiceAccountKey | null {
+  // Try GOOGLE_SERVICE_ACCOUNT_JSON_B64 first (base64-encoded, most reliable)
+  const b64 = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_B64;
+  if (b64) {
+    try {
+      const decoded = Buffer.from(b64, "base64").toString("utf8");
+      return JSON.parse(decoded) as ServiceAccountKey;
+    } catch {}
+  }
+
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (!raw) return null;
+
+  // Try direct parse
+  try { return JSON.parse(raw) as ServiceAccountKey; } catch {}
+
+  // Try replacing escaped newlines
+  try { return JSON.parse(raw.replace(/\\n/g, "\n")) as ServiceAccountKey; } catch {}
+
+  // Try base64 decode
   try {
-    return JSON.parse(raw) as ServiceAccountKey;
-  } catch {
-    console.warn("[GoogleCalendar] GOOGLE_SERVICE_ACCOUNT_JSON no es JSON válido");
-    return null;
-  }
+    return JSON.parse(Buffer.from(raw, "base64").toString("utf8")) as ServiceAccountKey;
+  } catch {}
+
+  console.warn("[GoogleCalendar] SA present but unparseable");
+  return null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

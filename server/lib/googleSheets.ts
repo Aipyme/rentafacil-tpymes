@@ -108,14 +108,47 @@ async function getServiceAccountAccessToken(sa: ServiceAccountKey): Promise<stri
 }
 
 function getServiceAccount(): ServiceAccountKey | null {
+  // Try GOOGLE_SERVICE_ACCOUNT_JSON_B64 first (base64-encoded, most reliable)
+  const b64 = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_B64;
+  if (b64) {
+    try {
+      const decoded = Buffer.from(b64, "base64").toString("utf8");
+      const parsed = JSON.parse(decoded) as ServiceAccountKey;
+      console.log(`[GoogleSheets] SA loaded (base64) for ${parsed.client_email}`);
+      return parsed;
+    } catch (e: any) {
+      console.warn(`[GoogleSheets] GOOGLE_SERVICE_ACCOUNT_JSON_B64 decode failed: ${e.message}`);
+    }
+  }
+
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (!raw) return null;
+
+  // Try direct parse
   try {
-    return JSON.parse(raw) as ServiceAccountKey;
-  } catch {
-    console.warn("[GoogleSheets] GOOGLE_SERVICE_ACCOUNT_JSON no es JSON válido");
-    return null;
-  }
+    const parsed = JSON.parse(raw) as ServiceAccountKey;
+    console.log(`[GoogleSheets] SA loaded (direct) for ${parsed.client_email}`);
+    return parsed;
+  } catch {}
+
+  // Try replacing escaped newlines (Railway sometimes double-escapes \n)
+  try {
+    const fixed = raw.replace(/\\n/g, "\n");
+    const parsed = JSON.parse(fixed) as ServiceAccountKey;
+    console.log(`[GoogleSheets] SA loaded (fixed newlines) for ${parsed.client_email}`);
+    return parsed;
+  } catch {}
+
+  // Try base64 decode as fallback
+  try {
+    const decoded = Buffer.from(raw, "base64").toString("utf8");
+    const parsed = JSON.parse(decoded) as ServiceAccountKey;
+    console.log(`[GoogleSheets] SA loaded (raw-as-base64) for ${parsed.client_email}`);
+    return parsed;
+  } catch {}
+
+  console.warn("[GoogleSheets] GOOGLE_SERVICE_ACCOUNT_JSON present but unparseable");
+  return null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
