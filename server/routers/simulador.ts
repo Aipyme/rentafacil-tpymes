@@ -123,10 +123,14 @@ export const simuladorRouter = router({
         tipo_resultado: resultado.tipo_resultado || "",
         observaciones: resultado.motivo_complejidad || "",
       };
-      // Fire-and-forget: don't await, don't block the response
-      upsertDeclaracionSheet(_sheetRow, "casos_master_v2")
-        .then(r => console.log(`[Simulador] Sheet write for ${_sheetExpId}: ${r.action}`))
-        .catch(e => console.error(`[Simulador] Sheet write FAILED for ${_sheetExpId}:`, e.message || e));
+      // Await Sheet write with logging — need to debug why fire-and-forget produces no output
+      console.log(`[Simulador] About to call upsertDeclaracionSheet for ${_sheetExpId}`);
+      try {
+        const sheetResult = await upsertDeclaracionSheet(_sheetRow, "casos_master_v2");
+        console.log(`[Simulador] Sheet write SUCCESS for ${_sheetExpId}: ${sheetResult.action}`);
+      } catch (sheetErr: any) {
+        console.error(`[Simulador] Sheet write ERROR for ${_sheetExpId}:`, sheetErr.message || sheetErr);
+      }
 
       return { expedienteId, resultado, precio };
     }),
