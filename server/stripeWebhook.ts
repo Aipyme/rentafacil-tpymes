@@ -216,6 +216,7 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           .where(eq(declaraciones.expedienteId, expedienteId));
 
         // Notificar a n8n WF08 con payload enriquecido para escribir en el Sheet
+        const paymentIntentId = (session.payment_intent as string) || "";
         const sheetPayload = buildSheetRowPayload({
           expedienteId,
           emailCliente,
@@ -224,15 +225,14 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           currency: session.currency || "eur",
           paidAt: new Date().toISOString(),
           stripeEventId: event.id,
+          stripePaymentIntentId: paymentIntentId,
           datosContribuyente: (expData?.datosContribuyente as Record<string, unknown>) || {},
           resultadoCalculo: (expData?.resultadoCalculo as Record<string, unknown>) || {},
           precioTotal: expData?.precioTotal || 0,
         });
         await notifyN8n({
           ...sheetPayload,
-          payment_intent_id: session.payment_intent as string || "",
           event_type: "checkout.session.completed",
-          stripe_event_id: event.id,
         });
 
         // Enviar email de confirmación al cliente (best-effort)
