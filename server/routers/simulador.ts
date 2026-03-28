@@ -132,6 +132,40 @@ export const simuladorRouter = router({
     }),
 
   /**
+   * Diagnóstico: verificar que la SA y Sheet están configurados
+   */
+  sheetDiag: publicProcedure.query(async () => {
+    const sheetId = process.env.GOOGLE_SHEETS_ID;
+    const saRaw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+    const diag: Record<string, unknown> = {
+      GOOGLE_SHEETS_ID: sheetId ? `${sheetId.substring(0, 10)}...` : "NOT SET",
+      SA_JSON_present: !!saRaw,
+      SA_JSON_length: saRaw?.length || 0,
+    };
+    if (saRaw) {
+      try {
+        const parsed = JSON.parse(saRaw);
+        diag.SA_email = parsed.client_email;
+        diag.SA_project = parsed.project_id;
+        diag.SA_has_private_key = !!parsed.private_key;
+      } catch (e: any) {
+        diag.SA_parse_error = e.message;
+      }
+    }
+    // Try a quick Sheet read
+    try {
+      const result = await upsertDeclaracionSheet(
+        { expediente_id: "DIAG-TEST", estado: "test", source_workflow: "diag" },
+        "casos_master_v2"
+      );
+      diag.upsert_result = result;
+    } catch (e: any) {
+      diag.upsert_error = e.message;
+    }
+    return diag;
+  }),
+
+  /**
    * Obtener expediente por ID
    */
   getExpediente: publicProcedure
