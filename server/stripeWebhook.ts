@@ -228,7 +228,9 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
         const comunidad = (datosContrib.comunidadAutonoma as string) || (datosContrib.comunidad as string) || "";
         const situacion = (datosContrib.situacionLaboral as string) || (datosContrib.situacion as string) || "";
         const planCode = (resultadoCalc.plan_code as string) || (resultadoCalc.planCode as string) || "BASICO";
-        const precioFinal = expData?.precioTotal || (session.amount_total || 0) / 100;
+        const precioFromDb = expData?.precioTotal || 0;
+        // precioTotal en BD está en céntimos (2900 = 29€). Stripe amount_total también en céntimos.
+        const precioFinal = precioFromDb > 100 ? precioFromDb / 100 : precioFromDb; // → EUR
         const amountEur = (session.amount_total || 0) / 100;
         const baseUrl = process.env.APP_BASE_URL || "https://rentatpymes.aicheckpyme.co";
         const urlSeguimiento = `${baseUrl}/mi-renta/${expedienteId}`;
@@ -341,7 +343,7 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
             nombreCliente,
             emailCliente,
             planNombre: planCode,
-            precioTotal: precioFinal,
+            precioTotal: precioFinal, // ya en EUR
             comunidad,
             situacion,
             urlSeguimiento,
