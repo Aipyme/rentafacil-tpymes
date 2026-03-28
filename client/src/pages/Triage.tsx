@@ -227,6 +227,7 @@ function getDeduccionesAutonomicas(ccaa: string): { key: string; label: string }
       ...comunes,
       { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (menores de 35 años)' },
       { key: 'ded_gastosEscolaresHijos', label: 'Gastos de escolaridad de hijos (0-3 años, colegios, idiomas)' },
+      { key: 'ded_actividadFisica', label: 'Gastos en actividad física/deportiva (gimnasio, deporte federado) — 15% hasta 1.000€' },
       { key: 'ded_emprendedores', label: 'Inversión en empresas de nueva creación (Business Angel)' },
     ],
     'Murcia': [
@@ -242,6 +243,7 @@ function getDeduccionesAutonomicas(ccaa: string): { key: string; label: string }
       ...comunes,
       { key: 'ded_alquilerJovenes', label: 'Alquiler de vivienda habitual (menores de 35 años o familia numerosa)' },
       { key: 'ded_gastosEscolaresHijos', label: 'Gastos de escolaridad de hijos (libros, material, transporte)' },
+      { key: 'ded_actividadFisica', label: 'Gastos en actividad física/deportiva (gimnasio, actividades deportivas) — 15% hasta 150€' },
     ],
   };
   return porCCAA[ccaa] || comunes;
@@ -289,13 +291,23 @@ function getComplejidad(data: TriageData): "simple" | "medio" | "complejo" | "no
   return "simple";
 }
 
-function getPrecio(complejidad: string): string {
+function getPrecio(complejidad: string, data?: TriageData): string {
+  let base = 0;
   switch (complejidad) {
-    case "simple": return "desde 39€";
-    case "medio": return "desde 69€";
-    case "complejo": return "desde 99€";
-    default: return "—";
+    case "simple": base = 39; break;
+    case "medio": base = 69; break;
+    case "complejo": base = 99; break;
+    default: return "Presupuesto personalizado";
   }
+  // Suplementos por situación específica
+  if (data) {
+    if (data.tieneInmuebles === "uno") base += 20;
+    if (data.tieneInmuebles === "varios") base += 40;
+    if (data.tieneDiscapacidad === "si") base += 10;
+    if (data.tieneInversiones === "si") base += 15;
+    if (data.tieneHipotecaPre2013 === "si") base += 10;
+  }
+  return `${base}€`;
 }
 
 function getPlan(complejidad: string): string {
@@ -337,6 +349,7 @@ function getDeduccionesDetectadas(data: TriageData): string[] {
   if (data.ded_inversionViviendaHabitual === "si") deducciones.push(`Deducción autonómica por inversión en vivienda habitual (${data.comunidadAutonoma})`);
   if (data.ded_donativos === "si") deducciones.push(`Deducción autonómica por donativos (${data.comunidadAutonoma})`);
   if (data.ded_emprendedores === "si") deducciones.push(`Deducción autonómica por emprendimiento/inversión (${data.comunidadAutonoma})`);
+  if (data.ded_actividadFisica === "si") deducciones.push(`Deducción autonómica por actividad física/deportiva (${data.comunidadAutonoma})`);
   return deducciones;
 }
 
@@ -544,7 +557,7 @@ export default function Triage() {
     expedienteId,
     complejidad,
     plan: getPlan(complejidad),
-    precio: getPrecio(complejidad),
+    precio: getPrecio(complejidad, data),
     deduccionesDetectadas: deducciones.join(', '),
     documentosNecesarios: documentos.join(', '),
     // Col AL-AN: empresa pagadora
@@ -654,7 +667,7 @@ export default function Triage() {
 
   const resumenTexto = `
 EXPEDIENTE: ${expedienteId}
-PLAN: ${getPlan(complejidad)} (${getPrecio(complejidad)})
+PLAN: ${getPlan(complejidad)} (${getPrecio(complejidad, data)})
 ---
 CONTRIBUYENTE: ${data.nombre} ${data.apellidos}
 NIF: ${data.nif || "No proporcionado"}

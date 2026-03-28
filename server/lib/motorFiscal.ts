@@ -633,15 +633,17 @@ export interface PrecioConfig {
 }
 
 export const PRECIO_DEFAULT: PrecioConfig = {
-  base: 2900, // 29€
+  base: 3900, // 39€ — Renta Simple
   suplementos: {
-    autonomo: 2000,        // +20€
-    vivienda: 1500,        // +15€
-    discapacidad: 1000,    // +10€
-    varios_pagadores: 500, // +5€
-    ingresos_altos: 2000,  // +20€
-    donaciones: 500,       // +5€
-    planes: 500,           // +5€
+    autonomo: 6000,        // +60€ (sube a 99€ mínimo → Renta Premium)
+    vivienda: 2000,        // +20€ por inmueble/propiedad
+    discapacidad: 1000,    // +10€ por discapacidad
+    varios_pagadores: 1000,// +10€ por 2+ pagadores
+    ingresos_altos: 2000,  // +20€ por ingresos >60k
+    donaciones: 500,       // +5€ por donativos
+    planes: 500,           // +5€ por planes pensiones
+    inversiones: 1500,     // +15€ por inversiones
+    hipoteca_pre2013: 1000,// +10€ por hipoteca pre-2013
   },
 };
 
