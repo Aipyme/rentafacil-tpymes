@@ -27,6 +27,7 @@ import { getDb } from "./db";
 import { declaraciones } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { buildSheetRowPayload } from "./lib/googleSheets";
+import { sendEmail, buildEmailConfirmacionPago } from "./lib/email";
 
 // ============================================================
 // HELPERS
@@ -233,6 +234,48 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           event_type: "checkout.session.completed",
           stripe_event_id: event.id,
         });
+
+        // Enviar email de confirmación al cliente (best-effort)
+        if (emailCliente) {
+          const datosContrib = (expData?.datosContribuyente as Record<string, unknown>) || {};
+          const resultadoCalc = (expData?.resultadoCalculo as Record<string, unknown>) || {};
+          const comunidad = (datosContrib.comunidadAutonoma as string) || (datosContrib.comunidad as string) || "";
+          const situacion = (datosContrib.situacionLaboral as string) || (datosContrib.situacion as string) || "";
+          const planCode = (resultadoCalc.plan_code as string) || (resultadoCalc.planCode as string) || "";
+          const precioFinal = expData?.precioTotal || (session.amount_total || 0) / 100;
+          const fechaPago = new Date().toLocaleDateString("es-ES", {
+            day: "2-digit", month: "long", year: "numeric"
+          });
+          const baseUrl = process.env.APP_BASE_URL || "https://rentatpymes.aicheckpyme.co";
+          const urlSeguimiento = `${baseUrl}/mi-renta/${expedienteId}`;
+
+          const htmlContent = buildEmailConfirmacionPago({
+            expedienteId,
+            nombreCliente,
+            emailCliente,
+            planNombre: planCode,
+            precioTotal: precioFinal,
+            comunidad,
+            situacion,
+            urlSeguimiento,
+            fechaPago,
+          });
+
+          const emailResult = await sendEmail({
+            to: emailCliente,
+            toName: nombreCliente || undefined,
+            subject: `✅ Pago confirmado — Expediente ${expedienteId} | Renta Fácil TPymes`,
+            htmlContent,
+          });
+
+          if (emailResult.success) {
+            console.log(`[Stripe Webhook] Email de confirmación enviado a ${emailCliente} (${expedienteId})`);
+          } else {
+            console.warn(`[Stripe Webhook] Email no enviado: ${emailResult.error}`);
+          }
+        } else {
+          console.warn(`[Stripe Webhook] No hay email del cliente para ${expedienteId} — email omitido`);
+        }
 
         break;
       }

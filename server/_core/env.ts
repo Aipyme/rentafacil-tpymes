@@ -14,4 +14,10 @@ export const ENV = {
   googleSheetsId: process.env.GOOGLE_SHEETS_ID ?? "",
   // Panel del Asesor — contraseña de acceso
   panelPassword: process.env.PANEL_PASSWORD ?? "",
+  // Email transaccional (Brevo API REST)
+  brevoApiKey: process.env.BREVO_API_KEY ?? "",
+  emailFrom: process.env.EMAIL_FROM ?? "noreply@rentafacil.es",
+  emailFromName: process.env.EMAIL_FROM_NAME ?? "Renta Fácil TPymes",
+  // URL base de la app (para links en emails)
+  appBaseUrl: process.env.APP_BASE_URL ?? "https://rentatpymes.aicheckpyme.co",
 };

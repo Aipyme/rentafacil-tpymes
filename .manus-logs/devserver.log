@@ -1666,3 +1666,8 @@
 [2026-03-28T09:15:25.405Z] 5:15:25 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=u4y-ZT7w9bZObWvec17Hl
 [2026-03-28T09:15:54.415Z] 5:15:54 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=u4y-ZT7w9bZObWvec17Hl
 [2026-03-28T09:16:10.404Z] 5:16:10 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=u4y-ZT7w9bZObWvec17Hl
+[2026-03-28T09:18:35.115Z] 5:18:35 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-28T09:28:58.208Z] 5:28:58 AM [tsx] change in ./server/stripeWebhook.ts Restarting...
+[2026-03-28T09:29:01.132Z] cServer running on http://localhost:3000/
+[2026-03-28T09:29:15.464Z] 5:29:15 AM [tsx] change in ./server/_core/env.ts Restarting...
+[2026-03-28T09:29:18.121Z] cServer running on http://localhost:3000/
