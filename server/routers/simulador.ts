@@ -3,6 +3,7 @@ import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { calcularRenta, calcularPrecio, type RespuestasSimulador } from "../lib/motorFiscal";
 import { getDb } from "../db";
 import { declaraciones } from "../../drizzle/schema";
+import { upsertDeclaracionSheet } from "../lib/googleSheets";
 import { eq } from "drizzle-orm";
 import { generarInformePDF } from "../lib/generarPDF";
 import { storagePut } from "../storage";
@@ -93,42 +94,39 @@ export const simuladorRouter = router({
         telefonoContacto: input.telefonoContacto,
       });
 
-      // ── Escribir en Google Sheet casos_master_v2 (best-effort, no bloquea) ──
-      try {
-        const { upsertDeclaracionSheet } = await import("../lib/googleSheets");
-        const contrib = (datos.contribuyente as Record<string, unknown>) || {};
-        const nombre = `${contrib.nombre || ""} ${contrib.apellidos || ""}`.trim();
-        const sheetRow: Record<string, unknown> = {
-          expediente_id: expedienteId,
-          environment: process.env.NODE_ENV === "production" ? "production" : "test",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          source_workflow: "simulador_renta",
-          cliente_nombre: nombre,
-          cliente_email: input.emailContacto || "",
-          cliente_telefono: input.telefonoContacto || "",
-          nif: (contrib.nif as string) || "",
-          ccaa: (datos.comunidad as string) || "",
-          situacion_laboral: (datos.situacion as string) || "",
-          ingresos_brutos: String(datos.ingresos_brutos || ""),
-          num_pagadores: datos.mas_de_un_pagador ? "2+" : "1",
-          num_hijos: String(datos.n_hijos || "0"),
-          realiza_donaciones: Array.isArray(datos.deducciones_check) && (datos.deducciones_check as string[]).includes("donaciones") ? "Sí" : "No",
-          estado: "simulacion",
-          subestado: "pendiente_pago",
-          complejidad: resultado.es_complejo ? "complejo" : "simple",
-          plan_code: resultado.es_complejo ? "COMPLEJO" : "BASICO",
-          precio: String(precio.precioTotal),
-          payment_status: "pending",
-          resultado_estimado: String(resultado.resultado_aproximado || ""),
-          tipo_resultado: resultado.tipo_resultado || "",
-          observaciones: resultado.motivo_complejidad || "",
-        };
-        await upsertDeclaracionSheet(sheetRow, "casos_master_v2");
-        console.log(`[Simulador] Expediente ${expedienteId} escrito en casos_master_v2`);
-      } catch (sheetErr: any) {
-        console.warn(`[Simulador] Error escribiendo en Sheet (no crítico): ${sheetErr.message}`);
-      }
+      // ── Escribir en Google Sheet casos_master_v2 (fire-and-forget, no bloquea respuesta) ──
+      const _sheetExpId = expedienteId;
+      const contrib = (datos.contribuyente as Record<string, unknown>) || {};
+      const _sheetRow: Record<string, unknown> = {
+        expediente_id: _sheetExpId,
+        environment: process.env.NODE_ENV === "production" ? "production" : "test",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        source_workflow: "simulador_renta",
+        cliente_nombre: `${contrib.nombre || ""} ${contrib.apellidos || ""}`.trim(),
+        cliente_email: input.emailContacto || "",
+        cliente_telefono: input.telefonoContacto || "",
+        nif: (contrib.nif as string) || "",
+        ccaa: (datos.comunidad as string) || "",
+        situacion_laboral: (datos.situacion as string) || "",
+        ingresos_brutos: String(datos.ingresos_brutos || ""),
+        num_pagadores: datos.mas_de_un_pagador ? "2+" : "1",
+        num_hijos: String(datos.n_hijos || "0"),
+        realiza_donaciones: Array.isArray(datos.deducciones_check) && (datos.deducciones_check as string[]).includes("donaciones") ? "Sí" : "No",
+        estado: "simulacion",
+        subestado: "pendiente_pago",
+        complejidad: resultado.es_complejo ? "complejo" : "simple",
+        plan_code: resultado.es_complejo ? "COMPLEJO" : "BASICO",
+        precio: String(precio.precioTotal),
+        payment_status: "pending",
+        resultado_estimado: String(resultado.resultado_aproximado || ""),
+        tipo_resultado: resultado.tipo_resultado || "",
+        observaciones: resultado.motivo_complejidad || "",
+      };
+      // Fire-and-forget: don't await, don't block the response
+      upsertDeclaracionSheet(_sheetRow, "casos_master_v2")
+        .then(r => console.log(`[Simulador] Sheet write for ${_sheetExpId}: ${r.action}`))
+        .catch(e => console.error(`[Simulador] Sheet write FAILED for ${_sheetExpId}:`, e.message || e));
 
       return { expedienteId, resultado, precio };
     }),
