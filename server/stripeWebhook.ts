@@ -294,6 +294,22 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           } catch {
             // No crítico
           }
+
+          // Actualizar fila en Sheet "Declaraciones" con datos del Calendar
+          try {
+            const calendarSheetUpdate: Record<string, unknown> = {
+              expediente_id: expedienteId,
+              calendar_event_id: calendarResult.eventId,
+              calendar_start: calendarResult.scheduledAt || "",
+              calendar_end: "", // se podría calcular pero no es crítico
+              asesor_email: process.env.CALENDAR_ADVISOR_EMAIL || "",
+              updated_at: new Date().toISOString(),
+            };
+            await upsertDeclaracionSheet(calendarSheetUpdate, "Declaraciones");
+            console.log(`[Stripe Webhook] Sheet actualizado con calendar_event_id para ${expedienteId}`);
+          } catch (calSheetErr: any) {
+            console.warn(`[Stripe Webhook] Error actualizando Sheet con Calendar: ${calSheetErr.message}`);
+          }
         } else if (calendarResult.error !== "not_configured") {
           console.warn(`[Stripe Webhook] Calendar no creado: ${calendarResult.error}`);
         }
