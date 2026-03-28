@@ -270,6 +270,22 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
         }
         // Si action = "skipped_idempotent" | "updated" | "appended" → OK, no notificar n8n
 
+        // ── PASO A2: Actualizar casos_master_v2 con datos de pago ──
+        try {
+          const casosMasterPayload: Record<string, unknown> = {
+            expediente_id: expedienteId,
+            estado: "pagado",
+            subestado: "pendiente_documentacion",
+            payment_status: "paid",
+            payment_confirmed_at: paidAt,
+            updated_at: new Date().toISOString(),
+          };
+          await upsertDeclaracionSheet(casosMasterPayload, "casos_master_v2");
+          console.log(`[Stripe Webhook] casos_master_v2 actualizado para ${expedienteId}`);
+        } catch (cmErr: any) {
+          console.warn(`[Stripe Webhook] Error actualizando casos_master_v2: ${cmErr.message}`);
+        }
+
         // ── PASO B: Google Calendar — crear evento de revisión (WF09/WF10) ──
         // Best-effort: no bloquea si falla
         const calendarResult = await crearEventoCalendar({
