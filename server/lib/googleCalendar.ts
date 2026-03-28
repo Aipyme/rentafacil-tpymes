@@ -236,13 +236,10 @@ export async function crearEventoCalendar(params: CalendarEventParams): Promise<
   const { start, end } = calcularFechaCita(diasAdelante, horaDefault);
 
   // Construir el evento
+  // NOTA: No incluimos attendees porque la SA sin Domain-Wide Delegation
+  // no puede invitar a usuarios externos. El asesor ve el evento porque
+  // es owner del calendario. El cliente recibe notificación via email Brevo.
   const advisorEmail = process.env.CALENDAR_ADVISOR_EMAIL;
-  const attendees: { email: string; displayName?: string }[] = [
-    { email: params.emailCliente, displayName: params.nombreCliente },
-  ];
-  if (advisorEmail) {
-    attendees.push({ email: advisorEmail, displayName: "Asesor Fiscal Renta Fácil" });
-  }
 
   const planLabel = params.planCode === "BASICO" ? "Básico" :
     params.planCode === "COMPLEJO" ? "Complejo" : params.planCode;
@@ -269,7 +266,8 @@ export async function crearEventoCalendar(params: CalendarEventParams): Promise<
       dateTime: end,
       timeZone: "Europe/Madrid",
     },
-    attendees,
+    // No attendees — SA sin Domain-Wide Delegation no puede invitar.
+    // El asesor ve los eventos porque es owner del calendario.
     reminders: {
       useDefault: false,
       overrides: [
