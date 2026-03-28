@@ -9,7 +9,7 @@ cmds = [
 ]
 
 [phases.build]
-cmds = ["pnpm run build"]
+cmds = ["pnpm install && pnpm run build"]
 
 [start]
 cmd = "pnpm run start"

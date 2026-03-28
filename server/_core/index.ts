@@ -89,7 +89,7 @@ async function startServer() {
   app._router?.stack?.forEach((m: any) => {
     if (m.route?.path) routes.push(`${Object.keys(m.route.methods).join(",").toUpperCase()} ${m.route.path}`);
   });
-  console.log(`[STARTUP] Commit: d72bae4 | Routes: ${routes.join(" | ")}`);
+  console.log(`[STARTUP] Commit: 0fa6137-REAL | Routes: ${routes.join(" | ")}`);
 
   // Log SA status at startup
   const b64Check = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_B64;
