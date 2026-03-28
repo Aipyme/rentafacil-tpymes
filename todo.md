@@ -222,3 +222,11 @@
 - [ ] Corregir página en blanco /mi-renta/[id] en producción (Railway — bundle JS no carga)
 - [ ] Activar WF09/WF10 Calendar en n8n para crear evento de cita tras el pago
 - [ ] Idempotencia del Sheet: comprobación previa en n8n para evitar filas duplicadas
+
+## Automatización post-pago: Sheets upsert + Google Calendar (sesión actual)
+- [x] googleSheets.ts: función upsertSheetRow con idempotencia por stripe_event_id (buscar → update si existe, append si no)
+- [x] googleSheets.ts: función directa de escritura en Sheet via Google Sheets API v4 con Service Account
+- [x] googleCalendar.ts: nuevo helper para crear evento en Google Calendar tras pago confirmado
+- [x] stripeWebhook.ts: integrar upsert Sheet y creación de evento Calendar tras checkout.session.completed
+- [ ] schema.ts: añadir campo calendarEventId a tabla declaraciones
+- [x] env.ts: añadir GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_CALENDAR_ID, CALENDAR_EVENT_DURATION_MINUTES

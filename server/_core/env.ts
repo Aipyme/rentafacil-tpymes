@@ -20,4 +20,12 @@ export const ENV = {
   emailFromName: process.env.EMAIL_FROM_NAME ?? "Renta Fácil TPymes",
   // URL base de la app (para links en emails)
   appBaseUrl: process.env.APP_BASE_URL ?? "https://rentatpymes.aicheckpyme.co",
+  // Google Service Account (Sheets + Calendar escritura directa)
+  googleServiceAccountJson: process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? "",
+  // Google Calendar
+  googleCalendarId: process.env.GOOGLE_CALENDAR_ID ?? "",
+  calendarAdvisorEmail: process.env.CALENDAR_ADVISOR_EMAIL ?? "",
+  calendarDaysAhead: parseInt(process.env.CALENDAR_DAYS_AHEAD || "2", 10),
+  calendarDefaultHour: process.env.CALENDAR_DEFAULT_HOUR ?? "10:00",
+  calendarEventDurationMin: parseInt(process.env.CALENDAR_EVENT_DURATION_MIN || "30", 10),
 };

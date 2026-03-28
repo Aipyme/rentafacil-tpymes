@@ -1,24 +1,27 @@
 /**
  * Handler: POST /api/stripe/webhook
- * Versión mejorada del stripeWebhook.ts existente.
  *
- * MEJORAS respecto al handler actual (server/stripeWebhook.ts):
- *  1. Guardia explícita si STRIPE_WEBHOOK_SECRET está vacío → 503.
- *  2. Guardia explícita si stripe-signature header está ausente → 400.
- *  3. Notificación a n8n WF08 (pago_confirmado) con payload enriquecido.
- *  4. Log estructurado con event.id, type y expediente_id.
- *  5. Idempotencia: no actualiza si el estado ya es "pagado".
+ * FLUJO COMPLETO tras checkout.session.completed:
+ *  1. Verificar firma Stripe
+ *  2. Idempotencia fuerte por stripeEventId en BD
+ *  3. Actualizar estado en BD (pagado + audit trail)
+ *  4. Google Sheets upsert directo (si hay Service Account)
+ *     → si no hay SA, delegar a n8n WF08 como fallback
+ *  5. Google Calendar: crear evento de revisión (WF09/WF10)
+ *  6. Email de confirmación al cliente (Brevo)
  *
- * INTEGRACIÓN:
- *  Este archivo reemplaza server/stripeWebhook.ts.
- *  El registro en _core/index.ts ya es correcto:
- *    app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), handleStripeWebhook);
- *
- * VARIABLES DE ENTORNO REQUERIDAS:
- *  STRIPE_SECRET_KEY          — clave secreta Stripe
- *  STRIPE_WEBHOOK_SECRET      — secreto del endpoint webhook en Stripe Dashboard
- *  N8N_PAGO_CONFIRMADO_WEBHOOK — URL del webhook n8n WF08
- *  INTERNAL_WORKFLOW_KEY      — secreto compartido entre backend y n8n
+ * VARIABLES DE ENTORNO:
+ *  STRIPE_SECRET_KEY              — clave secreta Stripe
+ *  STRIPE_WEBHOOK_SECRET          — secreto del endpoint webhook en Stripe Dashboard
+ *  N8N_PAGO_CONFIRMADO_WEBHOOK    — URL del webhook n8n WF08 (fallback si no hay SA)
+ *  INTERNAL_WORKFLOW_KEY          — secreto compartido entre backend y n8n
+ *  GOOGLE_SERVICE_ACCOUNT_JSON    — JSON de la service account (Sheets + Calendar)
+ *  GOOGLE_SHEETS_ID               — ID del spreadsheet
+ *  GOOGLE_CALENDAR_ID             — ID del calendario de citas
+ *  CALENDAR_ADVISOR_EMAIL         — Email del asesor para añadir como attendee
+ *  CALENDAR_DAYS_AHEAD            — Días hábiles adelante para la cita (default: 2)
+ *  CALENDAR_DEFAULT_HOUR          — Hora de inicio de la cita (default: "10:00")
+ *  CALENDAR_EVENT_DURATION_MIN    — Duración en minutos (default: 30)
  */
 
 import { Request, Response } from "express";
@@ -26,7 +29,8 @@ import Stripe from "stripe";
 import { getDb } from "./db";
 import { declaraciones } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
-import { buildSheetRowPayload } from "./lib/googleSheets";
+import { buildSheetRowPayload, upsertDeclaracionSheet } from "./lib/googleSheets";
+import { crearEventoCalendar } from "./lib/googleCalendar";
 import { sendEmail, buildEmailConfirmacionPago } from "./lib/email";
 
 // ============================================================
@@ -56,7 +60,7 @@ async function notifyN8n(payload: Record<string, unknown>): Promise<void> {
         ...(internalKey ? { "x-internal-key": internalKey } : {}),
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(10_000), // 10s timeout
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!res.ok) {
@@ -65,7 +69,6 @@ async function notifyN8n(payload: Record<string, unknown>): Promise<void> {
       console.log(`[Stripe Webhook] n8n notificado correctamente para expediente ${payload.expediente_id}`);
     }
   } catch (err: any) {
-    // No lanzar — la notificación a n8n es best-effort, no debe bloquear la respuesta a Stripe
     console.error("[Stripe Webhook] Error en notificación a n8n:", err.message);
   }
 }
@@ -147,7 +150,7 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           break;
         }
 
-        // Idempotencia fuerte: verificar por stripeEventId (evita duplicados aunque Stripe reintente)
+        // ── Idempotencia fuerte: verificar por stripeEventId en BD ──
         const [yaProcessado] = await db
           .select({ id: declaraciones.id })
           .from(declaraciones)
@@ -157,28 +160,34 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           break;
         }
 
-        // Verificar estado actual del expediente
+        // ── Verificar estado actual del expediente ──
         const [expediente] = await db
-          .select({ id: declaraciones.id, estado: declaraciones.estado, stripeEventId: declaraciones.stripeEventId })
+          .select({
+            id: declaraciones.id,
+            estado: declaraciones.estado,
+            stripeEventId: declaraciones.stripeEventId,
+          })
           .from(declaraciones)
           .where(eq(declaraciones.expedienteId, expedienteId));
 
         if (expediente?.estado === "pagado" && expediente?.stripeEventId) {
-          console.log(`[Stripe Webhook] Expediente ${expedienteId} ya estaba en estado PAGADO con eventId — idempotencia OK`);
+          console.log(`[Stripe Webhook] Expediente ${expedienteId} ya estaba PAGADO — idempotencia OK`);
           break;
         }
 
-        // Si ya está pagado pero sin stripeEventId/paymentConfirmedAt, completar el audit trail
+        const isTestEvent = !event.livemode;
+        const paymentIntentId = (session.payment_intent as string) || "";
+        const paidAt = new Date().toISOString();
+
+        // ── Si ya pagado sin audit trail, completarlo ──
         if (expediente?.estado === "pagado" && !expediente?.stripeEventId) {
-          console.log(`[Stripe Webhook] Expediente ${expedienteId} ya PAGADO — completando audit trail (stripeEventId, paymentConfirmedAt)`);
-          const isTestEventAudit = !event.livemode;
           await db
             .update(declaraciones)
             .set({
-              stripePaymentIntentId: (session.payment_intent as string) || null,
+              stripePaymentIntentId: paymentIntentId || null,
               stripeEventId: event.id,
               paymentConfirmedAt: new Date(),
-              environment: isTestEventAudit ? "test" : "prod",
+              environment: isTestEvent ? "test" : "prod",
               estadoUpdatedAt: new Date(),
               estadoUpdatedBy: "stripe_webhook",
             })
@@ -187,14 +196,13 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           break;
         }
 
-        const isTestEvent = !event.livemode;
-        // Actualizar estado en BD con audit trail completo
+        // ── Actualizar estado en BD ──
         await db
           .update(declaraciones)
           .set({
             estado: "pagado",
             subestado: "pendiente_documentacion",
-            stripePaymentIntentId: (session.payment_intent as string) || null,
+            stripePaymentIntentId: paymentIntentId || null,
             stripeEventId: event.id,
             paymentConfirmedAt: new Date(),
             environment: isTestEvent ? "test" : "prod",
@@ -205,7 +213,7 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
 
         console.log(`[Stripe Webhook] Expediente ${expedienteId} marcado como PAGADO`);
 
-        // Leer datos del expediente para enriquecer el payload al Sheet
+        // ── Leer datos del expediente para enriquecer payloads ──
         const [expData] = await db
           .select({
             datosContribuyente: declaraciones.datosContribuyente,
@@ -215,39 +223,86 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           .from(declaraciones)
           .where(eq(declaraciones.expedienteId, expedienteId));
 
-        // Notificar a n8n WF08 con payload enriquecido para escribir en el Sheet
-        const paymentIntentId = (session.payment_intent as string) || "";
+        const datosContrib = (expData?.datosContribuyente as Record<string, unknown>) || {};
+        const resultadoCalc = (expData?.resultadoCalculo as Record<string, unknown>) || {};
+        const comunidad = (datosContrib.comunidadAutonoma as string) || (datosContrib.comunidad as string) || "";
+        const situacion = (datosContrib.situacionLaboral as string) || (datosContrib.situacion as string) || "";
+        const planCode = (resultadoCalc.plan_code as string) || (resultadoCalc.planCode as string) || "BASICO";
+        const precioFinal = expData?.precioTotal || (session.amount_total || 0) / 100;
+        const amountEur = (session.amount_total || 0) / 100;
+        const baseUrl = process.env.APP_BASE_URL || "https://rentatpymes.aicheckpyme.co";
+        const urlSeguimiento = `${baseUrl}/mi-renta/${expedienteId}`;
+
+        // ── Construir payload completo para Sheet / n8n ──
         const sheetPayload = buildSheetRowPayload({
           expedienteId,
           emailCliente,
           nombreCliente,
-          amountTotal: (session.amount_total || 0) / 100,
+          amountTotal: amountEur,
           currency: session.currency || "eur",
-          paidAt: new Date().toISOString(),
+          paidAt,
           stripeEventId: event.id,
           stripePaymentIntentId: paymentIntentId,
-          datosContribuyente: (expData?.datosContribuyente as Record<string, unknown>) || {},
-          resultadoCalculo: (expData?.resultadoCalculo as Record<string, unknown>) || {},
+          datosContribuyente: datosContrib,
+          resultadoCalculo: resultadoCalc,
           precioTotal: expData?.precioTotal || 0,
         });
-        await notifyN8n({
-          ...sheetPayload,
-          event_type: "checkout.session.completed",
+
+        // ── PASO A: Google Sheets upsert directo (con idempotencia) ──
+        // Si hay Service Account configurada, escribe directamente en el Sheet.
+        // Si no, delega a n8n WF08 como fallback.
+        const sheetResult = await upsertDeclaracionSheet(sheetPayload, "Declaraciones");
+        console.log(`[Stripe Webhook] Sheet result: ${sheetResult.action} para ${expedienteId}`);
+
+        if (sheetResult.action === "delegated_to_n8n") {
+          // Fallback: notificar a n8n WF08 para que gestione el Sheet
+          await notifyN8n({
+            ...sheetPayload,
+            event_type: "checkout.session.completed",
+          });
+        } else if (sheetResult.action === "error") {
+          // Error en escritura directa → intentar n8n como fallback
+          console.warn(`[Stripe Webhook] Error en Sheet directo (${sheetResult.error}) — intentando n8n como fallback`);
+          await notifyN8n({
+            ...sheetPayload,
+            event_type: "checkout.session.completed",
+          });
+        }
+        // Si action = "skipped_idempotent" | "updated" | "appended" → OK, no notificar n8n
+
+        // ── PASO B: Google Calendar — crear evento de revisión (WF09/WF10) ──
+        // Best-effort: no bloquea si falla
+        const calendarResult = await crearEventoCalendar({
+          expedienteId,
+          nombreCliente,
+          emailCliente,
+          planCode,
+          comunidad,
+          importe: precioFinal,
+          paidAt,
+          urlSeguimiento,
         });
 
-        // Enviar email de confirmación al cliente (best-effort)
+        if (calendarResult.success && calendarResult.eventId) {
+          console.log(`[Stripe Webhook] Evento Calendar creado: ${calendarResult.eventId} | ${calendarResult.scheduledAt}`);
+          // Guardar calendarEventId en BD (best-effort, no bloquea)
+          try {
+            await db
+              .update(declaraciones)
+              .set({ subestado: "cita_propuesta" })
+              .where(eq(declaraciones.expedienteId, expedienteId));
+          } catch {
+            // No crítico
+          }
+        } else if (calendarResult.error !== "not_configured") {
+          console.warn(`[Stripe Webhook] Calendar no creado: ${calendarResult.error}`);
+        }
+
+        // ── PASO C: Email de confirmación al cliente (Brevo) ──
         if (emailCliente) {
-          const datosContrib = (expData?.datosContribuyente as Record<string, unknown>) || {};
-          const resultadoCalc = (expData?.resultadoCalculo as Record<string, unknown>) || {};
-          const comunidad = (datosContrib.comunidadAutonoma as string) || (datosContrib.comunidad as string) || "";
-          const situacion = (datosContrib.situacionLaboral as string) || (datosContrib.situacion as string) || "";
-          const planCode = (resultadoCalc.plan_code as string) || (resultadoCalc.planCode as string) || "";
-          const precioFinal = expData?.precioTotal || (session.amount_total || 0) / 100;
           const fechaPago = new Date().toLocaleDateString("es-ES", {
-            day: "2-digit", month: "long", year: "numeric"
+            day: "2-digit", month: "long", year: "numeric",
           });
-          const baseUrl = process.env.APP_BASE_URL || "https://rentatpymes.aicheckpyme.co";
-          const urlSeguimiento = `${baseUrl}/mi-renta/${expedienteId}`;
 
           const htmlContent = buildEmailConfirmacionPago({
             expedienteId,
@@ -313,16 +368,26 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
 
         console.log(`[Stripe Webhook] PaymentIntent ${pi.id} para expediente ${expedienteId} COMPLETADO`);
 
+        // Notificar a n8n como fallback (este evento no tiene session, menos datos)
         await notifyN8n({
           expediente_id: expedienteId,
+          expedienteId,
           payment_intent_id: pi.id,
-          amount_total: (pi.amount_received || pi.amount || 0) / 100,
-          currency: pi.currency,
-          email_cliente: emailCliente,
-          nombre_cliente: nombreCliente,
-          paid_at: new Date().toISOString(),
-          event_type: "payment_intent.succeeded",
+          stripePaymentIntentId: pi.id,
           stripe_event_id: event.id,
+          stripeEventId: event.id,
+          estado: "pagado",
+          payment_status: "paid",
+          payment_confirmed_at: new Date().toISOString(),
+          amount: (pi.amount_received || pi.amount || 0),
+          amount_eur: (pi.amount_received || pi.amount || 0) / 100,
+          currency: pi.currency,
+          cliente_email: emailCliente,
+          email: emailCliente,
+          cliente_nombre: nombreCliente,
+          nombre: nombreCliente,
+          source: "stripe_webhook_backend",
+          event_type: "payment_intent.succeeded",
         });
 
         break;
