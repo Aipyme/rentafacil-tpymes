@@ -85,8 +85,20 @@ export function buildSheetRowPayload(params: {
   const planCode = esComplejo ? "COMPLEJO" : "SIMPLE";
 
   return {
-    // Identificación
-    id: params.expedienteId,
+    // === Compatibilidad total: snake_case (nuevo) + camelCase (legacy) ===
+    // El nodo "Confirmar Pago API" de n8n lee $json.body.expediente_id
+    // El nodo "Actualizar Sheets: Pago" busca por columna expediente_id
+    expediente_id: params.expedienteId,
+    expedienteId: params.expedienteId,           // legacy compat
+    payment_intent_id: params.stripeEventId,     // n8n Confirmar Pago API
+    stripePaymentIntentId: params.stripeEventId, // legacy compat
+    stripe_event_id: params.stripeEventId,
+    estado: "pagado",
+    payment_status: "paid",
+    payment_confirmed_at: params.paidAt,
+    amount: Math.round(params.amountTotal * 100), // en céntimos como Stripe
+    currency: (params.currency || "eur").toLowerCase(),
+    // Datos del cliente
     nombre,
     email: params.emailCliente,
     nif,
@@ -95,15 +107,10 @@ export function buildSheetRowPayload(params: {
     ingresos: ingresos.toString(),
     complejidad: esComplejo ? "complejo" : "simple",
     plan: planCode,
-    estado: "Pagado",
-    fechaRegistro: params.paidAt,
-    // Pago
-    importePagado: params.amountTotal.toFixed(2),
-    moneda: (params.currency || "eur").toUpperCase(),
-    stripeEventId: params.stripeEventId,
-    // Fuente
+    fecha_registro: params.paidAt,
+    importe_pagado: params.amountTotal.toFixed(2),
+    // Fuente y acción
     fuente: "simulador_renta",
-    // Para que n8n sepa que debe escribir en el Sheet
     accion: "nuevo_pago_simulador",
   };
 }

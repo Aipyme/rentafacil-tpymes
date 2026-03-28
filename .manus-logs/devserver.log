@@ -1673,3 +1673,25 @@
 [2026-03-28T09:29:18.121Z] cServer running on http://localhost:3000/
 [2026-03-28T09:44:13.246Z] 5:44:13 AM [vite] (client) page reload public/__manus__/version.json
 [2026-03-28T09:46:34.513Z] 5:46:34 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-28T09:58:29.450Z] [Stripe Webhook] Event: payment_intent.succeeded | ID: evt_3TFtdPB82mGAf12Q1GSyJ1Ja
+[2026-03-28T09:58:29.451Z] [Stripe Webhook] payment_intent.succeeded sin expedienteId — ignorando
+[2026-03-28T09:58:29.526Z] [Stripe Webhook] Event: checkout.session.completed | ID: evt_1TFtdRB82mGAf12QzKYqv02S
+[2026-03-28T09:58:29.560Z] [Stripe Webhook] Expediente RF2025-D7H7WS marcado como PAGADO
+[2026-03-28T09:58:29.567Z] [Stripe Webhook] N8N_PAGO_CONFIRMADO_WEBHOOK no configurado — omitiendo notificación
+[2026-03-28T09:58:29.577Z] [Email] BREVO_API_KEY no configurada — email no enviado
+[2026-03-28T09:58:29.578Z] [Stripe Webhook] Email no enviado: BREVO_API_KEY not configured
+[2026-03-28T10:00:00.881Z] Dev server process group stopped
+[2026-03-28T10:00:00.942Z] Dev server exited with code -15
+[2026-03-28T10:00:03.947Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-28T10:00:08.388Z] Server running on http://localhost:3000/
+[2026-03-28T10:20:39.165Z] [Stripe Webhook] Event: payment_intent.succeeded | ID: evt_3TFtyrB82mGAf12Q1MVvpqds
+[2026-03-28T10:20:39.166Z] [Stripe Webhook] payment_intent.succeeded sin expedienteId — ignorando
+[2026-03-28T10:20:39.195Z] [Stripe Webhook] Event: checkout.session.completed | ID: evt_1TFtysB82mGAf12Q2HCF9mcl
+[2026-03-28T10:20:39.273Z] [Stripe Webhook] Expediente RF2025-7E322P marcado como PAGADO
+[2026-03-28T10:20:42.119Z] [Stripe Webhook] n8n notificado correctamente para expediente undefined
+[2026-03-28T10:20:44.083Z] [Email] Enviado a hola@ecombriefs.ai — messageId: <202603281020.15733245185@smtp-relay.mailin.fr>
+[2026-03-28T10:20:44.084Z] [Stripe Webhook] Email de confirmación enviado a hola@ecombriefs.ai (RF2025-7E322P)
+[2026-03-28T16:01:52.792Z] 12:01:52 PM [tsx] change in ./server/lib/googleSheets.ts Restarting...
+[2026-03-28T16:01:55.439Z] cServer running on http://localhost:3000/
+[2026-03-28T16:02:54.314Z] 12:02:54 PM [tsx] change in ./server/lib/googleSheets.ts Restarting...
+[2026-03-28T16:02:59.020Z] cServer running on http://localhost:3000/
