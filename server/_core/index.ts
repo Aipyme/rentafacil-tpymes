@@ -57,6 +57,25 @@ async function startServer() {
   // Presupuesto — público, llamado desde n8n y desde el simulador
   app.post("/api/presupuesto", handlePresupuesto);
 
+  // Runtime router introspection - what does the running app actually have?
+  // Using POST because Express 5 app.use("/{*path}") catches all GETs
+  app.post("/api/diag/router-check", (_req, res) => {
+    try {
+      const procedures = Object.keys((appRouter as any)._def?.procedures || {});
+      const simProcs = procedures.filter(p => p.startsWith("simulador."));
+      return res.json({
+        ts: new Date().toISOString(),
+        totalProcedures: procedures.length,
+        simuladorProcedures: simProcs,
+        hasSheetDiag: simProcs.includes("simulador.sheetDiag"),
+        hasGuardarSimulacion: simProcs.includes("simulador.guardarSimulacion"),
+        buildMarker: "EFBEF3C-ROUTERCHECK",
+      });
+    } catch (e: any) {
+      return res.json({ error: e.message });
+    }
+  });
+
   // Generate XML — solo uso interno (n8n, panel asesor)
   app.post("/api/generate-xml", requireInternalKey, handleGenerateXml);
 
