@@ -36,25 +36,26 @@ async function startServer() {
   // Stripe webhook MUST be registered BEFORE express.json() for signature verification
   app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), handleStripeWebhook);
 
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  // Presupuesto — público, llamado desde n8n y desde el simulador
-  app.post("/api/presupuesto", handlePresupuesto);
-
-  // SA diagnostic endpoint (temporary)
+  // SA diagnostic endpoint (temporary) — MUST be before body parsers
   app.get("/api/diag/sa", (_req, res) => {
     const b64 = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_B64;
     const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
     const d: Record<string, unknown> = {
+      ts: new Date().toISOString(),
       GOOGLE_SHEETS_ID: process.env.GOOGLE_SHEETS_ID ? `${process.env.GOOGLE_SHEETS_ID.substring(0, 10)}...` : "NOT_SET",
       B64_present: !!b64, B64_length: b64?.length || 0,
       RAW_present: !!raw, RAW_length: raw?.length || 0,
     };
     if (b64) { try { const p = JSON.parse(Buffer.from(b64, "base64").toString("utf8")); d.b64_ok = true; d.email = p.client_email; } catch (e: any) { d.b64_err = e.message; } }
     if (raw) { try { JSON.parse(raw); d.raw_direct_ok = true; } catch { d.raw_direct_ok = false; } try { JSON.parse(raw.replace(/\\n/g, "\n")); d.raw_fixed_ok = true; } catch { d.raw_fixed_ok = false; } }
-    res.json(d);
+    return res.json(d);
   });
+
+  // Configure body parser with larger size limit for file uploads
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Presupuesto — público, llamado desde n8n y desde el simulador
+  app.post("/api/presupuesto", handlePresupuesto);
 
   // Generate XML — solo uso interno (n8n, panel asesor)
   app.post("/api/generate-xml", requireInternalKey, handleGenerateXml);
