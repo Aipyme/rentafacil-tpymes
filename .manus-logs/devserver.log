@@ -1671,3 +1671,5 @@
 [2026-03-28T09:29:01.132Z] cServer running on http://localhost:3000/
 [2026-03-28T09:29:15.464Z] 5:29:15 AM [tsx] change in ./server/_core/env.ts Restarting...
 [2026-03-28T09:29:18.121Z] cServer running on http://localhost:3000/
+[2026-03-28T09:44:13.246Z] 5:44:13 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-28T09:46:34.513Z] 5:46:34 AM [vite] (client) page reload public/__manus__/version.json
