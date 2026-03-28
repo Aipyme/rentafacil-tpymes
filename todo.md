@@ -21,8 +21,8 @@
 - [x] Documentación completa del workflow n8n (docs/n8n-workflow-guia.md)
 
 ## Pendiente de configurar (secretos)
-- [ ] Configurar GOOGLE_SHEETS_API_KEY en Secretos del panel de Manus
-- [ ] Configurar GOOGLE_SHEETS_ID en Secretos del panel de Manus
+- [x] Configurar GOOGLE_SHEETS_API_KEY en Railway/Manus ✅
+- [x] Configurar GOOGLE_SHEETS_ID en Railway/Manus ✅
 - [ ] Añadir columnas L (nombreEmpresa) y M (nifPagador) al Google Sheet existente
 - [ ] Actualizar workflow de n8n para mapear los nuevos campos al Sheet
 

@@ -26,6 +26,7 @@ import Stripe from "stripe";
 import { getDb } from "./db";
 import { declaraciones } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { buildSheetRowPayload } from "./lib/googleSheets";
 
 // ============================================================
 // HELPERS
@@ -203,15 +204,32 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
 
         console.log(`[Stripe Webhook] Expediente ${expedienteId} marcado como PAGADO`);
 
-        // Notificar a n8n WF08
+        // Leer datos del expediente para enriquecer el payload al Sheet
+        const [expData] = await db
+          .select({
+            datosContribuyente: declaraciones.datosContribuyente,
+            resultadoCalculo: declaraciones.resultadoCalculo,
+            precioTotal: declaraciones.precioTotal,
+          })
+          .from(declaraciones)
+          .where(eq(declaraciones.expedienteId, expedienteId));
+
+        // Notificar a n8n WF08 con payload enriquecido para escribir en el Sheet
+        const sheetPayload = buildSheetRowPayload({
+          expedienteId,
+          emailCliente,
+          nombreCliente,
+          amountTotal: (session.amount_total || 0) / 100,
+          currency: session.currency || "eur",
+          paidAt: new Date().toISOString(),
+          stripeEventId: event.id,
+          datosContribuyente: (expData?.datosContribuyente as Record<string, unknown>) || {},
+          resultadoCalculo: (expData?.resultadoCalculo as Record<string, unknown>) || {},
+          precioTotal: expData?.precioTotal || 0,
+        });
         await notifyN8n({
-          expediente_id: expedienteId,
+          ...sheetPayload,
           payment_intent_id: session.payment_intent as string || "",
-          amount_total: (session.amount_total || 0) / 100,
-          currency: session.currency,
-          email_cliente: emailCliente,
-          nombre_cliente: nombreCliente,
-          paid_at: new Date().toISOString(),
           event_type: "checkout.session.completed",
           stripe_event_id: event.id,
         });

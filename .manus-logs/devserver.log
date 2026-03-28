@@ -1652,3 +1652,17 @@
 [2026-03-27T15:33:00.854Z] 11:33:00 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
 [2026-03-27T15:33:10.218Z] 11:33:10 AM [vite] (client) hmr update /src/pages/Home.tsx, /src/index.css?v=Bms-17YXF58v-jPnYbYSR
 [2026-03-27T15:34:48.526Z] 11:34:48 AM [vite] (client) page reload public/__manus__/version.json
+[2026-03-27T15:51:09.631Z] Dev server process group stopped
+[2026-03-27T15:51:09.683Z] Dev server exited with code -15
+[2026-03-27T15:51:12.688Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-27T15:51:16.882Z] Server running on http://localhost:3000/
+[2026-03-27T16:35:00.304Z] Dev server process group stopped
+[2026-03-27T16:35:00.357Z] Dev server exited with code -15
+[2026-03-27T16:35:03.343Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-03-27T16:35:05.797Z] Server running on http://localhost:3000/
+[2026-03-28T09:12:42.952Z] 5:12:42 AM [tsx] change in ./server/stripeWebhook.ts Restarting...
+[2026-03-28T09:12:45.766Z] cServer running on http://localhost:3000/
+[2026-03-28T09:14:58.703Z] 5:14:58 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=u4y-ZT7w9bZObWvec17Hl
+[2026-03-28T09:15:25.405Z] 5:15:25 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=u4y-ZT7w9bZObWvec17Hl
+[2026-03-28T09:15:54.415Z] 5:15:54 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=u4y-ZT7w9bZObWvec17Hl
+[2026-03-28T09:16:10.404Z] 5:16:10 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=u4y-ZT7w9bZObWvec17Hl

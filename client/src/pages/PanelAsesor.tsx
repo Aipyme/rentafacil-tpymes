@@ -15,6 +15,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import DocumentosPanel from "@/components/DocumentosPanel";
 import ExportarPDF from "@/components/ExportarPDF";
+import PanelDeclaraciones from "@/components/PanelDeclaraciones";
 
 // Tipo local del caso (espejo de server/routers/casos.ts)
 interface CasoGoogleSheets {
@@ -148,6 +149,8 @@ export default function PanelAsesor() {
 
   // Vista
   const [vistaTabla, setVistaTabla] = useState(false);
+  // Sección activa: "sheet" = casos del Google Sheet | "declaraciones" = simulador IRPF
+  const [seccionActiva, setSeccionActiva] = useState<"sheet" | "declaraciones">("sheet");
 
   // Verificar token al cargar
   useEffect(() => {
@@ -411,36 +414,63 @@ export default function PanelAsesor() {
             <h1 className="text-sm font-bold text-gray-900">Panel del Asesor</h1>
             <p className="text-xs text-gray-400">Renta Fácil TPymes · Campaña 2025</p>
           </div>
+          {/* Tabs de sección */}
+          <div className="flex items-center gap-1 ml-4 border border-gray-200 rounded-lg p-0.5 bg-gray-50">
+            <button
+              onClick={() => setSeccionActiva("sheet")}
+              className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${
+                seccionActiva === "sheet"
+                  ? "bg-white text-teal-700 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              📋 Casos (Sheet)
+            </button>
+            <button
+              onClick={() => setSeccionActiva("declaraciones")}
+              className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${
+                seccionActiva === "declaraciones"
+                  ? "bg-white text-teal-700 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              🧾 Declaraciones IRPF
+            </button>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          {fuente && (
+          {seccionActiva === "sheet" && fuente && (
             <span className={`text-xs font-medium ${fuente.color} hidden sm:inline`}>
               ● {fuente.text}
             </span>
           )}
-          <button
-            onClick={() => setVistaTabla(v => !v)}
-            className="text-xs text-gray-500 hover:text-teal-600 border border-gray-200 px-2 py-1 rounded transition-colors"
-            title={vistaTabla ? "Vista detalle" : "Vista tabla"}
-          >
-            {vistaTabla ? "☰ Detalle" : "⊞ Tabla"}
-          </button>
-          <button
-            onClick={() => refetch()}
-            className="text-xs text-gray-500 hover:text-teal-600 border border-gray-200 px-2 py-1 rounded transition-colors"
-          >
-            ↻ Actualizar
-          </button>
-          <button
-            onClick={() => {
-              exportarCSV(casos);
-              toast.success(`CSV exportado: ${casos.length} casos`);
-            }}
-            className="text-xs text-gray-500 hover:text-teal-600 border border-gray-200 px-2 py-1 rounded transition-colors"
-            title="Exportar a CSV"
-          >
-            ↓ CSV
-          </button>
+          {seccionActiva === "sheet" && (
+            <>
+              <button
+                onClick={() => setVistaTabla(v => !v)}
+                className="text-xs text-gray-500 hover:text-teal-600 border border-gray-200 px-2 py-1 rounded transition-colors"
+                title={vistaTabla ? "Vista detalle" : "Vista tabla"}
+              >
+                {vistaTabla ? "☰ Detalle" : "⊞ Tabla"}
+              </button>
+              <button
+                onClick={() => refetch()}
+                className="text-xs text-gray-500 hover:text-teal-600 border border-gray-200 px-2 py-1 rounded transition-colors"
+              >
+                ↻ Actualizar
+              </button>
+              <button
+                onClick={() => {
+                  exportarCSV(casos);
+                  toast.success(`CSV exportado: ${casos.length} casos`);
+                }}
+                className="text-xs text-gray-500 hover:text-teal-600 border border-gray-200 px-2 py-1 rounded transition-colors"
+                title="Exportar a CSV"
+              >
+                ↓ CSV
+              </button>
+            </>
+          )}
           <button
             onClick={() => {
               sessionStorage.removeItem("panel_token");
@@ -453,8 +483,11 @@ export default function PanelAsesor() {
         </div>
       </header>
 
-      {/* Vista tabla */}
-      {vistaTabla ? (
+      {/* Sección: Declaraciones IRPF (simulador /renta) */}
+      {seccionActiva === "declaraciones" && <PanelDeclaraciones />}
+
+      {/* Sección: Casos Google Sheet */}
+      {seccionActiva === "sheet" && vistaTabla ? (
         <div className="flex-1 overflow-auto p-4">
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <table className="w-full text-xs">
