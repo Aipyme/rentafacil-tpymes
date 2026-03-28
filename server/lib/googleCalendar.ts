@@ -168,7 +168,9 @@ function esDiaHabil(fecha: Date): boolean {
 
 function calcularFechaCita(diasHabilesAdelante: number, horaInicio: string): { start: string; end: string } {
   const duracionMin = parseInt(process.env.CALENDAR_EVENT_DURATION_MIN || "30", 10);
-  const [hora, minuto] = horaInicio.split(":").map(Number);
+  const parts = horaInicio.split(":");
+  const hora = parseInt(parts[0], 10) || 10;
+  const minuto = parseInt(parts[1], 10) || 0;
 
   // Calcular próximo día hábil
   let fecha = new Date();
