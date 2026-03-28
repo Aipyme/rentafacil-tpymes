@@ -84,9 +84,37 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
+  // Log registered routes for debugging
+  const routes: string[] = [];
+  app._router?.stack?.forEach((m: any) => {
+    if (m.route?.path) routes.push(`${Object.keys(m.route.methods).join(",").toUpperCase()} ${m.route.path}`);
+  });
+  console.log(`[STARTUP] Commit: d72bae4 | Routes: ${routes.join(" | ")}`);
+
+  // Log SA status at startup
+  const b64Check = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_B64;
+  const rawCheck = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  console.log(`[STARTUP] SA_B64: ${b64Check ? `present (${b64Check.length} chars)` : "NOT SET"}`);
+  console.log(`[STARTUP] SA_RAW: ${rawCheck ? `present (${rawCheck.length} chars)` : "NOT SET"}`);
+  if (b64Check) {
+    try { const p = JSON.parse(Buffer.from(b64Check, "base64").toString("utf8")); console.log(`[STARTUP] SA_B64 parsed OK: ${p.client_email}`); } 
+    catch (e: any) { console.log(`[STARTUP] SA_B64 parse FAILED: ${e.message}`); }
+  }
+  if (rawCheck) {
+    try { JSON.parse(rawCheck); console.log("[STARTUP] SA_RAW direct parse: OK"); } 
+    catch { 
+      try { JSON.parse(rawCheck.replace(/\\n/g, "\n")); console.log("[STARTUP] SA_RAW fixed newlines parse: OK"); }
+      catch { console.log("[STARTUP] SA_RAW parse: FAILED (both direct and fixed)"); }
+    }
+  }
+
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });
 }
+
+// Global error handlers
+process.on("unhandledRejection", (r) => console.error("[UNHANDLED_REJECTION]", r));
+process.on("uncaughtException", (err) => { console.error("[UNCAUGHT_EXCEPTION]", err); process.exit(1); });
 
 startServer().catch(console.error);
