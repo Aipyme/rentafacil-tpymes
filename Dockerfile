@@ -9,10 +9,13 @@ COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
 RUN pnpm install --frozen-lockfile
 
-# ---- Build ----
+# ---- Build (no cache) ----
 FROM deps AS build
+# Force cache invalidation on every deploy
+ARG RAILWAY_GIT_COMMIT_SHA
+ARG CACHEBUST=1
 COPY . .
-RUN pnpm run build
+RUN pnpm run build && echo "Built at $(date) from ${RAILWAY_GIT_COMMIT_SHA:-unknown}" > dist/build-info.txt
 
 # ---- Production (lean) ----
 FROM base AS production
@@ -26,5 +29,5 @@ COPY --from=build /app/drizzle ./drizzle
 COPY --from=build /app/migrations ./migrations
 
 ENV NODE_ENV=production
-EXPOSE 3000
+EXPOSE 8080
 CMD ["node", "dist/index.js"]
