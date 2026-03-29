@@ -80,21 +80,27 @@ export const simuladorRouter = router({
       const expedienteId = `RF2025-${randomPart}`;
 
       const db = await getDb();
-      if (!db) throw new Error("Database not available");
-
-      await db.insert(declaraciones).values({
-        expedienteId,
-        estado: "simulacion",
-        datosContribuyente: datos as unknown as Record<string, unknown>,
-        resultadoCalculo: resultado as unknown as Record<string, unknown>,
-        precioBase: precio.precioBase,
-        suplementos: precio.suplementos as unknown as Record<string, unknown>,
-        precioTotal: precio.precioTotal,
-        esComplejo: resultado.es_complejo,
-        motivoComplejidad: resultado.motivo_complejidad,
-        emailContacto: input.emailContacto,
-        telefonoContacto: input.telefonoContacto,
-      });
+      if (db) {
+        try {
+          await db.insert(declaraciones).values({
+            expedienteId,
+            estado: "simulacion",
+            datosContribuyente: datos as unknown as Record<string, unknown>,
+            resultadoCalculo: resultado as unknown as Record<string, unknown>,
+            precioBase: precio.precioBase,
+            suplementos: precio.suplementos as unknown as Record<string, unknown>,
+            precioTotal: precio.precioTotal,
+            esComplejo: resultado.es_complejo,
+            motivoComplejidad: resultado.motivo_complejidad,
+            emailContacto: input.emailContacto,
+            telefonoContacto: input.telefonoContacto,
+          });
+        } catch (dbErr: any) {
+          console.warn(`[Simulador] DB insert failed (continuing with Sheet): ${dbErr.message}`);
+        }
+      } else {
+        console.warn(`[Simulador] DB not available, skipping DB insert for ${expedienteId}`);
+      }
 
       // ── Escribir en Google Sheet casos_master_v2 (fire-and-forget, no bloquea respuesta) ──
       const _sheetExpId = expedienteId;
