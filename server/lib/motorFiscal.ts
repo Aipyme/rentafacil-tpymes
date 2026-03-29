@@ -124,8 +124,162 @@ const TRAMOS_ESTATALES = [
   { hasta: Infinity, tipo: 0.245 },
 ];
 
-// Escala autonómica (media aproximada; en producción usar la de cada CCAA)
-const TRAMOS_AUTONOMICOS = [
+// ============================================================
+// ESCALAS AUTONÓMICAS IRPF 2025 (por CCAA)
+// Fuente: normativa autonómica vigente ejercicio 2025
+// ============================================================
+const TRAMOS_POR_CCAA: Record<string, Array<{ hasta: number; tipo: number }>> = {
+  "Madrid": [
+    { hasta: 12450, tipo: 0.085 },
+    { hasta: 17707.2, tipo: 0.1070 },
+    { hasta: 33007.2, tipo: 0.1280 },
+    { hasta: 53407.2, tipo: 0.1785 },
+    { hasta: 100000, tipo: 0.2060 },
+    { hasta: Infinity, tipo: 0.2135 },
+  ],
+  "Cataluña": [
+    { hasta: 12450, tipo: 0.1050 },
+    { hasta: 17707.2, tipo: 0.1200 },
+    { hasta: 33007.2, tipo: 0.1500 },
+    { hasta: 53407.2, tipo: 0.1850 },
+    { hasta: 90000, tipo: 0.2100 },
+    { hasta: 120000, tipo: 0.2350 },
+    { hasta: 175000, tipo: 0.2400 },
+    { hasta: Infinity, tipo: 0.2550 },
+  ],
+  "Andalucía": [
+    { hasta: 12450, tipo: 0.0950 },
+    { hasta: 20200, tipo: 0.1200 },
+    { hasta: 35200, tipo: 0.1500 },
+    { hasta: 60000, tipo: 0.1850 },
+    { hasta: 120000, tipo: 0.2250 },
+    { hasta: Infinity, tipo: 0.2400 },
+  ],
+  "Comunitat Valenciana": [
+    { hasta: 12450, tipo: 0.1000 },
+    { hasta: 17707.2, tipo: 0.1200 },
+    { hasta: 33007.2, tipo: 0.1400 },
+    { hasta: 53407.2, tipo: 0.1800 },
+    { hasta: 80000, tipo: 0.2250 },
+    { hasta: 120000, tipo: 0.2400 },
+    { hasta: 175000, tipo: 0.2500 },
+    { hasta: Infinity, tipo: 0.2550 },
+  ],
+  "Galicia": [
+    { hasta: 12450, tipo: 0.0950 },
+    { hasta: 20200, tipo: 0.1175 },
+    { hasta: 35200, tipo: 0.1475 },
+    { hasta: 60000, tipo: 0.1850 },
+    { hasta: Infinity, tipo: 0.2250 },
+  ],
+  "País Vasco": [ // Bizkaia (régimen foral, referencia)
+    { hasta: 15390, tipo: 0.2300 },
+    { hasta: 30790, tipo: 0.2800 },
+    { hasta: 46190, tipo: 0.3500 },
+    { hasta: 66810, tipo: 0.4000 },
+    { hasta: 92420, tipo: 0.4500 },
+    { hasta: 123170, tipo: 0.4600 },
+    { hasta: Infinity, tipo: 0.4700 },
+  ],
+  "Canarias": [
+    { hasta: 12450, tipo: 0.0900 },
+    { hasta: 17707.2, tipo: 0.1175 },
+    { hasta: 33007.2, tipo: 0.1400 },
+    { hasta: 53407.2, tipo: 0.1850 },
+    { hasta: 90000, tipo: 0.2350 },
+    { hasta: Infinity, tipo: 0.2400 },
+  ],
+  "Castilla y León": [
+    { hasta: 12450, tipo: 0.0950 },
+    { hasta: 20200, tipo: 0.1200 },
+    { hasta: 35200, tipo: 0.1500 },
+    { hasta: 53407.2, tipo: 0.1850 },
+    { hasta: Infinity, tipo: 0.2150 },
+  ],
+  "Castilla-La Mancha": [
+    { hasta: 12450, tipo: 0.0950 },
+    { hasta: 20200, tipo: 0.1200 },
+    { hasta: 35200, tipo: 0.1500 },
+    { hasta: 60000, tipo: 0.1850 },
+    { hasta: Infinity, tipo: 0.2250 },
+  ],
+  "Aragón": [
+    { hasta: 12450, tipo: 0.1000 },
+    { hasta: 20200, tipo: 0.1200 },
+    { hasta: 35200, tipo: 0.1500 },
+    { hasta: 50000, tipo: 0.1900 },
+    { hasta: 70000, tipo: 0.2100 },
+    { hasta: 150000, tipo: 0.2250 },
+    { hasta: Infinity, tipo: 0.2500 },
+  ],
+  "Extremadura": [
+    { hasta: 12450, tipo: 0.0950 },
+    { hasta: 20200, tipo: 0.1200 },
+    { hasta: 35200, tipo: 0.1500 },
+    { hasta: 60000, tipo: 0.1850 },
+    { hasta: 80000, tipo: 0.2250 },
+    { hasta: Infinity, tipo: 0.2450 },
+  ],
+  "Asturias": [
+    { hasta: 12450, tipo: 0.1000 },
+    { hasta: 17707.2, tipo: 0.1200 },
+    { hasta: 33007.2, tipo: 0.1400 },
+    { hasta: 53407.2, tipo: 0.1850 },
+    { hasta: 70000, tipo: 0.2150 },
+    { hasta: 90000, tipo: 0.2250 },
+    { hasta: Infinity, tipo: 0.2550 },
+  ],
+  "Murcia": [
+    { hasta: 12450, tipo: 0.0950 },
+    { hasta: 20200, tipo: 0.1200 },
+    { hasta: 35200, tipo: 0.1500 },
+    { hasta: 60000, tipo: 0.1850 },
+    { hasta: Infinity, tipo: 0.2250 },
+  ],
+  "Cantabria": [
+    { hasta: 12450, tipo: 0.0950 },
+    { hasta: 20200, tipo: 0.1200 },
+    { hasta: 35200, tipo: 0.1500 },
+    { hasta: 46000, tipo: 0.1850 },
+    { hasta: 65000, tipo: 0.2100 },
+    { hasta: 90000, tipo: 0.2350 },
+    { hasta: Infinity, tipo: 0.2500 },
+  ],
+  "La Rioja": [
+    { hasta: 12450, tipo: 0.0950 },
+    { hasta: 20200, tipo: 0.1175 },
+    { hasta: 35200, tipo: 0.1475 },
+    { hasta: 50000, tipo: 0.1850 },
+    { hasta: Infinity, tipo: 0.2250 },
+  ],
+  "Baleares": [
+    { hasta: 10000, tipo: 0.0950 },
+    { hasta: 18000, tipo: 0.1175 },
+    { hasta: 30000, tipo: 0.1475 },
+    { hasta: 48000, tipo: 0.1700 },
+    { hasta: 70000, tipo: 0.1900 },
+    { hasta: 90000, tipo: 0.2350 },
+    { hasta: 120000, tipo: 0.2400 },
+    { hasta: 175000, tipo: 0.2450 },
+    { hasta: Infinity, tipo: 0.2500 },
+  ],
+  "Navarra": [ // Régimen foral
+    { hasta: 4160, tipo: 0.1300 },
+    { hasta: 10840, tipo: 0.2245 },
+    { hasta: 19160, tipo: 0.2530 },
+    { hasta: 29160, tipo: 0.2866 },
+    { hasta: 39160, tipo: 0.3145 },
+    { hasta: 60000, tipo: 0.3550 },
+    { hasta: 70000, tipo: 0.4050 },
+    { hasta: 100000, tipo: 0.4300 },
+    { hasta: 180000, tipo: 0.4520 },
+    { hasta: 250000, tipo: 0.4570 },
+    { hasta: Infinity, tipo: 0.4700 },
+  ],
+};
+
+// Fallback para CCAAs no configuradas
+const TRAMOS_AUTONOMICOS_DEFAULT = [
   { hasta: 12450, tipo: 0.095 },
   { hasta: 20200, tipo: 0.12 },
   { hasta: 35200, tipo: 0.15 },
@@ -133,6 +287,11 @@ const TRAMOS_AUTONOMICOS = [
   { hasta: 300000, tipo: 0.225 },
   { hasta: Infinity, tipo: 0.245 },
 ];
+
+function getTramosAutonomicos(comunidad?: string): Array<{ hasta: number; tipo: number }> {
+  if (!comunidad) return TRAMOS_AUTONOMICOS_DEFAULT;
+  return TRAMOS_POR_CCAA[comunidad] || TRAMOS_AUTONOMICOS_DEFAULT;
+}
 
 function calcularCuotaTramos(base: number, tramos: typeof TRAMOS_ESTATALES): number {
   let cuota = 0;
@@ -532,12 +691,19 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
   // 4. Mínimo personal y familiar
   const minimoPersonal = calcularMinimoPersonal(datos);
 
-  // 5. Cuota íntegra
-  const cuotaEstatales = calcularCuotaTramos(baseImponibleGeneral, TRAMOS_ESTATALES);
-  const cuotaMinimo = calcularCuotaTramos(minimoPersonal, TRAMOS_ESTATALES);
-  const cuotaIntegraNeta = Math.max(0, cuotaEstatales - cuotaMinimo);
+  // 5. Cuota íntegra (estatal + autonómica por separado)
+  const tramosAutonomicos = getTramosAutonomicos(datos.comunidad);
+  const cuotaEstatal = calcularCuotaTramos(baseImponibleGeneral, TRAMOS_ESTATALES);
+  const cuotaMinimoEstatal = calcularCuotaTramos(minimoPersonal, TRAMOS_ESTATALES);
+  const cuotaIntegrEstatal = Math.max(0, cuotaEstatal - cuotaMinimoEstatal);
+
+  const cuotaAutonomica = calcularCuotaTramos(baseImponibleGeneral, tramosAutonomicos);
+  const cuotaMinimoAutonomica = calcularCuotaTramos(minimoPersonal, tramosAutonomicos);
+  const cuotaIntegrAutonomica = Math.max(0, cuotaAutonomica - cuotaMinimoAutonomica);
+
+  const cuotaIntegraNeta = cuotaIntegrEstatal + cuotaIntegrAutonomica;
   const cuotaIntegra = cuotaIntegraNeta;
-  const cuotaIntegra50 = cuotaIntegraNeta / 2; // mitad estatal, mitad autonómica
+  const cuotaIntegra50 = cuotaIntegraNeta / 2; // backward compat (approx)
 
   // 6. Deducciones estatales
   const deduccionVivienda = calcularDeduccionVivienda(datos);
@@ -559,7 +725,9 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
   const resultado = Math.round((cuotaLiquida - retenciones) * 100) / 100;
 
   // 10. Estimación borrador (sin deducciones optimizadas - solo retenciones vs cuota básica)
-  const cuotaBorrador = calcularCuotaTramos(baseImponibleGeneral, TRAMOS_ESTATALES);
+  const cuotaBorradorEstatal = calcularCuotaTramos(baseImponibleGeneral, TRAMOS_ESTATALES);
+  const cuotaBorradorAuton = calcularCuotaTramos(baseImponibleGeneral, tramosAutonomicos);
+  const cuotaBorrador = Math.max(0, cuotaBorradorEstatal - cuotaMinimoEstatal) + Math.max(0, cuotaBorradorAuton - cuotaMinimoAutonomica);
   const resultadoBorrador = Math.round((cuotaBorrador - retenciones) * 100) / 100;
   const ahorroVsBorrador = Math.round((resultadoBorrador - resultado) * 100) / 100;
 
@@ -586,8 +754,8 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
     "514": minimoPersonal,              // Total mínimo personal y familiar
 
     // Cuotas
-    "019": cuotaIntegra50,              // Cuota íntegra estatal
-    "020": cuotaIntegra50,              // Cuota íntegra autonómica
+    "019": cuotaIntegrEstatal,             // Cuota íntegra estatal
+    "020": cuotaIntegrAutonomica,          // Cuota íntegra autonómica
 
     // Deducciones estatales
     "547": deduccionVivienda,           // Deducción vivienda habitual (pre-2013)
@@ -628,8 +796,8 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
     reduccion_trabajo: reduccionTrabajo,
     reduccion_planes: reduccionPlanes,
     base_imponible_general: baseImponibleGeneral,
-    cuota_integra_estatal: cuotaIntegra50,
-    cuota_integra_autonomica: cuotaIntegra50,
+    cuota_integra_estatal: cuotaIntegrEstatal,
+    cuota_integra_autonomica: cuotaIntegrAutonomica,
     cuota_integra_total: cuotaIntegra,
     deduccion_vivienda: deduccionVivienda,
     deduccion_maternidad: deduccionMaternidad,
