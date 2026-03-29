@@ -15,12 +15,14 @@ COPY . .
 RUN pnpm run build
 
 # ---- Production ----
+# Install ALL deps because esbuild --packages=external leaves
+# vite/tailwind/etc. as runtime imports in the server bundle.
 FROM base AS production
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
-RUN pnpm install --frozen-lockfile --prod
-# dist/ contains both server (index.js) and client (public/)
+RUN pnpm install --frozen-lockfile
+# dist/ contains server (index.js) and client statics (public/)
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/drizzle ./drizzle
 COPY --from=build /app/migrations ./migrations
