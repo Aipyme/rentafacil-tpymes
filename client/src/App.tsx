@@ -25,6 +25,7 @@ import Madrid from "@/pages/Madrid";
 import Cataluna from "@/pages/Cataluna";
 import Valencia from "@/pages/Valencia";
 import Canarias from "@/pages/Canarias";
+import Derivaciones from "@/pages/Derivaciones";
 
 function AppRouter() {
   // make sure to consider if you need authentication for certain routes
@@ -45,6 +46,7 @@ function AppRouter() {
       <Route path="/valencia" component={Valencia} />
       <Route path="/canarias" component={Canarias} />
       <Route path="/panel-asesor" component={PanelAsesor} />
+      <Route path="/derivaciones" component={Derivaciones} />
       <Route path="/seguimiento" component={SeguimientoCliente} />
       <Route path="/renta" component={SimuladorRenta} />
       <Route path="/renta/simulador" component={SimuladorRenta} />

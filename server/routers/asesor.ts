@@ -671,4 +671,157 @@ export const asesorRouter = router({
       });
       return { casos, total: casos.length };
     }),
+
+  /**
+   * Panel: Listar expedientes complejos o derivados (desde declaraciones DB).
+   * Accesible desde el panel con token de contraseña (publicProcedure).
+   * Devuelve expedientes donde esComplejo=true o estado es 'derivado'/'derivado_asesor'.
+   */
+  panelListarDerivaciones: publicProcedure
+    .input(z.object({
+      estado: z.string().optional(),
+      busqueda: z.string().optional(),
+      limite: z.number().default(100),
+      offset: z.number().default(0),
+    }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) return { derivaciones: [], total: 0 };
+
+      // Filtrar: esComplejo=true O estado en [derivado, derivado_asesor, ...]
+      const condBase = or(
+        eq(declaraciones.esComplejo, true),
+        eq(declaraciones.estado, "derivado"),
+        eq(declaraciones.estado, "derivado_asesor"),
+        eq(declaraciones.estado, "cita_propuesta"),
+        eq(declaraciones.estado, "cita_confirmada"),
+        eq(declaraciones.estado, "en_preparacion"),
+      );
+
+      const rows = await db
+        .select({
+          expedienteId: declaraciones.expedienteId,
+          estado: declaraciones.estado,
+          esComplejo: declaraciones.esComplejo,
+          motivoComplejidad: declaraciones.motivoComplejidad,
+          emailContacto: declaraciones.emailContacto,
+          telefonoContacto: declaraciones.telefonoContacto,
+          datosContribuyente: declaraciones.datosContribuyente,
+          precioTotal: declaraciones.precioTotal,
+          createdAt: declaraciones.createdAt,
+          updatedAt: declaraciones.updatedAt,
+        })
+        .from(declaraciones)
+        .where(condBase)
+        .orderBy(desc(declaraciones.createdAt))
+        .limit(input.limite)
+        .offset(input.offset);
+
+      // Enriquecer con datos de la solicitud del asesor si existe
+      const derivaciones = await Promise.all(rows.map(async (row) => {
+        let solicitudInfo: {
+          id: number;
+          nombre: string;
+          asesorAsignado: string | null;
+          estado: string;
+          reservedSlot: string | null;
+        } | null = null;
+
+        try {
+          const [sol] = await db
+            .select({
+              id: solicitudesAsesor.id,
+              nombre: solicitudesAsesor.nombre,
+              asesorAsignado: solicitudesAsesor.asesorAsignado,
+              estado: solicitudesAsesor.estado,
+              reservedSlot: solicitudesAsesor.reservedSlot,
+            })
+            .from(solicitudesAsesor)
+            .where(eq(solicitudesAsesor.expedienteId, row.expedienteId))
+            .orderBy(desc(solicitudesAsesor.createdAt))
+            .limit(1);
+          if (sol) solicitudInfo = sol;
+        } catch { /* no hay solicitud */ }
+
+        const datos = (row.datosContribuyente as Record<string, unknown>) || {};
+        const contribuyente = (datos.contribuyente as Record<string, unknown>) || {};
+
+        return {
+          expedienteId: row.expedienteId,
+          clienteNombre: String(contribuyente.nombre || contribuyente.nombre_completo || datos.nombre || ""),
+          clienteEmail: row.emailContacto || "",
+          clienteTelefono: row.telefonoContacto || "",
+          motivoDerivacion: row.motivoComplejidad || "",
+          estado: row.estado,
+          esComplejo: row.esComplejo,
+          prioridad: (row.precioTotal || 0) > 10000 ? "Alta" : "Media",
+          asesorAsignado: solicitudInfo?.asesorAsignado || "",
+          solicitudId: solicitudInfo?.id || null,
+          solicitudEstado: solicitudInfo?.estado || null,
+          reservedSlot: solicitudInfo?.reservedSlot || null,
+          createdAt: row.createdAt.toISOString(),
+        };
+      }));
+
+      // Filtrado adicional en memoria por búsqueda y estado
+      let resultado = derivaciones;
+      if (input.estado && input.estado !== "todos") {
+        resultado = resultado.filter(d => d.solicitudEstado === input.estado || d.estado === input.estado);
+      }
+      if (input.busqueda) {
+        const q = input.busqueda.toLowerCase();
+        resultado = resultado.filter(d =>
+          d.expedienteId.toLowerCase().includes(q) ||
+          d.clienteNombre.toLowerCase().includes(q) ||
+          d.clienteEmail.toLowerCase().includes(q) ||
+          d.motivoDerivacion.toLowerCase().includes(q)
+        );
+      }
+
+      return { derivaciones: resultado, total: resultado.length };
+    }),
+
+  /**
+   * Panel: Asignar asesor (texto libre) a una solicitud por su ID.
+   * Usado desde la página Derivaciones.
+   */
+  panelAsignarAsesor: publicProcedure
+    .input(z.object({
+      solicitudId: z.number(),
+      asesorNombre: z.string().min(1, "El nombre del asesor es obligatorio"),
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      await db
+        .update(solicitudesAsesor)
+        .set({ asesorAsignado: input.asesorNombre } as any)
+        .where(eq(solicitudesAsesor.id, input.solicitudId));
+
+      return { success: true };
+    }),
+
+  /**
+   * Panel: Marcar una solicitud de derivación como resuelta.
+   */
+  panelMarcarResuelto: publicProcedure
+    .input(z.object({
+      solicitudId: z.number(),
+      notasAsesor: z.string().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      await db
+        .update(solicitudesAsesor)
+        .set({
+          estado: "resuelto",
+          ...(input.notasAsesor ? { notasAsesor: input.notasAsesor } : {}),
+        } as any)
+        .where(eq(solicitudesAsesor.id, input.solicitudId));
+
+      return { success: true };
+    }),
 });
