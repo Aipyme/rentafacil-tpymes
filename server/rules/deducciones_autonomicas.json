@@ -1,0 +1,78 @@
+{
+  "autonomicas": {
+    "Andalucía": {
+      "alquiler": { "key": "autonomica_checks.alquiler", "map_to": "A_ALQ", "description": "Deducción alquiler Andalucía: 15% hasta 500€", "pct": 0.15, "limit": 500 },
+      "gimnasio": { "key": "autonomica_checks.gimnasio", "map_to": "A_GIM", "description": "Deducción gastos deportivos Andalucía: 15% hasta 150€", "pct": 0.15, "limit": 150 },
+      "nacimiento": { "key": "autonomica_checks.nacimiento", "map_to": "A_NAC", "description": "Deducción nacimiento/adopción Andalucía: 200€", "fixed": 200 }
+    },
+    "Madrid": {
+      "nacimiento": { "key": "autonomica_checks.nacimiento", "map_to": "M_NAC", "description": "Deducción nacimiento/adopción Madrid: 600€", "fixed": 600 },
+      "guarderia": { "key": "autonomica_checks.guarderia", "map_to": "M_GUARD", "description": "Deducción guardería Madrid: 20% hasta 1000€", "pct": 0.20, "limit": 1000 },
+      "familia": { "key": "autonomica_checks.familia", "map_to": "M_FAM", "description": "Deducción familia numerosa Madrid: 900€ (general) / 1200€ (especial)", "fixed_general": 900, "fixed_especial": 1200 }
+    },
+    "Cataluña": {
+      "alquiler": { "key": "autonomica_checks.alquiler", "map_to": "C_ALQ", "description": "Deducción alquiler Cataluña: 10% hasta 300€", "pct": 0.10, "limit": 300 },
+      "familia": { "key": "autonomica_checks.familia", "map_to": "C_FAM", "description": "Deducción familia numerosa Cataluña: 150€/hijo", "per_child": 150 },
+      "donaciones": { "key": "autonomica_checks.donaciones_cat", "map_to": "C_DON", "description": "Deducción donativos entidades catalanas: 15%", "pct": 0.15 }
+    },
+    "Comunitat Valenciana": {
+      "vivienda_joven": { "key": "autonomica_checks.vivienda_joven", "map_to": "VJ_VAL", "description": "Deducción vivienda joven Valencia: 500€", "fixed": 500 },
+      "conciliacion": { "key": "autonomica_checks.conciliacion", "map_to": "V_CONC", "description": "Deducción conciliación Valencia: 15% hasta 418€", "pct": 0.15, "limit": 418 },
+      "familia": { "key": "autonomica_checks.familia", "map_to": "V_FAM", "description": "Deducción familia numerosa Valencia: hasta 600€", "fixed": 600 }
+    },
+    "Galicia": {
+      "alquiler": { "key": "autonomica_checks.alquiler", "map_to": "G_ALQ", "description": "Deducción alquiler Galicia: 10% hasta 300€", "pct": 0.10, "limit": 300 },
+      "nacimiento": { "key": "autonomica_checks.nacimiento", "map_to": "G_NAC", "description": "Deducción nacimiento Galicia: 360€", "fixed": 360 }
+    },
+    "Canarias": {
+      "vivienda": { "key": "autonomica_checks.vivienda", "map_to": "CN_VIV", "description": "Deducción vivienda Canarias: 20% hasta 2000€", "pct": 0.20, "limit": 2000 },
+      "nacimiento": { "key": "autonomica_checks.nacimiento", "map_to": "CN_NAC", "description": "Deducción nacimiento Canarias: 200€", "fixed": 200 }
+    },
+    "Castilla y León": {
+      "familia": { "key": "autonomica_checks.familia", "map_to": "CYL_FAM", "description": "Deducción familia numerosa CyL: 246€/hijo", "per_child": 246 },
+      "nacimiento": { "key": "autonomica_checks.nacimiento", "map_to": "CYL_NAC", "description": "Deducción nacimiento CyL: 710€ primer hijo", "fixed": 710 }
+    },
+    "Castilla-La Mancha": {
+      "vivienda": { "key": "autonomica_checks.vivienda", "map_to": "CLM_VIV", "description": "Deducción vivienda CLM", "pct": 0.15, "limit": 450 },
+      "nacimiento": { "key": "autonomica_checks.nacimiento", "map_to": "CLM_NAC", "description": "Deducción nacimiento CLM: 100€", "fixed": 100 }
+    },
+    "Aragón": {
+      "alquiler": { "key": "autonomica_checks.alquiler", "map_to": "AR_ALQ", "description": "Deducción alquiler Aragón: 10% hasta 300€", "pct": 0.10, "limit": 300 },
+      "nacimiento": { "key": "autonomica_checks.nacimiento", "map_to": "AR_NAC", "description": "Deducción nacimiento Aragón: 500€", "fixed": 500 }
+    },
+    "Extremadura": {
+      "alquiler": { "key": "autonomica_checks.alquiler", "map_to": "EX_ALQ", "description": "Deducción alquiler Extremadura: 10% hasta 300€", "pct": 0.10, "limit": 300 }
+    },
+    "Asturias": {
+      "guarderia": { "key": "autonomica_checks.guarderia", "map_to": "AS_GUARD", "description": "Deducción guardería Asturias: 15% hasta 330€", "pct": 0.15, "limit": 330 },
+      "familia": { "key": "autonomica_checks.familia", "map_to": "AS_FAM", "description": "Deducción familia numerosa Asturias: 505€", "fixed": 505 }
+    },
+    "Murcia": {
+      "familia": { "key": "autonomica_checks.familia", "map_to": "MU_FAM", "description": "Deducción familia numerosa Murcia", "fixed": 300 },
+      "guarderia": { "key": "autonomica_checks.guarderia", "map_to": "MU_GUARD", "description": "Deducción guardería Murcia: 15% hasta 330€", "pct": 0.15, "limit": 330 }
+    },
+    "Cantabria": {
+      "vivienda": { "key": "autonomica_checks.vivienda", "map_to": "CT_VIV", "description": "Deducción vivienda Cantabria", "pct": 0.15, "limit": 500 },
+      "familia": { "key": "autonomica_checks.familia", "map_to": "CT_FAM", "description": "Deducción familia numerosa Cantabria", "fixed": 300 }
+    },
+    "La Rioja": {
+      "familia": { "key": "autonomica_checks.familia", "map_to": "LR_FAM", "description": "Deducción familia numerosa La Rioja", "fixed": 300 },
+      "nacimiento": { "key": "autonomica_checks.nacimiento", "map_to": "LR_NAC", "description": "Deducción nacimiento La Rioja: 150€", "fixed": 150 }
+    },
+    "Baleares": {
+      "alquiler": { "key": "autonomica_checks.alquiler", "map_to": "IB_ALQ", "description": "Deducción alquiler Baleares", "pct": 0.15, "limit": 400 }
+    },
+    "Navarra": {
+      "alquiler": { "key": "autonomica_checks.alquiler", "map_to": "NA_ALQ", "description": "Deducción alquiler Navarra (régimen foral)", "pct": 0.15, "limit": 1200 }
+    },
+    "País Vasco": {
+      "vivienda": { "key": "autonomica_checks.vivienda", "map_to": "PV_VIV", "description": "Deducción vivienda País Vasco (régimen foral)", "pct": 0.18, "limit": 1530 }
+    },
+    "Ceuta": {
+      "general": { "key": "autonomica_checks.ceuta", "map_to": "CEU_GEN", "description": "Deducción residentes Ceuta: 60% cuota", "pct_cuota": 0.60 }
+    },
+    "Melilla": {
+      "general": { "key": "autonomica_checks.melilla", "map_to": "MEL_GEN", "description": "Deducción residentes Melilla: 60% cuota", "pct_cuota": 0.60 }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DeclaracionModelo100 version="2025">
+  <Identificacion>
+    <NIF>{{contribuyente.nif}}</NIF>
+    <Nombre>{{contribuyente.nombre}}</Nombre>
+    <Apellidos>{{contribuyente.apellidos}}</Apellidos>
+    <Ejercicio>2025</Ejercicio>
+  </Identificacion>
+
+  <RendimientosTrabajo>
+    <Casilla003>{{casillas.003}}</Casilla003>
+    <Casilla012>{{casillas.012}}</Casilla012>
+    <Casilla023>{{casillas.023}}</Casilla023>
+    <Casilla025>{{casillas.025}}</Casilla025>
+  </RendimientosTrabajo>
+
+  <ReduccionesBaseImponible>
+    <Casilla051>{{casillas.051}}</Casilla051>
+  </ReduccionesBaseImponible>
+
+  <BaseImponible>
+    <Casilla435>{{casillas.435}}</Casilla435>
+    <Casilla470>{{casillas.470}}</Casilla470>
+  </BaseImponible>
+
+  <MinimosPersonales>
+    <Casilla505>{{casillas.505}}</Casilla505>
+    <Casilla506>{{casillas.506}}</Casilla506>
+    <Casilla507>{{casillas.507}}</Casilla507>
+    <Casilla511>{{casillas.511}}</Casilla511>
+    <Casilla514>{{casillas.514}}</Casilla514>
+  </MinimosPersonales>
+
+  <CuotaIntegra>
+    <Casilla019>{{casillas.019}}</Casilla019>
+    <Casilla020>{{casillas.020}}</Casilla020>
+  </CuotaIntegra>
+
+  <DeduccionesEstatales>
+    <Casilla547>{{casillas.547}}</Casilla547>
+    <Casilla611>{{casillas.611}}</Casilla611>
+    <Casilla660>{{casillas.660}}</Casilla660>
+    <Casilla750>{{casillas.750}}</Casilla750>
+  </DeduccionesEstatales>
+
+  <PagosCuenta>
+    <Casilla596>{{casillas.596}}</Casilla596>
+    <Casilla609>{{casillas.609}}</Casilla609>
+  </PagosCuenta>
+
+  <Resultado>
+    <Casilla595>{{casillas.595}}</Casilla595>
+    <Casilla610>{{casillas.610}}</Casilla610>
+    <Casilla670>{{casillas.670}}</Casilla670>
+    <Casilla671>{{casillas.671}}</Casilla671>
+    <Casilla672>{{casillas.672}}</Casilla672>
+  </Resultado>
+
+  <Firma>
+    <Timestamp>{{consentimiento.timestamp}}</Timestamp>
+    <IP>{{consentimiento.ip}}</IP>
+  </Firma>
+</DeclaracionModelo100>
