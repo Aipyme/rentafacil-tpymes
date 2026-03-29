@@ -284,6 +284,30 @@ export const asesorRouter = router({
         }
       }
 
+      // ── Escribir derivación en Google Sheet "Derivaciones" ──
+      try {
+        const { upsertDeclaracionSheet } = await import("../lib/googleSheets");
+        await upsertDeclaracionSheet({
+          expediente_id: input.expedienteId || derivacionId,
+          derivacion_id: derivacionId,
+          cliente_nombre: input.nombre,
+          cliente_email: input.email,
+          cliente_telefono: input.telefono,
+          nif: input.nif,
+          motivo_complejidad: input.motivoComplejidad || "",
+          descripcion_situacion: input.descripcionSituacion || "",
+          franja_horaria: input.franjaHoraria || "flexible",
+          reserved_slot: reservedSlot,
+          estado: "pendiente",
+          n8n_status: n8nStatus,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }, "Derivaciones");
+        console.log(`[Asesor] Derivación ${derivacionId} escrita en Sheet Derivaciones`);
+      } catch (sheetErr: any) {
+        console.warn(`[Asesor] Error escribiendo derivación en Sheet: ${sheetErr.message}`);
+      }
+
       return {
         success: true,
         solicitudId,
