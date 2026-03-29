@@ -11,6 +11,7 @@ console.log("[ROUTERS] simuladorRouter loaded, keys:", Object.keys(simuladorRout
 import { pagosRouter } from "./routers/pagos";
 import { asesorRouter } from "./routers/asesor";
 import { notificacionesRouter } from "./routers/notificaciones";
+import { borradorRouter } from "./routers/borrador";
 import { ENV } from "./_core/env";
 
 export const appRouter = router({
@@ -47,6 +48,9 @@ export const appRouter = router({
 
   // Notificaciones por email al cliente (borrador listo, docs recibidos, presentada)
   notificaciones: notificacionesRouter,
+
+  // Borradores: generar PDF+XML, descargar, marcar presentado
+  borrador: borradorRouter,
 
   // Autenticación básica del Panel del Asesor
   panel: router({

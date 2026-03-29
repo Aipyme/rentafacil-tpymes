@@ -1045,18 +1045,18 @@ export default function PanelAsesor() {
                     <button
                       className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors border border-blue-200"
                       onClick={async () => {
-                        if (!confirm("¿Enviar email de 'Borrador listo' al cliente?")) return;
+                        if (!confirm("¿Generar borrador PDF+XML y enviar email 'Borrador listo' al cliente?")) return;
                         try {
-                          const res = await fetch("/api/trpc/notificaciones.enviarBorradorListo", {
+                          const res = await fetch("/api/trpc/borrador.generarYNotificar", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ json: { expedienteId: casoSeleccionado.id } }),
                           });
                           const data = await res.json();
                           if (data?.result?.data?.json?.success) {
-                            toast.success("✅ Email 'Borrador listo' enviado al cliente");
+                            toast.success("✅ Borrador generado + email enviado al cliente");
                           } else {
-                            toast.error("Error: " + (data?.result?.data?.json?.error || "No se pudo enviar"));
+                            toast.error("Error al generar borrador");
                           }
                         } catch { toast.error("Error de conexión"); }
                       }}
@@ -1096,6 +1096,18 @@ export default function PanelAsesor() {
                         const tipo = confirm("¿Es a devolver? (Aceptar = Sí, Cancelar = A pagar)") ? "a_devolver" : "a_pagar";
                         const csv = prompt("Nº CSV AEAT (opcional):", "") || undefined;
                         try {
+                          // 1. Marcar como presentado en BD
+                          await fetch("/api/trpc/borrador.marcarPresentado", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ json: {
+                              expedienteId: casoSeleccionado.id,
+                              resultadoFinal: parseFloat(resultado),
+                              tipoResultado: tipo,
+                              numeroCsvAeat: csv,
+                            }}),
+                          });
+                          // 2. Enviar email de presentada
                           const res = await fetch("/api/trpc/notificaciones.enviarDeclaracionPresentada", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -1108,9 +1120,9 @@ export default function PanelAsesor() {
                           });
                           const data = await res.json();
                           if (data?.result?.data?.json?.success) {
-                            toast.success("🎉 Email 'Declaración presentada' enviado al cliente");
+                            toast.success("🎉 Marcado como presentada + email enviado");
                           } else {
-                            toast.error("Error: " + (data?.result?.data?.json?.error || "No se pudo enviar"));
+                            toast.warning("Marcado como presentada, pero email falló");
                           }
                         } catch { toast.error("Error de conexión"); }
                       }}
