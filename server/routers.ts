@@ -12,6 +12,7 @@ import { pagosRouter } from "./routers/pagos";
 import { asesorRouter } from "./routers/asesor";
 import { notificacionesRouter } from "./routers/notificaciones";
 import { borradorRouter } from "./routers/borrador";
+import { xmlRouter } from "./routers/xml";
 import { ENV } from "./_core/env";
 
 console.log("[ROUTERS] ALL imports OK. borrador keys:", Object.keys(borradorRouter._def.procedures || {}).join(", "));
@@ -54,6 +55,9 @@ export const appRouter = router({
 
   // Borradores: generar PDF+XML, descargar, marcar presentado
   borrador: borradorRouter,
+
+  // Generación de XML Modelo 100 para expedientes
+  xml: xmlRouter,
 
   // Test: inline procedure to check if new procedures work
   testNew: router({
