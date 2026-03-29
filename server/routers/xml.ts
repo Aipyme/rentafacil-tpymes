@@ -12,7 +12,7 @@
 import { z } from "zod";
 import { createHash } from "crypto";
 import { readFileSync } from "fs";
-import { join } from "path";
+import path, { join } from "path";
 import { protectedProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
@@ -23,8 +23,12 @@ import type { RespuestasSimulador } from "../lib/motorFiscal";
 
 // ── Carga de la plantilla XML ──────────────────────────────────────────────
 
+import { fileURLToPath } from "url";
+const __filename_xml = fileURLToPath(import.meta.url);
+const __dirname_xml = path.dirname(__filename_xml);
+
 const TEMPLATE_PATH = join(
-  __dirname,
+  __dirname_xml,
   "../lib/xml_templates/modelo100_2025.xml"
 );
 
