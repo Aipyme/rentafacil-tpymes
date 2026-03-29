@@ -3,6 +3,10 @@ FROM node:22-slim
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 WORKDIR /app
 
+# Cache buster — change this value to force full rebuild
+ARG CACHE_BUST=20260329-v2
+RUN echo "Cache bust: ${CACHE_BUST}"
+
 COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
 RUN pnpm install --frozen-lockfile
