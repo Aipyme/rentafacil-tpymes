@@ -566,22 +566,50 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
   // 11. Complejidad
   const { esComplejo, motivo, flags, flag_review } = detectarComplejidad(datos);
 
-  // 12. Casillas principales del modelo 100
+  // 12. Casillas principales del modelo 100 (PADRE 2025)
   const casillas: Record<string, number> = {
-    "001": ingresos,
-    "003": reduccionTrabajo,
-    "007": reduccionPlanes,
-    "011": baseImponibleGeneral,
-    "019": cuotaIntegra50,
-    "020": cuotaIntegra50,
-    "547": deduccionVivienda,
-    "563": deduccionDonaciones,
-    "545": deduccionMaternidad,
-    "588": deduccionFamiliaNumerosa,
-    "590": deduccionDiscapacidad,
-    "620": cuotaLiquida,
-    "621": retenciones,
-    "670": resultado,
+    // Rendimientos del trabajo
+    "003": ingresos,                    // Retribuciones dinerarias (salario bruto)
+    "012": ingresos,                    // Total ingresos íntegros computables
+    "023": reduccionTrabajo,            // Reducción rendimientos del trabajo (Art. 20)
+    "025": Math.max(0, ingresos - reduccionTrabajo), // Rendimiento neto reducido trabajo
+
+    // Reducciones base imponible
+    "051": reduccionPlanes,             // Aportaciones a planes de pensiones
+
+    // Base imponible
+    "435": baseImponibleGeneral,        // Base imponible general
+    "470": Math.max(0, baseImponibleGeneral - minimoPersonal), // Base liquidable general
+
+    // Mínimos personales y familiares
+    "505": 5550,                        // Mínimo del contribuyente
+    "514": minimoPersonal,              // Total mínimo personal y familiar
+
+    // Cuotas
+    "019": cuotaIntegra50,              // Cuota íntegra estatal
+    "020": cuotaIntegra50,              // Cuota íntegra autonómica
+
+    // Deducciones estatales
+    "547": deduccionVivienda,           // Deducción vivienda habitual (pre-2013)
+    "611": deduccionMaternidad,         // Deducción por maternidad
+    "660": deduccionFamiliaNumerosa,    // Deducción familia numerosa
+    "750": deduccionDonaciones,         // Deducción donativos (80% primeros 250€)
+
+    // Discapacidad (mínimo)
+    "511": deduccionDiscapacidad,       // Mínimo discapacidad contribuyente
+
+    // Pagos a cuenta y retenciones
+    "596": retenciones,                 // Retenciones rendimientos del trabajo
+    "609": retenciones,                 // Total pagos a cuenta
+
+    // Resultado
+    "595": cuotaLiquida,                // Cuota resultante autoliquidación
+    "610": cuotaLiquida - retenciones,  // Cuota diferencial
+    "670": resultado,                   // Resultado final de la declaración
+
+    // Fraccionamiento (si a ingresar)
+    "671": resultado > 0 ? Math.round(resultado * 0.60 * 100) / 100 : 0, // 60% junio
+    "672": resultado > 0 ? Math.round(resultado * 0.40 * 100) / 100 : 0, // 40% noviembre
   };
 
   // 13. Desglose de deducciones para UI
