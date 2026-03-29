@@ -191,16 +191,26 @@ export const asesorRouter = router({
         console.error("[Asesor] Error notificando al owner:", notifyErr);
       }
 
-      // Enviar webhook a n8n con payload enriquecido (formato del documento de especificaciones)
-      const n8nWebhookUrl = process.env.VITE_WEBHOOK_N8N;
-      const n8nWebhookKey = process.env.N8N_WEBHOOK_KEY; // Clave secreta para autenticar el webhook
+      // Enviar webhook a n8n WF09 (derivacion-create)
+      const n8nWebhookUrl = process.env.N8N_DERIVACION_CREATE_URL
+        ?? "https://autogr.app.n8n.cloud/webhook/derivacion-create";
+      const n8nWebhookKey = process.env.N8N_WEBHOOK_KEY;
       let n8nStatus = "not_configured";
       if (n8nWebhookUrl) {
         try {
           const webhookPayload = {
             event: "derivacion_created",
+            // ── Campos flat para WF09 → hoja DERIVACIONES ──────────────────────
             derivacion_id: derivacionId,
             expediente_id: input.expedienteId,
+            nombre: input.nombre,
+            email: input.email,
+            telefono: input.telefono,
+            motivo: input.motivoComplejidad || "Caso derivado a asesor",
+            reserved_slot: reservedSlot,
+            estado: "pending",
+            timestamp: ahora,
+            // ── Campos enriquecidos para Calendar y Email ───────────────────────
             user_contact: {
               nombre: input.nombre,
               nif: input.nif,
@@ -208,8 +218,6 @@ export const asesorRouter = router({
               phone: input.telefono,
             },
             franja_horaria: franjaId,
-            reserved_slot: reservedSlot,
-            motivo: input.motivoComplejidad,
             descripcion_situacion: input.descripcionSituacion,
             ahorro_estimado: (input.resultadoSimulador as any)?.ahorro_total || 0,
             precio: input.precioEstimado || 0,
@@ -501,15 +509,13 @@ export const asesorRouter = router({
         } as any)
         .where(eq(solicitudesAsesor.id, input.solicitudId));
 
-      // 4) Disparar webhook derivacion-confirm a n8n
-      const n8nConfirmUrl = (process.env.VITE_WEBHOOK_N8N || "").replace(
-        "derivacion-create",
-        "derivacion-confirm"
-      );
+      // 4) Disparar webhook derivacion-confirm a n8n (WF10)
+      const n8nConfirmUrl = process.env.N8N_DERIVACION_CONFIRM_URL
+        ?? "https://autogr.app.n8n.cloud/webhook/derivacion-confirm";
       const n8nWebhookKey = process.env.N8N_WEBHOOK_KEY;
       let n8nStatus = "not_configured";
 
-      if (n8nConfirmUrl && n8nConfirmUrl.includes("derivacion-confirm")) {
+      if (n8nConfirmUrl) {
         try {
           const payload = {
             event: "derivacion_confirmed",

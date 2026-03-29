@@ -9,6 +9,10 @@ export const ENV = {
   n8nWebhookUrl: process.env.VITE_WEBHOOK_N8N ?? "",
   // n8n webhook URL para actualización de campos de gestión (WF02)
   n8nUpdateWebhookUrl: process.env.N8N_UPDATE_WEBHOOK_URL ?? "https://autogr.app.n8n.cloud/webhook/renta-update",
+  // n8n webhook URL para crear derivación a asesor (WF09 — derivacion-create)
+  n8nDerivacionCreateUrl: process.env.N8N_DERIVACION_CREATE_URL ?? "https://autogr.app.n8n.cloud/webhook/derivacion-create",
+  // n8n webhook URL para confirmar derivación (WF10 — derivacion-confirm)
+  n8nDerivacionConfirmUrl: process.env.N8N_DERIVACION_CONFIRM_URL ?? "https://autogr.app.n8n.cloud/webhook/derivacion-confirm",
   // Google Sheets API (opcional, acceso directo)
   googleSheetsApiKey: process.env.GOOGLE_SHEETS_API_KEY ?? "",
   googleSheetsId: process.env.GOOGLE_SHEETS_ID ?? "",
