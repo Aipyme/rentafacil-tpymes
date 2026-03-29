@@ -55,6 +55,11 @@ export const appRouter = router({
   // Borradores: generar PDF+XML, descargar, marcar presentado
   borrador: borradorRouter,
 
+  // Test: inline procedure to check if new procedures work
+  testNew: router({
+    ping: publicProcedure.query(() => ({ pong: true, ts: Date.now() })),
+  }),
+
   // Autenticación básica del Panel del Asesor
   panel: router({
     /**
