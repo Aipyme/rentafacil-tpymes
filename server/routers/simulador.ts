@@ -47,6 +47,11 @@ const RespuestasSchema = z.object({
   }).optional(),
 });
 
+// ============================================================
+// In-memory expediente cache (fallback when MySQL is unavailable)
+// ============================================================
+const expedienteCache = new Map<string, any>();
+
 export const simuladorRouter = router({
   /**
    * Calcular resultado de la declaración (gratis, sin registro)
@@ -101,6 +106,23 @@ export const simuladorRouter = router({
       } else {
         console.warn(`[Simulador] DB not available, skipping DB insert for ${expedienteId}`);
       }
+
+      // Cache expediente in memory (fallback for getExpediente when DB is down)
+      expedienteCache.set(expedienteId, {
+        expedienteId,
+        estado: "simulacion",
+        subestado: "pendiente_pago",
+        datosContribuyente: datos,
+        resultadoCalculo: resultado,
+        precioBase: precio.precioBase,
+        suplementos: precio.suplementos,
+        precioTotal: precio.precioTotal,
+        esComplejo: resultado.es_complejo,
+        motivoComplejidad: resultado.motivo_complejidad,
+        emailContacto: input.emailContacto,
+        telefonoContacto: input.telefonoContacto,
+        createdAt: new Date(),
+      });
 
       // ── Escribir en Google Sheet casos_master_v2 (fire-and-forget, no bloquea respuesta) ──
       const _sheetExpId = expedienteId;
@@ -226,13 +248,19 @@ export const simuladorRouter = router({
   getExpediente: publicProcedure
     .input(z.object({ expedienteId: z.string() }))
     .query(async ({ input }) => {
+      // Try MySQL first
       const db = await getDb();
-      if (!db) return null;
-      const [expediente] = await db
-        .select()
-        .from(declaraciones)
-        .where(eq(declaraciones.expedienteId, input.expedienteId));
-      return expediente || null;
+      if (db) {
+        const [expediente] = await db
+          .select()
+          .from(declaraciones)
+          .where(eq(declaraciones.expedienteId, input.expedienteId));
+        if (expediente) return expediente;
+      }
+      // Fallback: in-memory cache (when DB is unavailable)
+      const cached = expedienteCache.get(input.expedienteId);
+      if (cached) return cached;
+      return null;
     }),
 
   /**
