@@ -1034,6 +1034,93 @@ export default function PanelAsesor() {
                   )}
                 </div>
 
+                {/* Acciones de email al cliente */}
+                <div className="bg-white rounded-xl border border-gray-200 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      ✉️ Notificaciones al cliente
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button
+                      className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors border border-blue-200"
+                      onClick={async () => {
+                        if (!confirm("¿Enviar email de 'Borrador listo' al cliente?")) return;
+                        try {
+                          const res = await fetch("/api/trpc/notificaciones.enviarBorradorListo", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ json: { expedienteId: casoSeleccionado.id } }),
+                          });
+                          const data = await res.json();
+                          if (data?.result?.data?.json?.success) {
+                            toast.success("✅ Email 'Borrador listo' enviado al cliente");
+                          } else {
+                            toast.error("Error: " + (data?.result?.data?.json?.error || "No se pudo enviar"));
+                          }
+                        } catch { toast.error("Error de conexión"); }
+                      }}
+                    >
+                      📝 Borrador listo
+                    </button>
+                    <button
+                      className="flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-sm font-medium transition-colors border border-amber-200"
+                      onClick={async () => {
+                        if (!confirm("¿Enviar email de 'Documentos recibidos' al cliente?")) return;
+                        try {
+                          const res = await fetch("/api/trpc/notificaciones.enviarDocumentosRecibidos", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ json: {
+                              expedienteId: casoSeleccionado.id,
+                              documentosSubidos: ["Documentos del expediente"],
+                              documentosPendientes: [],
+                            }}),
+                          });
+                          const data = await res.json();
+                          if (data?.result?.data?.json?.success) {
+                            toast.success("✅ Email 'Documentos recibidos' enviado al cliente");
+                          } else {
+                            toast.error("Error: " + (data?.result?.data?.json?.error || "No se pudo enviar"));
+                          }
+                        } catch { toast.error("Error de conexión"); }
+                      }}
+                    >
+                      📎 Docs recibidos
+                    </button>
+                    <button
+                      className="flex items-center justify-center gap-2 px-4 py-2.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-sm font-medium transition-colors border border-green-200"
+                      onClick={async () => {
+                        const resultado = prompt("Resultado final (€):", "0");
+                        if (resultado === null) return;
+                        const tipo = confirm("¿Es a devolver? (Aceptar = Sí, Cancelar = A pagar)") ? "a_devolver" : "a_pagar";
+                        const csv = prompt("Nº CSV AEAT (opcional):", "") || undefined;
+                        try {
+                          const res = await fetch("/api/trpc/notificaciones.enviarDeclaracionPresentada", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ json: {
+                              expedienteId: casoSeleccionado.id,
+                              resultadoFinal: parseFloat(resultado),
+                              tipoResultado: tipo,
+                              numeroCsvAeat: csv,
+                            }}),
+                          });
+                          const data = await res.json();
+                          if (data?.result?.data?.json?.success) {
+                            toast.success("🎉 Email 'Declaración presentada' enviado al cliente");
+                          } else {
+                            toast.error("Error: " + (data?.result?.data?.json?.error || "No se pudo enviar"));
+                          }
+                        } catch { toast.error("Error de conexión"); }
+                      }}
+                    >
+                      🎉 Presentada
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-3">Los emails se envían al email del expediente via Brevo</p>
+                </div>
+
                 {/* Documentos del caso */}
                 <div className="bg-white rounded-xl border border-gray-200 p-5">
                   <div className="flex items-center justify-between mb-4">
