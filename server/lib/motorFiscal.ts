@@ -378,6 +378,191 @@ function calcularDeduccionFamiliaNumerosa(datos: RespuestasSimulador): number {
 }
 
 // ============================================================
+// DEDUCCIONES AUTONÓMICAS — FUNCIONES apply_*
+// Cada función recibe los checks de autonomica_checks y datos del simulador.
+// Devuelve { concepto, importe } o null si no aplica.
+// ============================================================
+
+/** Reglas por CCAA para deduccion_gym_deporte */
+const GYM_REGLAS: Record<string, { pct: number; limite: number; label: string }> = {
+  "Andalucía":           { pct: 0.15, limite: 150,  label: "Andalucía" },
+  "Cataluña":            { pct: 0.15, limite: 150,  label: "Cataluña" },
+  "Madrid":              { pct: 0.15, limite: 150,  label: "Madrid" },
+  "Comunitat Valenciana":{ pct: 0.15, limite: 150,  label: "C. Valenciana" },
+  "Galicia":             { pct: 0.15, limite: 150,  label: "Galicia" },
+  "Canarias":            { pct: 0.15, limite: 150,  label: "Canarias" },
+  "Castilla y León":     { pct: 0.15, limite: 150,  label: "Castilla y León" },
+  "Aragón":              { pct: 0.15, limite: 150,  label: "Aragón" },
+  "Asturias":            { pct: 0.15, limite: 150,  label: "Asturias" },
+  "Murcia":              { pct: 0.15, limite: 150,  label: "Murcia" },
+  "Extremadura":         { pct: 0.15, limite: 150,  label: "Extremadura" },
+};
+
+/** Reglas por CCAA para deduccion_guarderia */
+const GUARDERIA_REGLAS: Record<string, { pct: number; limite: number; label: string }> = {
+  "Madrid":              { pct: 0.20, limite: 1000, label: "Madrid" },
+  "Andalucía":           { pct: 0.30, limite: 1000, label: "Andalucía" },
+  "Cataluña":            { pct: 0.30, limite: 1000, label: "Cataluña" },
+  "Comunitat Valenciana":{ pct: 0.30, limite: 1000, label: "C. Valenciana" },
+  "Galicia":             { pct: 0.30, limite: 850,  label: "Galicia" },
+  "Canarias":            { pct: 0.25, limite: 900,  label: "Canarias" },
+  "Castilla y León":     { pct: 0.30, limite: 1000, label: "Castilla y León" },
+  "Aragón":              { pct: 0.30, limite: 1000, label: "Aragón" },
+  "Asturias":            { pct: 0.15, limite: 330,  label: "Asturias" },
+  "Murcia":              { pct: 0.15, limite: 330,  label: "Murcia" },
+  "Extremadura":         { pct: 0.20, limite: 500,  label: "Extremadura" },
+  "Castilla-La Mancha":  { pct: 0.20, limite: 500,  label: "Castilla-La Mancha" },
+  "La Rioja":            { pct: 0.20, limite: 500,  label: "La Rioja" },
+};
+
+/** Reglas por CCAA para deduccion_alquiler_vivienda */
+const ALQUILER_REGLAS: Record<string, { pct: number; limite: number; label: string }> = {
+  "Madrid":              { pct: 0.30, limite: 1000, label: "Madrid" },
+  "Andalucía":           { pct: 0.15, limite: 500,  label: "Andalucía" },
+  "Cataluña":            { pct: 0.10, limite: 300,  label: "Cataluña" },
+  "Comunitat Valenciana":{ pct: 0.15, limite: 459,  label: "C. Valenciana" },
+  "Galicia":             { pct: 0.10, limite: 300,  label: "Galicia" },
+  "Canarias":            { pct: 0.15, limite: 600,  label: "Canarias" },
+  "Castilla y León":     { pct: 0.15, limite: 459,  label: "Castilla y León" },
+  "Aragón":              { pct: 0.10, limite: 300,  label: "Aragón" },
+  "Asturias":            { pct: 0.15, limite: 400,  label: "Asturias" },
+  "Islas Baleares":      { pct: 0.15, limite: 530,  label: "Baleares" },
+  "Extremadura":         { pct: 0.10, limite: 300,  label: "Extremadura" },
+  "La Rioja":            { pct: 0.10, limite: 300,  label: "La Rioja" },
+  "Castilla-La Mancha":  { pct: 0.15, limite: 450,  label: "Castilla-La Mancha" },
+  "Navarra":             { pct: 0.15, limite: 1200, label: "Navarra" },
+  "Cantabria":           { pct: 0.15, limite: 500,  label: "Cantabria" },
+};
+
+/** Importe fijo de deducción autonómica extra por maternidad por CCAA */
+const MATERNIDAD_EXTRA_REGLAS: Record<string, { importe: number; label: string }> = {
+  "Madrid":              { importe: 600,  label: "Madrid" },
+  "Andalucía":           { importe: 200,  label: "Andalucía" },
+  "Cataluña":            { importe: 300,  label: "Cataluña" },
+  "Comunitat Valenciana":{ importe: 270,  label: "C. Valenciana" },
+  "Galicia":             { importe: 360,  label: "Galicia" },
+  "Canarias":            { importe: 200,  label: "Canarias" },
+  "Castilla y León":     { importe: 710,  label: "Castilla y León" },
+  "Aragón":              { importe: 500,  label: "Aragón" },
+  "Castilla-La Mancha":  { importe: 100,  label: "Castilla-La Mancha" },
+  "La Rioja":            { importe: 150,  label: "La Rioja" },
+  "Murcia":              { importe: 150,  label: "Murcia" },
+  "Asturias":            { importe: 200,  label: "Asturias" },
+  "Extremadura":         { importe: 200,  label: "Extremadura" },
+  "Islas Baleares":      { importe: 200,  label: "Baleares" },
+  "Cantabria":           { importe: 200,  label: "Cantabria" },
+};
+
+/**
+ * Aplica la deducción autonómica por gastos deportivos/gimnasio.
+ * Clave en autonomica_checks: "gym_amount" (importe gastado en euros).
+ */
+export function applyDeduccionGymDeporte(
+  comunidad: string,
+  checks: Record<string, boolean | number | string>,
+  datos: RespuestasSimulador
+): { concepto: string; importe: number } | null {
+  const regla = GYM_REGLAS[comunidad];
+  if (!regla) return null;
+
+  // Soporta tanto checks.gym_amount (nuevo) como datos.gasto_gimnasio (legacy)
+  const gastoGym = Number(checks.gym_amount || checks.gimnasio_amount || datos.gasto_gimnasio || 0);
+  if (gastoGym <= 0) return null;
+
+  // Requiere que esté activo en deducciones_check (legacy) o checks.gym (nuevo)
+  const activo =
+    checks.gym === true ||
+    checks.gym_deporte === true ||
+    (datos.deducciones_check || []).includes("Gimnasio");
+  if (!activo && gastoGym <= 0) return null;
+
+  const importe = Math.round(Math.min(gastoGym * regla.pct, regla.limite) * 100) / 100;
+  if (importe <= 0) return null;
+
+  return { concepto: `Deducción gastos deportivos/gimnasio (${regla.label})`, importe };
+}
+
+/**
+ * Aplica la deducción autonómica por gastos de guardería/cuidado de hijos.
+ * Clave en autonomica_checks: "guarderia_amount" (importe en euros).
+ */
+export function applyDeduccionGuarderia(
+  comunidad: string,
+  checks: Record<string, boolean | number | string>,
+  datos: RespuestasSimulador
+): { concepto: string; importe: number } | null {
+  const regla = GUARDERIA_REGLAS[comunidad];
+  if (!regla) return null;
+
+  const gastoGuarderia = Number(checks.guarderia_amount || 0);
+  if (gastoGuarderia <= 0) return null;
+
+  const importe = Math.round(Math.min(gastoGuarderia * regla.pct, regla.limite) * 100) / 100;
+  if (importe <= 0) return null;
+
+  return { concepto: `Deducción gastos guardería (${regla.label})`, importe };
+}
+
+/**
+ * Aplica la deducción autonómica por alquiler de vivienda habitual.
+ * Clave en autonomica_checks: "alquiler" (importe anual pagado en euros)
+ * o "alquiler_amount" para mayor claridad.
+ */
+export function applyDeduccionAlquilerVivienda(
+  comunidad: string,
+  checks: Record<string, boolean | number | string>,
+  _datos: RespuestasSimulador
+): { concepto: string; importe: number } | null {
+  const regla = ALQUILER_REGLAS[comunidad];
+  if (!regla) return null;
+
+  const gastoAlquiler = Number(checks.alquiler_amount || checks.alquiler || 0);
+  if (gastoAlquiler <= 0) return null;
+
+  const importe = Math.round(Math.min(gastoAlquiler * regla.pct, regla.limite) * 100) / 100;
+  if (importe <= 0) return null;
+
+  return { concepto: `Deducción alquiler vivienda habitual (${regla.label})`, importe };
+}
+
+/**
+ * Aplica la deducción autonómica extra por maternidad/nacimiento/adopción.
+ * Clave en autonomica_checks: "nacimiento" (boolean) o "maternidad_extra" (boolean).
+ */
+export function applyDeduccionMaternidadExtra(
+  comunidad: string,
+  checks: Record<string, boolean | number | string>,
+  _datos: RespuestasSimulador
+): { concepto: string; importe: number } | null {
+  const regla = MATERNIDAD_EXTRA_REGLAS[comunidad];
+  if (!regla) return null;
+
+  const activo = checks.nacimiento === true || checks.maternidad_extra === true || checks.adopcion === true;
+  if (!activo) return null;
+
+  return { concepto: `Deducción autonómica maternidad/nacimiento (${regla.label})`, importe: regla.importe };
+}
+
+/**
+ * Punto de entrada unificado: aplica una deducción autonómica por tipo.
+ * tipo: "gym_deporte" | "guarderia" | "alquiler_vivienda" | "maternidad_extra"
+ */
+export function applyDeduccionAutonomica(
+  comunidad: string,
+  tipo: "gym_deporte" | "guarderia" | "alquiler_vivienda" | "maternidad_extra",
+  datos: RespuestasSimulador
+): { concepto: string; importe: number } | null {
+  const checks = datos.autonomica_checks || {};
+  switch (tipo) {
+    case "gym_deporte":       return applyDeduccionGymDeporte(comunidad, checks, datos);
+    case "guarderia":         return applyDeduccionGuarderia(comunidad, checks, datos);
+    case "alquiler_vivienda": return applyDeduccionAlquilerVivienda(comunidad, checks, datos);
+    case "maternidad_extra":  return applyDeduccionMaternidadExtra(comunidad, checks, datos);
+    default:                  return null;
+  }
+}
+
+// ============================================================
 // DEDUCCIONES AUTONÓMICAS
 // ============================================================
 
@@ -392,32 +577,33 @@ function calcularDeduccionesAutonomicas(
     if (importe > 0) desglose.push({ concepto, importe });
   };
 
+  // ── Aplicar deducciones avanzadas via apply_* para todas las CCAAs ──────
+  // Estas funciones usan las claves de autonomica_checks y son extensibles.
+  const TIPOS_AVANZADOS = [
+    "gym_deporte",
+    "guarderia",
+    "alquiler_vivienda",
+    "maternidad_extra",
+  ] as const;
+  for (const tipo of TIPOS_AVANZADOS) {
+    const resultado = applyDeduccionAutonomica(comunidad, tipo, datos);
+    if (resultado) {
+      add(resultado.concepto, resultado.importe);
+    }
+  }
+
+  // ── Deducciones específicas por CCAA que no están en los apply_* genéricos ─
   switch (comunidad) {
     case "Andalucía": {
-      // Gimnasio (Decreto-ley 7/2021 Andalucía)
-      const gastoGim = Number(datos.gasto_gimnasio || 0);
-      if (gastoGim > 0 && (datos.deducciones_check || []).includes("Gimnasio")) {
-        add("Deducción gastos deportivos (Andalucía)", Math.min(gastoGim * 0.15, 150));
-      }
-      // Alquiler Andalucía
-      const alqAndalucia = Number(checks.alquiler || 0);
-      if (alqAndalucia > 0) {
-        add("Deducción alquiler vivienda habitual (Andalucía)", Math.min(alqAndalucia * 0.15, 500));
-      }
-      // Nacimiento
-      if (checks.nacimiento) {
+      // nacimiento (si no fue cubierto por maternidad_extra)
+      if (checks.nacimiento && !checks.maternidad_extra) {
         add("Deducción por nacimiento/adopción (Andalucía)", 200);
       }
       break;
     }
     case "Madrid": {
-      // Guardería
-      const guarderiaAmount = Number(checks.guarderia_amount || 0);
-      if (guarderiaAmount > 0) {
-        add("Deducción gastos guardería (Madrid)", Math.min(guarderiaAmount * 0.20, 1000));
-      }
-      // Nacimiento/adopción
-      if (checks.nacimiento) {
+      // nacimiento (si no fue cubierto por maternidad_extra)
+      if (checks.nacimiento && !checks.maternidad_extra) {
         add("Deducción por nacimiento/adopción (Madrid)", 600);
       }
       // Familia numerosa
@@ -428,15 +614,15 @@ function calcularDeduccionesAutonomicas(
       break;
     }
     case "Cataluña": {
-      // Alquiler Cataluña
-      const alqCat = Number(checks.alquiler || 0);
-      if (alqCat > 0) {
-        add("Deducción alquiler (Cataluña)", Math.min(alqCat * 0.10, 300));
-      }
-      // Familia
+      // Familia numerosa (por hijo)
       const nHijosCat = datos.n_hijos || 0;
       if (nHijosCat >= 3) {
         add("Deducción familia numerosa (Cataluña)", nHijosCat * 150);
+      }
+      // Donaciones a entidades catalanas
+      const donCat = Number(checks.donaciones_cat || 0);
+      if (donCat > 0) {
+        add("Deducción donativos entidades catalanas (Cataluña)", Math.min(donCat * 0.15, 600));
       }
       break;
     }
@@ -445,99 +631,130 @@ function calcularDeduccionesAutonomicas(
       if (checks.vivienda_joven) {
         add("Deducción vivienda joven (C. Valenciana)", 500);
       }
-      // Conciliación
+      // Conciliación (trabajo + familia)
       const concAmount = Number(checks.conciliacion_amount || 0);
       if (concAmount > 0) {
         add("Deducción conciliación (C. Valenciana)", Math.min(concAmount * 0.15, 418));
       }
+      // Familia numerosa
+      const nHijosVal = datos.n_hijos || 0;
+      if (nHijosVal >= 3) {
+        add("Deducción familia numerosa (C. Valenciana)", 600);
+      }
       break;
     }
     case "Canarias": {
+      // Vivienda (compra o rehabilitación)
       const vivCanAmount = Number(checks.vivienda_amount || 0);
-      if (vivCanAmount > 0) {
+      if (vivCanAmount > 0 && !checks.alquiler && !checks.alquiler_amount) {
         add("Deducción vivienda (Canarias)", Math.min(vivCanAmount * 0.20, 2000));
+      }
+      // Nacimiento
+      if (checks.nacimiento && !checks.maternidad_extra) {
+        add("Deducción por nacimiento/adopción (Canarias)", 200);
       }
       break;
     }
     case "Galicia": {
-      const alqGal = Number(checks.alquiler || 0);
-      if (alqGal > 0) {
-        add("Deducción alquiler (Galicia)", Math.min(alqGal * 0.10, 300));
+      // Nacimiento
+      if (checks.nacimiento && !checks.maternidad_extra) {
+        add("Deducción nacimiento (Galicia)", 360);
       }
       break;
     }
     case "Castilla y León": {
+      // Familia numerosa (por hijo)
       const nHijosCyl = datos.n_hijos || 0;
       if (nHijosCyl >= 3) {
         add("Deducción familia numerosa (Castilla y León)", nHijosCyl * 246);
       }
+      // Nacimiento
+      if (checks.nacimiento && !checks.maternidad_extra) {
+        add("Deducción por nacimiento/adopción (Castilla y León)", 710);
+      }
       break;
     }
     case "Aragón": {
-      const alqAr = Number(checks.alquiler || 0);
-      if (alqAr > 0) {
-        add("Deducción alquiler (Aragón)", Math.min(alqAr * 0.10, 300));
+      // Nacimiento
+      if (checks.nacimiento && !checks.maternidad_extra) {
+        add("Deducción por nacimiento/adopción (Aragón)", 500);
       }
       break;
     }
     case "Islas Baleares": {
-      const alqBal = Number(checks.alquiler || 0);
-      if (alqBal > 0) {
-        add("Deducción alquiler (Baleares)", Math.min(alqBal * 0.15, 530));
+      // Nacimiento
+      if (checks.nacimiento && !checks.maternidad_extra) {
+        add("Deducción por nacimiento/adopción (Baleares)", 200);
       }
       break;
     }
     case "Asturias": {
-      const guarderiaAs = Number(checks.guarderia_amount || 0);
-      if (guarderiaAs > 0) {
-        add("Deducción guardería (Asturias)", Math.min(guarderiaAs * 0.15, 330));
+      // Familia numerosa
+      const nHijosAs = datos.n_hijos || 0;
+      if (nHijosAs >= 3) {
+        add("Deducción familia numerosa (Asturias)", 505);
       }
       break;
     }
     case "Extremadura": {
-      const alqEx = Number(checks.alquiler || 0);
-      if (alqEx > 0) {
-        add("Deducción alquiler (Extremadura)", Math.min(alqEx * 0.10, 300));
+      // Nacimiento
+      if (checks.nacimiento && !checks.maternidad_extra) {
+        add("Deducción por nacimiento/adopción (Extremadura)", 200);
       }
       break;
     }
     case "La Rioja": {
+      // Familia numerosa
       const nHijosLR = datos.n_hijos || 0;
       if (nHijosLR >= 3) {
         add("Deducción familia numerosa (La Rioja)", 150 * nHijosLR);
       }
+      // Nacimiento
+      if (checks.nacimiento && !checks.maternidad_extra) {
+        add("Deducción por nacimiento/adopción (La Rioja)", 150);
+      }
       break;
     }
     case "Murcia": {
+      // Familia numerosa
       const nHijosMu = datos.n_hijos || 0;
       if (nHijosMu >= 3) {
-        add("Deducción familia numerosa (Murcia)", 100 * nHijosMu);
+        add("Deducción familia numerosa (Murcia)", 300);
       }
       break;
     }
     case "Cantabria": {
-      if (checks.vivienda) {
+      // Vivienda (si no fue cubierto por alquiler)
+      if (checks.vivienda && !checks.alquiler && !checks.alquiler_amount) {
         add("Deducción vivienda (Cantabria)", 300);
+      }
+      // Familia numerosa
+      const nHijosCt = datos.n_hijos || 0;
+      if (nHijosCt >= 3) {
+        add("Deducción familia numerosa (Cantabria)", 300);
       }
       break;
     }
     case "Castilla-La Mancha": {
-      if (checks.vivienda) {
+      // Vivienda (si no fue cubierto por alquiler)
+      if (checks.vivienda && !checks.alquiler && !checks.alquiler_amount) {
         add("Deducción vivienda (Castilla-La Mancha)", 300);
+      }
+      // Nacimiento
+      if (checks.nacimiento && !checks.maternidad_extra) {
+        add("Deducción por nacimiento/adopción (Castilla-La Mancha)", 100);
       }
       break;
     }
     case "País Vasco": {
-      if (checks.vivienda) {
+      // Vivienda foral (si no fue cubierto por alquiler)
+      if (checks.vivienda && !checks.alquiler && !checks.alquiler_amount) {
         add("Deducción vivienda (País Vasco)", 1530);
       }
       break;
     }
     case "Navarra": {
-      const alqNav = Number(checks.alquiler || 0);
-      if (alqNav > 0) {
-        add("Deducción alquiler (Navarra)", Math.min(alqNav * 0.15, 900));
-      }
+      // (el alquiler ya está cubierto por applyDeduccionAlquilerVivienda)
       break;
     }
     default:
