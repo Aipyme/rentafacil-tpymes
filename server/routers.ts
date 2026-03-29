@@ -14,8 +14,11 @@ import { notificacionesRouter } from "./routers/notificaciones";
 import { borradorRouter } from "./routers/borrador";
 import { ENV } from "./_core/env";
 
+console.log("[ROUTERS] ALL imports OK. borrador keys:", Object.keys(borradorRouter._def.procedures || {}).join(", "));
+console.log("[ROUTERS] notificaciones keys:", Object.keys(notificacionesRouter._def.procedures || {}).join(", "));
+
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
+    // Debug: log ALL registered router keys
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -91,3 +94,6 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+
+// Debug: log all registered tRPC procedures
+console.log("[ROUTERS] appRouter procedures:", Object.keys((appRouter as any)._def?.procedures || {}).join(", "));
