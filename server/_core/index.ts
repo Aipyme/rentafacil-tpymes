@@ -81,6 +81,19 @@ async function startServer() {
 
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  // Direct diagnostic endpoint — bypasses tRPC entirely
+  app.get("/api/diag/procedures", (_req, res) => {
+    const procs = Object.keys((appRouter as any)._def?.procedures || {});
+    res.json({
+      total: procs.length,
+      hasBorrador: procs.includes("borrador.generar"),
+      hasNotificaciones: procs.includes("notificaciones.enviarBorradorListo"),
+      hasTestNew: procs.includes("testNew.ping"),
+      buildMarker: "DEPLOY-730dd26-DIAG",
+      procedures: procs,
+    });
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",
