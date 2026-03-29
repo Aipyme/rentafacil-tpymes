@@ -9,10 +9,12 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { firmas } from "../../drizzle/schema";
+import { firmas, declaraciones } from "../../drizzle/schema";
 import { storagePut } from "../storage";
 import { eq } from "drizzle-orm";
 import { ENV } from "../_core/env";
+import { sendEmail } from "../lib/email";
+import { buildEmailFirmaRecibida } from "../lib/emailTemplates";
 
 // Sufijo aleatorio para evitar colisiones en S3
 function randomSuffix(): string {
@@ -80,6 +82,42 @@ export const firmasRouter = router({
           } catch {
             // No crítico — la firma ya está en BD y S3
           }
+        }
+
+        // 6. Email de firma recibida al cliente (best-effort)
+        try {
+          const [expediente] = await db
+            .select({
+              emailContacto: declaraciones.emailContacto,
+              datosContribuyente: declaraciones.datosContribuyente,
+            })
+            .from(declaraciones)
+            .where(eq(declaraciones.expedienteId, input.casoId));
+
+          if (expediente?.emailContacto) {
+            const contrib = (expediente.datosContribuyente as Record<string, unknown>) || {};
+            const nombreCliente = `${contrib.nombre || ""} ${(contrib.contribuyente as any)?.nombre || ""} ${(contrib.contribuyente as any)?.apellidos || ""}`.trim() || "";
+            const baseUrl = process.env.APP_BASE_URL || "https://rentatpymes.aicheckpyme.co";
+            const urlMiRenta = `${baseUrl}/mi-renta/${input.casoId}`;
+            const fechaFirma = new Date().toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+            const emailData = buildEmailFirmaRecibida({
+              expedienteId: input.casoId,
+              nombreCliente,
+              urlMiRenta,
+              fechaFirma,
+            });
+
+            const emailResult = await sendEmail({
+              to: expediente.emailContacto,
+              toName: nombreCliente || undefined,
+              subject: emailData.subject,
+              htmlContent: emailData.html,
+            });
+            console.log(`[Firmas] Email firma recibida: ${emailResult.success ? 'OK' : emailResult.error} (${input.casoId})`);
+          }
+        } catch (emailErr: any) {
+          console.warn(`[Firmas] Error email firma: ${emailErr.message}`);
         }
 
         return {

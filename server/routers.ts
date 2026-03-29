@@ -10,6 +10,7 @@ import { simuladorRouter } from "./routers/simulador";
 console.log("[ROUTERS] simuladorRouter loaded, keys:", Object.keys(simuladorRouter._def.procedures || {}).join(", "));
 import { pagosRouter } from "./routers/pagos";
 import { asesorRouter } from "./routers/asesor";
+import { notificacionesRouter } from "./routers/notificaciones";
 import { ENV } from "./_core/env";
 
 export const appRouter = router({
@@ -43,6 +44,9 @@ export const appRouter = router({
 
   // Derivación de casos complejos al asesor
   asesor: asesorRouter,
+
+  // Notificaciones por email al cliente (borrador listo, docs recibidos, presentada)
+  notificaciones: notificacionesRouter,
 
   // Autenticación básica del Panel del Asesor
   panel: router({

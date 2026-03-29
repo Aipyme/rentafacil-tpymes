@@ -7,6 +7,8 @@ import { upsertDeclaracionSheet } from "../lib/googleSheets";
 import { eq } from "drizzle-orm";
 import { generarInformePDF } from "../lib/generarPDF";
 import { storagePut } from "../storage";
+import { sendEmail } from "../lib/email";
+import { buildEmailBienvenida, getDocumentosNecesarios } from "../lib/emailTemplates";
 
 // ============================================================
 // Zod schema para las respuestas del simulador
@@ -130,6 +132,49 @@ export const simuladorRouter = router({
         console.log(`[Simulador] Sheet write SUCCESS for ${_sheetExpId}: ${sheetResult.action}`);
       } catch (sheetErr: any) {
         console.error(`[Simulador] Sheet write ERROR for ${_sheetExpId}:`, sheetErr.message || sheetErr);
+      }
+
+      // ── Email de bienvenida al cliente (best-effort) ──
+      if (input.emailContacto) {
+        try {
+          const baseUrl = process.env.APP_BASE_URL || "https://rentatpymes.aicheckpyme.co";
+          const urlMiRenta = `${baseUrl}/mi-renta/${expedienteId}`;
+          const contrib = (datos.contribuyente as Record<string, unknown>) || {};
+          const nombreCliente = `${contrib.nombre || ""} ${contrib.apellidos || ""}`.trim();
+
+          const docsNecesarios = getDocumentosNecesarios(datos.situacion, {
+            hipoteca: datos.vivienda_hipoteca,
+            autonomo: datos.situacion === "Autónomo",
+            donaciones: (datos.importe_donaciones || 0) > 0,
+            discapacidad: datos.contribuyente?.discapacidad,
+          });
+
+          const emailData = buildEmailBienvenida({
+            expedienteId,
+            nombreCliente,
+            emailCliente: input.emailContacto,
+            comunidad: (datos.comunidad as string) || "",
+            situacion: datos.situacion,
+            complejidad: resultado.es_complejo ? "Complejo" : "Simple",
+            urlMiRenta,
+            documentosNecesarios: docsNecesarios,
+          });
+
+          const emailResult = await sendEmail({
+            to: input.emailContacto,
+            toName: nombreCliente || undefined,
+            subject: emailData.subject,
+            htmlContent: emailData.html,
+          });
+
+          if (emailResult.success) {
+            console.log(`[Simulador] Email bienvenida enviado a ${input.emailContacto} (${expedienteId})`);
+          } else {
+            console.warn(`[Simulador] Email bienvenida no enviado: ${emailResult.error}`);
+          }
+        } catch (emailErr: any) {
+          console.warn(`[Simulador] Error enviando email bienvenida: ${emailErr.message}`);
+        }
       }
 
       return { expedienteId, resultado, precio };
