@@ -213,6 +213,88 @@ async function leerDesdeN8nWebhook(): Promise<CasoGoogleSheets[]> {
 
 // ── Router ─────────────────────────────────────────────────────────────────
 
+/**
+ * Read new-format cases from casos_master_v2 tab and map to CasoGoogleSheets
+ */
+async function leerDesdeCasosMasterV2(): Promise<CasoGoogleSheets[]> {
+  const apiKey = ENV.googleSheetsApiKey;
+  const sheetId = ENV.googleSheetsId;
+  if (!apiKey || !sheetId) return [];
+
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent("casos_master_v2")}!A:AZ?key=${apiKey}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    const data = await response.json() as { values?: string[][] };
+    if (!data.values || data.values.length < 2) return [];
+
+    const headers = data.values[0].map((h: string) => h.toLowerCase().trim());
+    const col = (name: string) => headers.indexOf(name.toLowerCase());
+
+    const idCol = col("expediente_id");
+    const nombreCol = col("cliente_nombre");
+    const emailCol = col("cliente_email");
+    const telefonoCol = col("cliente_telefono");
+    const nifCol = col("nif");
+    const ccaaCol = col("ccaa") !== -1 ? col("ccaa") : col("comunidad_autonoma");
+    const situacionCol = col("situacion_laboral");
+    const ingresosCol = col("ingresos_brutos");
+    const fechaCol = col("created_at");
+    const estadoCol = col("estado");
+    const complejidadCol = col("complejidad");
+    const planCol = col("plan_code");
+    const precioCol = col("precio_eur");
+    const numPagadoresCol = col("num_pagadores");
+    const nHijosCol = col("num_hijos");
+    const donacionesCol = col("realiza_donaciones");
+
+    const casos: CasoGoogleSheets[] = [];
+    for (let i = 1; i < data.values.length; i++) {
+      const row = data.values[i];
+      if (!row || row.length === 0) continue;
+      const id = idCol >= 0 ? (row[idCol] ?? "") : "";
+      if (!id) continue;
+
+      casos.push({
+        id,
+        nombre: nombreCol >= 0 ? (row[nombreCol] ?? "") : "",
+        email: emailCol >= 0 ? (row[emailCol] ?? "") : "",
+        nif: nifCol >= 0 ? (row[nifCol] ?? "") : "",
+        comunidad: ccaaCol >= 0 ? (row[ccaaCol] ?? "") : "",
+        situacion: situacionCol >= 0 ? (row[situacionCol] ?? "") : "",
+        ingresos: ingresosCol >= 0 ? (row[ingresosCol] ?? "") : "",
+        fecha: fechaCol >= 0 ? (row[fechaCol] ?? "") : "",
+        estado: estadoCol >= 0 ? (row[estadoCol] ?? "simulacion") : "simulacion",
+        nifPagador: "",
+        nombreEmpresa: "",
+        telefono: telefonoCol >= 0 ? (row[telefonoCol] ?? "") : "",
+        numPagadores: numPagadoresCol >= 0 ? (row[numPagadoresCol] ?? "1") : "1",
+        tieneInmuebles: "No",
+        tieneActividad: "",
+        complejidad: complejidadCol >= 0 ? (row[complejidadCol] ?? "") : "",
+        plan: planCol >= 0 ? (row[planCol] ?? "") : "",
+        precio: precioCol >= 0 ? (row[precioCol] ?? "") : "",
+        prioridad: "",
+        asesorAsignado: "",
+        notasAsesor: "",
+        documentosRecibidos: "",
+        fechaContacto: "",
+        fechaRevision: "",
+        resultadoFinal: "",
+        importeResultado: "",
+        fechaPresentacion: "",
+        observaciones: "",
+        ultimoRecordatorio: "",
+        rowIndex: i + 1,
+      });
+    }
+    return casos;
+  } catch (e) {
+    console.warn("[casos] Error leyendo casos_master_v2:", e);
+    return [];
+  }
+}
+
 export const casosRouter = router({
   /**
    * Obtener todos los casos del Google Sheet
@@ -231,7 +313,18 @@ export const casosRouter = router({
 
       if (ENV.googleSheetsApiKey && ENV.googleSheetsId) {
         try {
-          casos = await leerDesdeGoogleSheetsDirecto();
+          const [sheet1Cases, v2Cases] = await Promise.all([
+            leerDesdeGoogleSheetsDirecto(),
+            leerDesdeCasosMasterV2(),
+          ]);
+          // Merge: Sheet1 (old RENTA-2025-*) + casos_master_v2 (new RF2025-*)
+          // Deduplicate by id
+          const seen = new Set<string>();
+          casos = [...sheet1Cases, ...v2Cases].filter(c => {
+            if (seen.has(c.id)) return false;
+            seen.add(c.id);
+            return true;
+          });
           fuente = "google_sheets";
         } catch (e) {
           error = `Google Sheets: ${e instanceof Error ? e.message : String(e)}`;

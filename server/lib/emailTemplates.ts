@@ -328,7 +328,7 @@ export function buildEmailDeclaracionPresentada(data: DeclaracionPresentadaData)
       : `<div style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:4px;padding:16px;margin-bottom:24px;">
            <p style="margin:0;font-size:14px;color:#991b1b;"><strong>📅 ¿Cómo pago?</strong></p>
            <p style="margin:8px 0 0;font-size:13px;color:#4a5568;line-height:1.6;">
-             El importe se cargará en tu cuenta bancaria en las fechas establecidas por la AEAT. Si elegiste fraccionamiento, el primer pago es el 60% y el segundo en noviembre.
+             Si tu resultado es a ingresar, puedes pagar en un solo plazo (antes del 30 de junio) o fraccionarlo: <strong>60% en junio</strong> y <strong>40% en noviembre</strong>, sin intereses.
            </p>
          </div>`
     }
