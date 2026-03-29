@@ -526,3 +526,140 @@ export function buildSheetRowPayload(params: {
     fecha_registro: params.paidAt,
   };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Headers canónicos para cada tab del Sheet
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Headers correctos para la tab "Derivaciones"
+ * (estructura de derivaciones fiscales, no de solicitudes de asesor)
+ */
+export const DERIVACIONES_HEADERS = [
+  "derivacion_id",
+  "expediente_id",
+  "cliente_nombre",
+  "cliente_email",
+  "cliente_telefono",
+  "nif",
+  "motivo_derivacion",
+  "descripcion_situacion",
+  "franja_horaria",
+  "reserved_slot",
+  "estado",           // pending | assigned | resolved
+  "derivado_a",       // email/nombre del asesor asignado
+  "prioridad",        // alta | media | baja
+  "n8n_status",
+  "created_at",
+  "updated_at",
+  "resuelto_por",
+  "resuelto_at",
+  "observaciones",
+];
+
+/**
+ * Inicializa los headers de la tab "Derivaciones" si están mal o vacíos.
+ * Llama a esto una vez para resetear la estructura.
+ */
+export async function initDerivacionesHeaders(): Promise<boolean> {
+  const sheetId = process.env.GOOGLE_SHEETS_ID;
+  if (!sheetId) return false;
+  const sa = getServiceAccount();
+  if (!sa) return false;
+  let token: string;
+  try { token = await getServiceAccountAccessToken(sa); } catch { return false; }
+
+  const range = "Derivaciones!A1:S1";
+  const url = `${SHEETS_API_BASE}/${sheetId}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ range, majorDimension: "ROWS", values: [DERIVACIONES_HEADERS] }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  return res.ok;
+}
+
+/**
+ * Limpia columnas vacías (sin nombre) al final de casos_master_v2.
+ * Las reemplaza por un espacio para que la API las ignore.
+ */
+export async function limpiarColumnasVaciasCasosMaster(): Promise<{ ok: boolean; msg: string }> {
+  const sheetId = process.env.GOOGLE_SHEETS_ID;
+  if (!sheetId) return { ok: false, msg: "Sin GOOGLE_SHEETS_ID" };
+  const sa = getServiceAccount();
+  if (!sa) return { ok: false, msg: "Sin Service Account" };
+  let token: string;
+  try { token = await getServiceAccountAccessToken(sa); } catch (e: any) { return { ok: false, msg: e.message }; }
+
+  // Leer header actual
+  const headers = await obtenerHeaders(token, sheetId, "casos_master_v2");
+  const emptyIndices = headers.map((h, i) => ({ h, i })).filter(x => !x.h.trim());
+  if (emptyIndices.length === 0) return { ok: true, msg: "Sin columnas vacías" };
+
+  // Borrar columna vacía = clearValues en esa columna entera
+  // Usamos batchClear para las columnas vacías
+  const ranges = emptyIndices.map(({ i }) => {
+    const col = columnLetter(i + 1);
+    return `casos_master_v2!${col}:${col}`;
+  });
+
+  const url = `${SHEETS_API_BASE}/${sheetId}/values:batchClear`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ ranges }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    return { ok: false, msg: err };
+  }
+  return { ok: true, msg: `Limpiadas ${emptyIndices.length} columnas vacías: ${emptyIndices.map(x => columnLetter(x.i + 1)).join(", ")}` };
+}
+
+/**
+ * Leer expedientes de casos_master_v2 con filtros opcionales.
+ */
+export async function leerCasosMasterV2(filtros?: {
+  es_derivacion?: boolean;
+  estado?: string;
+  limit?: number;
+}): Promise<Record<string, string>[]> {
+  const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
+  const sheetId = process.env.GOOGLE_SHEETS_ID;
+  if (!apiKey || !sheetId) return [];
+
+  try {
+    const url = `${SHEETS_API_BASE}/${sheetId}/values/casos_master_v2!A:DZ?key=${apiKey}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+    if (!res.ok) return [];
+    const data = await res.json() as { values?: string[][] };
+    const rows = data.values || [];
+    if (rows.length < 2) return [];
+    const headers = rows[0];
+    let result = rows.slice(1)
+      .filter(r => r[0]) // solo filas con expediente_id
+      .map(row => {
+        const obj: Record<string, string> = {};
+        headers.forEach((h, i) => { if (h) obj[h] = row[i] ?? ""; });
+        return obj;
+      });
+
+    // Aplicar filtros
+    if (filtros?.es_derivacion !== undefined) {
+      const val = filtros.es_derivacion ? "true" : "false";
+      result = result.filter(r => (r.es_derivacion || "").toLowerCase() === val);
+    }
+    if (filtros?.estado) {
+      result = result.filter(r => r.estado === filtros.estado);
+    }
+    if (filtros?.limit) {
+      result = result.slice(0, filtros.limit);
+    }
+    return result;
+  } catch (err: any) {
+    console.error("[GoogleSheets] Error en leerCasosMasterV2:", err.message);
+    return [];
+  }
+}

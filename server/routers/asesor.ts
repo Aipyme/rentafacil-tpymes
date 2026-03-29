@@ -285,23 +285,29 @@ export const asesorRouter = router({
       }
 
       // ── Escribir derivación en Google Sheet "Derivaciones" ──
+      // Campos alineados con DERIVACIONES_HEADERS canónicos
       try {
         const { upsertDeclaracionSheet } = await import("../lib/googleSheets");
         await upsertDeclaracionSheet({
-          expediente_id: input.expedienteId || derivacionId,
           derivacion_id: derivacionId,
+          expediente_id: input.expedienteId || derivacionId,
           cliente_nombre: input.nombre,
           cliente_email: input.email,
           cliente_telefono: input.telefono,
           nif: input.nif,
-          motivo_complejidad: input.motivoComplejidad || "",
+          motivo_derivacion: input.motivoComplejidad || "",
           descripcion_situacion: input.descripcionSituacion || "",
           franja_horaria: input.franjaHoraria || "flexible",
           reserved_slot: reservedSlot,
-          estado: "pendiente",
+          estado: "pending",
+          derivado_a: "",
+          prioridad: "media",
           n8n_status: n8nStatus,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
+          resuelto_por: "",
+          resuelto_at: "",
+          observaciones: "",
         }, "Derivaciones");
         console.log(`[Asesor] Derivación ${derivacionId} escrita en Sheet Derivaciones`);
       } catch (sheetErr: any) {
@@ -628,5 +634,41 @@ export const asesorRouter = router({
         .set({ activo: false })
         .where(eq(asesores.id, input.id));
       return { success: true };
+    }),
+
+  /**
+   * ADMIN: Inicializar headers correctos en tab "Derivaciones" del Sheet
+   * y limpiar columnas vacías de casos_master_v2.
+   * Llamar UNA VEZ desde el panel asesor para dejar el Sheet bonito.
+   */
+  adminFixSheet: protectedProcedure
+    .mutation(async () => {
+      const { initDerivacionesHeaders, limpiarColumnasVaciasCasosMaster } = await import("../lib/googleSheets");
+      const [derivResult, cleanResult] = await Promise.all([
+        initDerivacionesHeaders(),
+        limpiarColumnasVaciasCasosMaster(),
+      ]);
+      return {
+        derivaciones_headers_ok: derivResult,
+        columnas_vacias: cleanResult,
+      };
+    }),
+
+  /**
+   * ADMIN: Listar derivaciones del Sheet para el panel de derivaciones
+   */
+  adminListarDerivaciones: protectedProcedure
+    .input(z.object({
+      estado: z.string().optional(),
+      limit: z.number().optional().default(50),
+    }))
+    .query(async ({ input }) => {
+      const { leerCasosMasterV2 } = await import("../lib/googleSheets");
+      const casos = await leerCasosMasterV2({
+        es_derivacion: true,
+        estado: input.estado,
+        limit: input.limit,
+      });
+      return { casos, total: casos.length };
     }),
 });
