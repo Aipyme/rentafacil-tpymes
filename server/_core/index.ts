@@ -84,12 +84,28 @@ async function startServer() {
   // Direct diagnostic endpoint — bypasses tRPC entirely
   app.get("/api/diag/procedures", (_req, res) => {
     const procs = Object.keys((appRouter as any)._def?.procedures || {});
+    const dbUrl = process.env.DATABASE_URL;
     res.json({
       total: procs.length,
       hasBorrador: procs.includes("borrador.generar"),
       hasNotificaciones: procs.includes("notificaciones.enviarBorradorListo"),
       hasTestNew: procs.includes("testNew.ping"),
       buildMarker: "DEPLOY-730dd26-DIAG",
+      db: {
+        hasUrl: !!dbUrl,
+        urlPrefix: dbUrl ? dbUrl.substring(0, 30) + "..." : "NOT SET",
+      },
+      s3: {
+        bucket: process.env.S3_BUCKET || "NOT SET",
+        region: process.env.S3_REGION || "NOT SET",
+        hasAccessKey: !!process.env.S3_ACCESS_KEY_ID,
+      },
+      stripe: {
+        hasSecretKey: !!process.env.STRIPE_SECRET_KEY,
+      },
+      brevo: {
+        hasApiKey: !!(process.env.BREVO_API_KEY || process.env.SENDINBLUE_API_KEY),
+      },
       procedures: procs,
     });
   });
