@@ -26,6 +26,7 @@ import Cataluna from "@/pages/Cataluna";
 import Valencia from "@/pages/Valencia";
 import Canarias from "@/pages/Canarias";
 import Derivaciones from "@/pages/Derivaciones";
+import SimuladorFiscal from "@/pages/SimuladorFiscal";
 
 function AppRouter() {
   // make sure to consider if you need authentication for certain routes
@@ -53,6 +54,7 @@ function AppRouter() {
       <Route path="/pago/:expedienteId" component={PagoRenta} />
       <Route path="/mi-renta/:expedienteId" component={MiRenta} />
       <Route path="/asesor-fiscal" component={AsesorFiscal} />
+      <Route path="/simulador-fiscal" component={SimuladorFiscal} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

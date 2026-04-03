@@ -57,6 +57,14 @@ export default function Navbar() {
             Precios
           </a>
           <Link
+            href="/simulador-fiscal"
+            className={`text-sm font-medium transition-colors no-underline ${
+              location === "/simulador-fiscal" ? "text-[#1a365d]" : "text-gray-500 hover:text-[#1a365d]"
+            }`}
+          >
+            Simulador IRPF
+          </Link>
+          <Link
             href="/blog"
             className={`text-sm font-medium transition-colors no-underline ${
               location.startsWith("/blog") ? "text-[#1a365d]" : "text-gray-500 hover:text-[#1a365d]"
