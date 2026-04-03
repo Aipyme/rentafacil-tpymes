@@ -516,9 +516,32 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     ahorro_estimado: "20% – 60% de la inversión",
     icono: "♻️",
   },
+  {
+    id: "vehiculo_electrico",
+    pregunta: "¿Has comprado un vehículo eléctrico nuevo entre el 30/06/2023 y el 31/12/2025?",
+    descripcion: "15% del valor de adquisición (sin IVA), máximo 3.000 €. Solo vehículos nuevos de uso particular (turismos, motos eléctricas, cuadriciclos).",
+    normativa: "DA 58ª LIRPF (RDL 5/2023, prorrogado RDL 9/2024)",
+    ahorro_estimado: "Hasta 3.000€",
+    icono: "🚗",
+  },
+  {
+    id: "inversion_startup",
+    pregunta: "¿Has invertido en 2025 en una empresa de nueva o reciente creación (startup, business angel)?",
+    descripcion: "50% de las cantidades invertidas en empresas de nueva creación certificadas. Base máxima: 100.000 €. La empresa debe tener menos de 5 años y no cotizar en bolsa.",
+    normativa: "Art. 68.1 LIRPF (Ley 28/2022 de Startups)",
+    ahorro_estimado: "50% de la inversión, máx. 50.000€",
+    icono: "🚀",
+  },
+  {
+    id: "cuotas_gimnasio",
+    pregunta: "¿Has pagado cuotas de gimnasio, piscina municipal, club deportivo o clases de actividad física en 2025?",
+    descripcion: "✨ Nueva deducción 2025: 15% de las cuotas pagadas por actividades deportivas o de actividad física. Máximo 150 € de deducción (base máxima 1.000 €).",
+    normativa: "RDL 4/2024 (nueva deducción IRPF 2025)",
+    ahorro_estimado: "Hasta 150€/año",
+    icono: "🏋️",
+  },
 ];
-
-// ─── Deducciones autonómicas por comunidad ───────────────────────────────────
+// ─── Deducciones autonómicas por comunidadd ───────────────────────────────────
 const DEDUCCIONES_AUTONOMICAS: Record<string, DeduccionItem[]> = {
   madrid: [
     {

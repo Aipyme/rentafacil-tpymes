@@ -1901,3 +1901,23 @@
 [2026-04-03T16:10:01.690Z] [STARTUP] SA_B64: NOT SET
 [2026-04-03T16:10:01.690Z] [STARTUP] SA_RAW: NOT SET
 [2026-04-03T16:10:01.691Z] Server running on http://localhost:3000/
+[2026-04-03T16:52:21.484Z] Dev server process group stopped
+[2026-04-03T16:52:21.544Z] Dev server exited with code -15
+[2026-04-03T16:52:24.497Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-04-03T16:52:26.053Z] [ROUTERS] simuladorRouter loaded, keys: calcular, guardarSimulacion, sheetDiag, getExpediente, crearSesionPago, confirmarPago, generarPDF, confirmarDeducciones, listar
+[2026-04-03T16:52:26.054Z] [ROUTERS] ALL imports OK. borrador keys: generar, generarYNotificar, marcarPresentado
+[2026-04-03T16:52:26.055Z] [ROUTERS] notificaciones keys: enviarBorradorListo, enviarDocumentosRecibidos, enviarDeclaracionPresentada
+[2026-04-03T16:52:26.055Z] [ROUTERS] appRouter procedures: system.health, system.notifyOwner, auth.me, auth.logout, casos.list, casos.updateGestion, casos.updateEstado, casos.notificarRevisionPendiente, casos.listarAsesores, casos.listarParaRecordatorio, casos.eliminar, casos.buscarPorId, documentos.listar, documentos.getUploadUrl, documentos.confirmarSubida, documentos.subirBase64, documentos.eliminar, documentos.listarRechazos, documentos.getDownloadUrl, documentos.contarPorCasos, firmas.guardar, firmas.verificar, firmas.obtenerParaAsesor, simulador.calcular, simulador.guardarSimulacion, simulador.sheetDiag, simulador.getExpediente, simulador.crearSesionPago, simulador.confirmarPago, simulador.generarPDF, simulador.confirmarDeducciones, simulador.listar, pagos.crearSesionCheckout, pagos.verificarPago, asesor.getFranjasHorarias, asesor.crearSolicitud, asesor.getSolicitud, asesor.getMisSolicitudes, asesor.adminListarSolicitudes, asesor.adminActualizarEstado, asesor.adminConfirmarSlot, asesor.adminAsignarAsesor, asesor.getAsesores, asesor.adminCrearAsesor, asesor.adminDesactivarAsesor, asesor.adminFixSheet, asesor.adminListarDerivaciones, asesor.panelListarDerivaciones, asesor.panelAsignarAsesor, asesor.panelMarcarResuelto, notificaciones.enviarBorradorListo, notificaciones.enviarDocumentosRecibidos, notificaciones.enviarDeclaracionPresentada, borrador.generar, borrador.generarYNotificar, borrador.marcarPresentado, xml.generateXml, testNew.ping, panel.login, panel.verify
+[2026-04-03T16:52:26.993Z] [STARTUP] Commit: 0fa6137-REAL | Routes: POST /api/stripe/webhook | GET /api/diag/sa | POST /api/presupuesto | POST /api/diag/router-check | POST /api/generate-xml | GET /api/health | GET /api/oauth/callback | GET /api/diag/email | GET /api/diag/sheet | GET /api/diag/procedures
+[2026-04-03T16:52:26.993Z] [STARTUP] SA_B64: NOT SET
+[2026-04-03T16:52:26.994Z] [STARTUP] SA_RAW: NOT SET
+[2026-04-03T16:52:26.994Z] Server running on http://localhost:3000/
+[2026-04-03T18:22:36.851Z] 2:22:36 PM [vite] (client) hmr update /src/pages/SimuladorFiscal.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T18:23:28.278Z] 2:23:28 PM [vite] (client) hmr update /src/pages/SimuladorFiscal.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T18:24:21.045Z] 2:24:21 PM [vite] (client) hmr update /src/pages/SimuladorFiscal.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T18:25:58.670Z] 2:25:58 PM [vite] (client) hmr update /src/pages/SimuladorFiscal.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T18:26:17.108Z] 2:26:17 PM [vite] (client) hmr update /src/pages/SimuladorFiscal.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T18:26:22.595Z] 2:26:22 PM [vite] (client) hmr update /src/pages/SimuladorFiscal.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T18:26:45.181Z] 2:26:45 PM [vite] (client) hmr update /src/pages/SimuladorFiscal.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T18:28:08.179Z] 2:28:08 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T18:28:40.441Z] 2:28:40 PM [vite] (client) page reload public/__manus__/version.json

@@ -106,6 +106,22 @@ export interface DatosContribuyente {
   adquisicionViviendaJoven: boolean; // Compra vivienda habitual joven
   gastosEscolaridad: number; // Gastos escolaridad hijos (deducciones autonómicas)
   gastosGuarderia: number; // Gastos guardería hijos < 3 años
+  // Nuevas deducciones 2025
+  cuotasGimnasio: number;           // Cuotas gimnasio/actividad física (autonómica en varias CCAA)
+  vehiculoElectrico: boolean;       // Adquisición vehículo eléctrico nuevo en 2025
+  importeVehiculoElectrico: number; // Valor de adquisición del vehículo eléctrico
+  movilidadGeografica: boolean;     // Cambio de residencia por motivos laborales (gasto deducible +2.000 €)
+  gastosVeterinario: number;        // Gastos veterinarios mascotas (Andalucía)
+  gastosDentista: number;           // Gastos dentista (algunas CCAA)
+  gastosOptica: number;             // Gastos óptica/lentes (algunas CCAA)
+  gastosTransportePublico: number;  // Abono transporte público (algunas CCAA)
+  gastosLibrosTexto: number;        // Libros de texto y material escolar
+  monoparental: boolean;            // Familia monoparental
+  acogimientoMayores: boolean;      // Acogimiento no remunerado de mayores de 65 años
+  danaValencia: boolean;            // Afectado por DANA Valencia 2024
+  importeGastosDana: number;        // Gastos reparación vivienda por DANA
+  inversionStartup?: number;
+  gastosFormacion?: number;        // Inversión en empresas de nueva creación (Art. 68.1 LIRPF)
 }
 
 export interface DeduccionAplicada {
@@ -600,13 +616,39 @@ function calcularDeduccionesEstatales(
       casilla: "0627",
       importe: Math.round(importeDonativos * 100) / 100,
       descripcion: `80% de los primeros 250 € + ${datos.donativosHabitualONG ? "45" : "40"}% del resto. Donativo de ${datos.donativos.toLocaleString("es-ES")} €.`,
-      normativa: "Art. 68.3 LIRPF + Ley 49/2002",
+        normativa: "Art. 68.3 LIRPF + Ley 49/2002",
+    });
+  }
+
+  // 8. Deducción por adquisición de vehículo eléctrico nuevo (DA 58ª LIRPF)
+  if (datos.vehiculoElectrico && datos.importeVehiculoElectrico > 0) {
+    const baseDeduccion = Math.min(datos.importeVehiculoElectrico, 20000);
+    const importeVehiculo = baseDeduccion * 0.15;
+    const limiteVehiculo = Math.min(importeVehiculo, 3000);
+    deducciones.push({
+      nombre: "Deducción por adquisición de vehículo eléctrico nuevo",
+      casilla: "0568",
+      importe: Math.round(limiteVehiculo * 100) / 100,
+      descripcion: `15% del valor de adquisición (${datos.importeVehiculoElectrico.toLocaleString("es-ES")} €), máx. 3.000 €. Vehículo matriculado antes del 31/12/2025.`,
+      normativa: "DA 58ª LIRPF (RDL 5/2023, prorrogado RDL 9/2024)",
+    });
+  }
+
+  // 9. Deducción por inversión en empresas de nueva o reciente creación (Art. 68.1 LIRPF)
+  if ((datos.inversionStartup ?? 0) > 0) {
+    const baseDeduccion = Math.min(datos.inversionStartup ?? 0, 100000);
+    const importeStartup = baseDeduccion * 0.50; // 50% desde 2023
+    deducciones.push({
+      nombre: "Deducción por inversión en empresa de nueva creación",
+      casilla: "0528",
+      importe: Math.round(importeStartup * 100) / 100,
+      descripcion: `50% de ${baseDeduccion.toLocaleString("es-ES")} € invertidos en empresa de nueva o reciente creación. Máx. base: 100.000 €.`,
+      normativa: "Art. 68.1 LIRPF (modificado Ley 28/2022 de Startups)",
     });
   }
 
   return deducciones;
 }
-
 // ─── DEDUCCIONES AUTONÓMICAS ─────────────────────────────────────────────────
 
 function calcularDeduccionesAutonomicas(
@@ -783,8 +825,380 @@ function calcularDeduccionesAutonomicas(
       break;
     }
 
+    case "aragon": {
+      // Deducción por nacimiento/adopción 3º hijo o sucesivos
+      if (datos.numHijos >= 3) {
+        deducciones.push({
+          nombre: "Deducción por nacimiento/adopción 3º hijo o sucesivos (Aragón)",
+          casilla: "0901",
+          importe: 500,
+          descripcion: "500 € por el tercer hijo o sucesivos.",
+          normativa: "Art. 110-3 DL 1/2005 Aragón",
+        });
+      }
+      // Deducción por cuidado de personas dependientes
+      if (datos.numAscendientes > 0) {
+        deducciones.push({
+          nombre: "Deducción por cuidado de personas dependientes (Aragón)",
+          casilla: "0902",
+          importe: Math.min(150, 150),
+          descripcion: "150 € por el cuidado de personas dependientes a cargo.",
+          normativa: "Art. 110-6 DL 1/2005 Aragón",
+        });
+      }
+      // Deducción por gastos de guarderia
+      if (datos.gastosGuarderia > 0 && datos.hijosMenores3 > 0) {
+        const importeGuarderiaAr = Math.min(datos.gastosGuarderia * 0.15, 250 * datos.hijosMenores3);
+        deducciones.push({
+          nombre: "Deducción por gastos de guardería (Aragón)",
+          casilla: "0903",
+          importe: importeGuarderiaAr,
+          descripcion: `15% de gastos de guardería, máx. 250 € por hijo menor de 3 años.`,
+          normativa: "Art. 110-7 DL 1/2005 Aragón",
+        });
+      }
+      // Deducción por adquisición libros de texto
+      if (datos.gastosLibrosTexto > 0 && datos.numHijos > 0) {
+        const importeLibrosAr = Math.min(datos.gastosLibrosTexto, 100 * datos.numHijos);
+        deducciones.push({
+          nombre: "Deducción por adquisición de libros de texto (Aragón)",
+          casilla: "0904",
+          importe: importeLibrosAr,
+          descripcion: `Gastos en libros de texto y material escolar. Máx. 100 € por hijo.`,
+          normativa: "Art. 110-8 DL 1/2005 Aragón",
+        });
+      }
+      break;
+    }
+    case "asturias": {
+      // Deducción por acogimiento no remunerado de mayores de 65 años
+      if (datos.acogimientoMayores) {
+        deducciones.push({
+          nombre: "Deducción por acogimiento no remunerado de mayores de 65 años (Asturias)",
+          casilla: "1001",
+          importe: 341,
+          descripcion: "341 € por acogimiento no remunerado de personas mayores de 65 años.",
+          normativa: "Art. 6 DL 2/2014 Asturias",
+        });
+      }
+      // Deducción por alquiler vivienda habitual
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0) {
+        if (baseTotal < 25009) {
+          const importeAlquilerAs = Math.min(datos.alquilerAnual * 0.15, 606);
+          deducciones.push({
+            nombre: "Deducción por alquiler vivienda habitual (Asturias)",
+            casilla: "1002",
+            importe: importeAlquilerAs,
+            descripcion: `15% del alquiler anual, máx. 606 €. Base imponible < 25.009 €.`,
+            normativa: "Art. 7 DL 2/2014 Asturias",
+          });
+        }
+      }
+      // Deducción por gastos de guardería
+      if (datos.gastosGuarderia > 0 && datos.hijosMenores3 > 0) {
+        const importeGuarderiaAs = Math.min(datos.gastosGuarderia * 0.15, 330 * datos.hijosMenores3);
+        deducciones.push({
+          nombre: "Deducción por gastos de guardería (Asturias)",
+          casilla: "1003",
+          importe: importeGuarderiaAs,
+          descripcion: `15% de gastos de guardería, máx. 330 € por hijo.`,
+          normativa: "Art. 8 DL 2/2014 Asturias",
+        });
+      }
+      // Deducción por adquisición de vehículo eléctrico (Asturias)
+      if (datos.vehiculoElectrico && datos.importeVehiculoElectrico > 0) {
+        const importeVehAs = Math.min(datos.importeVehiculoElectrico * 0.15, 1000);
+        deducciones.push({
+          nombre: "Deducción autonómica por adquisición de vehículo eléctrico (Asturias)",
+          casilla: "1004",
+          importe: importeVehAs,
+          descripcion: `15% del valor del vehículo eléctrico, máx. 1.000 €.`,
+          normativa: "Ley 4/2023 Asturias",
+        });
+      }
+      break;
+    }
+    case "baleares": {
+      // Deducción por alquiler vivienda habitual
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0) {
+        const importeAlquilerBal = Math.min(datos.alquilerAnual * 0.15, 530);
+        deducciones.push({
+          nombre: "Deducción por alquiler vivienda habitual (Baleares)",
+          casilla: "1101",
+          importe: importeAlquilerBal,
+          descripcion: `15% del alquiler anual, máx. 530 €.`,
+          normativa: "Art. 3 DL 1/2014 Baleares",
+        });
+      }
+      // Deducción por gastos de aprendizaje de idiomas
+      if ((datos.gastosFormacion ?? 0) > 0 && datos.numHijos > 0) {
+        const importeIdiomasBal = Math.min((datos.gastosFormacion ?? 0) * 0.15, 100 * datos.numHijos);
+        deducciones.push({
+          nombre: "Deducción por gastos de aprendizaje extraescolar de idiomas (Baleares)",
+          casilla: "1102",
+          importe: importeIdiomasBal,
+          descripcion: `15% de gastos de idiomas extraescolares, máx. 100 € por hijo.`,
+          normativa: "Art. 4 DL 1/2014 Baleares",
+        });
+      }
+      // Deducción por nacimiento
+      if (datos.numHijos > 0 && datos.edadesHijos.some(e => e === 0)) {
+        deducciones.push({
+          nombre: "Deducción por nacimiento (Baleares)",
+          casilla: "1103",
+          importe: 600,
+          descripcion: "600 € por nacimiento o adopción de hijo en el ejercicio.",
+          normativa: "Art. 5 DL 1/2014 Baleares",
+        });
+      }
+      break;
+    }
+    case "cantabria": {
+      // Deducción por alquiler vivienda habitual (jóvenes < 35)
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0 && edad < 35) {
+        if (baseTotal < 22000) {
+          const importeAlquilerCant = Math.min(datos.alquilerAnual * 0.10, 300);
+          deducciones.push({
+            nombre: "Deducción por alquiler vivienda habitual (Cantabria)",
+            casilla: "1201",
+            importe: importeAlquilerCant,
+            descripcion: `10% del alquiler anual, máx. 300 €. Menores de 35 años.`,
+            normativa: "Art. 2 DL 62/2008 Cantabria",
+          });
+        }
+      }
+      // Deducción por cuidado de familiares
+      if (datos.numAscendientes > 0) {
+        deducciones.push({
+          nombre: "Deducción por cuidado de familiares dependientes (Cantabria)",
+          casilla: "1202",
+          importe: 100,
+          descripcion: "100 € por cuidado de ascendientes dependientes.",
+          normativa: "Art. 3 DL 62/2008 Cantabria",
+        });
+      }
+      break;
+    }
+    case "castilla_la_mancha": {
+      // Deducción por nacimiento o adopción de hijos
+      if (datos.numHijos > 0 && datos.edadesHijos.some(e => e === 0)) {
+        const importeNacCLM = datos.numHijos >= 3 ? 300 : datos.numHijos === 2 ? 200 : 100;
+        deducciones.push({
+          nombre: "Deducción por nacimiento o adopción de hijos (Castilla-La Mancha)",
+          casilla: "1301",
+          importe: importeNacCLM,
+          descripcion: `${importeNacCLM} € por nacimiento o adopción. Importe según número de hijos.`,
+          normativa: "Art. 1 DL 1/2010 Castilla-La Mancha",
+        });
+      }
+      // Deducción por familia numerosa
+      if (datos.familiaNumerosa) {
+        const importeFNCLM = datos.familiaNumerosaEspecial ? 500 : 200;
+        deducciones.push({
+          nombre: "Deducción por familia numerosa (Castilla-La Mancha)",
+          casilla: "1302",
+          importe: importeFNCLM,
+          descripcion: `Familia numerosa ${datos.familiaNumerosaEspecial ? "especial" : "general"}.`,
+          normativa: "Art. 2 DL 1/2010 Castilla-La Mancha",
+        });
+      }
+      break;
+    }
+    case "castilla_leon": {
+      // Deducción por alquiler vivienda habitual (jóvenes < 36)
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0 && edad < 36) {
+        if (baseTotal < 18900) {
+          const importeAlquilerCL = Math.min(datos.alquilerAnual * 0.15, 459);
+          deducciones.push({
+            nombre: "Deducción por alquiler vivienda habitual (Castilla y León)",
+            casilla: "1401",
+            importe: importeAlquilerCL,
+            descripcion: `15% del alquiler anual, máx. 459 €. Menores de 36 años.`,
+            normativa: "Art. 3 DL 1/2013 Castilla y León",
+          });
+        }
+      }
+      // Deducción por familia numerosa
+      if (datos.familiaNumerosa) {
+        const importeFNCL = datos.familiaNumerosaEspecial ? 1010 : 505;
+        deducciones.push({
+          nombre: "Deducción por familia numerosa (Castilla y León)",
+          casilla: "1402",
+          importe: importeFNCL,
+          descripcion: `Familia numerosa ${datos.familiaNumerosaEspecial ? "especial" : "general"}.`,
+          normativa: "Art. 4 DL 1/2013 Castilla y León",
+        });
+      }
+      // Deducción por gastos de guardería
+      if (datos.gastosGuarderia > 0 && datos.hijosMenores3 > 0) {
+        const importeGuarderiaCL = Math.min(datos.gastosGuarderia * 0.30, 1000 * datos.hijosMenores3);
+        deducciones.push({
+          nombre: "Deducción por gastos de guardería (Castilla y León)",
+          casilla: "1403",
+          importe: importeGuarderiaCL,
+          descripcion: `30% de gastos de guardería, máx. 1.000 € por hijo.`,
+          normativa: "Art. 5 DL 1/2013 Castilla y León",
+        });
+      }
+      break;
+    }
+    case "extremadura": {
+      // Deducción por alquiler vivienda habitual (jóvenes < 36)
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0 && edad < 36) {
+        if (baseTotal < 19000) {
+          const importeAlquilerEx = Math.min(datos.alquilerAnual * 0.10, 300);
+          deducciones.push({
+            nombre: "Deducción por alquiler vivienda habitual (Extremadura)",
+            casilla: "1501",
+            importe: importeAlquilerEx,
+            descripcion: `10% del alquiler anual, máx. 300 €. Menores de 36 años.`,
+            normativa: "Art. 6 DL 1/2018 Extremadura",
+          });
+        }
+      }
+      // Deducción por familia numerosa
+      if (datos.familiaNumerosa) {
+        const importeFNEx = datos.familiaNumerosaEspecial ? 300 : 150;
+        deducciones.push({
+          nombre: "Deducción por familia numerosa (Extremadura)",
+          casilla: "1502",
+          importe: importeFNEx,
+          descripcion: `Familia numerosa ${datos.familiaNumerosaEspecial ? "especial" : "general"}.`,
+          normativa: "Art. 7 DL 1/2018 Extremadura",
+        });
+      }
+      break;
+    }
+    case "galicia": {
+      // Deducción por alquiler vivienda habitual (jóvenes < 35)
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0 && edad < 35) {
+        if (baseTotal < 22000) {
+          const importeAlquilerGal = Math.min(datos.alquilerAnual * 0.10, 300);
+          deducciones.push({
+            nombre: "Deducción por alquiler vivienda habitual (Galicia)",
+            casilla: "1601",
+            importe: importeAlquilerGal,
+            descripcion: `10% del alquiler anual, máx. 300 €. Menores de 35 años.`,
+            normativa: "Art. 5 DL 1/2011 Galicia",
+          });
+        }
+      }
+      // Deducción por familia numerosa
+      if (datos.familiaNumerosa) {
+        const importeFNGal = datos.familiaNumerosaEspecial ? 1200 : 600;
+        deducciones.push({
+          nombre: "Deducción por familia numerosa (Galicia)",
+          casilla: "1602",
+          importe: importeFNGal,
+          descripcion: `Familia numerosa ${datos.familiaNumerosaEspecial ? "especial" : "general"}.`,
+          normativa: "Art. 6 DL 1/2011 Galicia",
+        });
+      }
+      // Deducción por gastos de guardería
+      if (datos.gastosGuarderia > 0 && datos.hijosMenores3 > 0) {
+        const importeGuarderiaGal = Math.min(datos.gastosGuarderia * 0.30, 400 * datos.hijosMenores3);
+        deducciones.push({
+          nombre: "Deducción por gastos de guardería (Galicia)",
+          casilla: "1603",
+          importe: importeGuarderiaGal,
+          descripcion: `30% de gastos de guardería, máx. 400 € por hijo.`,
+          normativa: "Art. 7 DL 1/2011 Galicia",
+        });
+      }
+      break;
+    }
+    case "murcia": {
+      // Deducción por familia numerosa
+      if (datos.familiaNumerosa) {
+        const importeFNMur = datos.familiaNumerosaEspecial ? 1000 : 600;
+        deducciones.push({
+          nombre: "Deducción por familia numerosa (Murcia)",
+          casilla: "1701",
+          importe: importeFNMur,
+          descripcion: `Familia numerosa ${datos.familiaNumerosaEspecial ? "especial" : "general"}.`,
+          normativa: "Art. 3 DL 1/2010 Murcia",
+        });
+      }
+      // Deducción por alquiler vivienda habitual (jóvenes < 36)
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0 && edad < 36) {
+        if (baseTotal < 24000) {
+          const importeAlquilerMur = Math.min(datos.alquilerAnual * 0.10, 300);
+          deducciones.push({
+            nombre: "Deducción por alquiler vivienda habitual (Murcia)",
+            casilla: "1702",
+            importe: importeAlquilerMur,
+            descripcion: `10% del alquiler anual, máx. 300 €. Menores de 36 años.`,
+            normativa: "Art. 4 DL 1/2010 Murcia",
+          });
+        }
+      }
+      break;
+    }
+    case "la_rioja": {
+      // Deducción por alquiler vivienda habitual (jóvenes < 36)
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0 && edad < 36) {
+        if (baseTotal < 18030) {
+          const importeAlquilerRioja = Math.min(datos.alquilerAnual * 0.10, 300);
+          deducciones.push({
+            nombre: "Deducción por alquiler vivienda habitual (La Rioja)",
+            casilla: "1801",
+            importe: importeAlquilerRioja,
+            descripcion: `10% del alquiler anual, máx. 300 €. Menores de 36 años.`,
+            normativa: "Art. 2 Ley 10/2017 La Rioja",
+          });
+        }
+      }
+      // Deducción por familia numerosa
+      if (datos.familiaNumerosa) {
+        const importeFNRioja = datos.familiaNumerosaEspecial ? 600 : 300;
+        deducciones.push({
+          nombre: "Deducción por familia numerosa (La Rioja)",
+          casilla: "1802",
+          importe: importeFNRioja,
+          descripcion: `Familia numerosa ${datos.familiaNumerosaEspecial ? "especial" : "general"}.`,
+          normativa: "Art. 3 Ley 10/2017 La Rioja",
+        });
+      }
+      // Deducción por gastos de guardería
+      if (datos.gastosGuarderia > 0 && datos.hijosMenores3 > 0) {
+        const importeGuarderiaRioja = Math.min(datos.gastosGuarderia * 0.15, 300 * datos.hijosMenores3);
+        deducciones.push({
+          nombre: "Deducción por gastos de guardería (La Rioja)",
+          casilla: "1803",
+          importe: importeGuarderiaRioja,
+          descripcion: `15% de gastos de guardería, máx. 300 € por hijo.`,
+          normativa: "Art. 4 Ley 10/2017 La Rioja",
+        });
+      }
+      break;
+    }
+    case "navarra":
+    case "pais_vasco": {
+      // Euskadi y Navarra tienen régimen foral propio (no IRPF estatal)
+      // Se aplican deducciones genéricas orientativas
+      if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0) {
+        const importeAlquilerForal = Math.min(datos.alquilerAnual * 0.20, 1600);
+        deducciones.push({
+          nombre: `Deducción por alquiler vivienda habitual (Régimen Foral)`,
+          casilla: "FORAL",
+          importe: importeAlquilerForal,
+          descripcion: `20% del alquiler anual, máx. 1.600 €. Régimen foral propio.`,
+          normativa: "Normativa foral (Euskadi/Navarra) — consulte con su asesor foral",
+        });
+      }
+      if (datos.familiaNumerosa) {
+        deducciones.push({
+          nombre: "Deducción por familia numerosa (Régimen Foral)",
+          casilla: "FORAL",
+          importe: datos.familiaNumerosaEspecial ? 1200 : 600,
+          descripcion: `Familia numerosa. Régimen foral propio.`,
+          normativa: "Normativa foral (Euskadi/Navarra) — consulte con su asesor foral",
+        });
+      }
+      break;
+    }
     default:
-      // Para el resto de CCAA, aplicar deducciones genéricas básicas
+      // CCAA sin caso específico: deducción genérica orientativa
       if (datos.alquilerViviendaHabitual && datos.alquilerAnual > 0 && edad < 35) {
         const importeGenerico = Math.min(datos.alquilerAnual * 0.10, 300);
         if (importeGenerico > 0) {
@@ -1074,5 +1488,21 @@ export function crearDatosVacios(): DatosContribuyente {
     adquisicionViviendaJoven: false,
     gastosEscolaridad: 0,
     gastosGuarderia: 0,
+    // Nuevas deducciones 2025
+    cuotasGimnasio: 0,
+    vehiculoElectrico: false,
+    importeVehiculoElectrico: 0,
+    movilidadGeografica: false,
+    gastosVeterinario: 0,
+    gastosDentista: 0,
+    gastosOptica: 0,
+    gastosTransportePublico: 0,
+    gastosLibrosTexto: 0,
+    monoparental: false,
+    acogimientoMayores: false,
+    danaValencia: false,
+    importeGastosDana: 0,
+    inversionStartup: 0,
+    gastosFormacion: 0,
   };
 }
