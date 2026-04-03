@@ -1260,6 +1260,40 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                           ))}
                         </div>
 
+                        {/* ★ NUEVA 2025: Deducción por actividad física (gimnasio) */}
+                        <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-200">
+                          <div className="flex items-start gap-3 mb-3">
+                            <span className="text-2xl">🏋️</span>
+                            <div>
+                              <p className="text-sm font-bold text-emerald-800">
+                                ¡Nueva deducción 2025! Actividad física y deporte
+                              </p>
+                              <p className="text-xs text-emerald-600 mt-0.5">
+                                El RDL 4/2024 permite deducir el 15% de los gastos en gimnasio, actividades deportivas
+                                y clubes deportivos. Hasta 150 € de ahorro fiscal.
+                              </p>
+                            </div>
+                          </div>
+                          <label className="flex items-start gap-3 cursor-pointer group">
+                            <Checkbox
+                              checked={data.ded_actividadFisica === "si"}
+                              onCheckedChange={(checked) => update({ ded_actividadFisica: checked ? "si" : "no" })}
+                              className="mt-0.5"
+                            />
+                            <span className="text-sm font-medium text-emerald-800 group-hover:text-emerald-900 transition-colors">
+                              He pagado cuota de gimnasio, actividades deportivas o club deportivo en 2025
+                            </span>
+                          </label>
+                          {data.ded_actividadFisica === "si" && (
+                            <div className="mt-3 pl-7">
+                              <p className="text-xs text-emerald-700 bg-emerald-100 rounded-lg p-2">
+                                ✅ Perfecto. Necesitaremos los recibos del gimnasio o actividad deportiva para aplicar esta deducción.
+                                Ahorro estimado: <strong>hasta 150 €</strong> (15% de hasta 1.000 € de gastos).
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
                         {/* Comunidad autónoma */}
                         <div>
                           <Label className="text-sm font-medium text-gray-700 mb-2 block">

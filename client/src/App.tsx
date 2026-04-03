@@ -27,6 +27,7 @@ import Valencia from "@/pages/Valencia";
 import Canarias from "@/pages/Canarias";
 import Derivaciones from "@/pages/Derivaciones";
 import SimuladorFiscal from "@/pages/SimuladorFiscal";
+import DeduccionGimnasio from "@/pages/DeduccionGimnasio";
 
 function AppRouter() {
   // make sure to consider if you need authentication for certain routes
@@ -55,6 +56,7 @@ function AppRouter() {
       <Route path="/mi-renta/:expedienteId" component={MiRenta} />
       <Route path="/asesor-fiscal" component={AsesorFiscal} />
       <Route path="/simulador-fiscal" component={SimuladorFiscal} />
+      <Route path="/deducciones/gimnasio-2025" component={DeduccionGimnasio} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -1925,3 +1925,10 @@
 [2026-04-03T20:57:56.842Z] 4:57:56 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
 [2026-04-03T20:58:59.312Z] 4:58:59 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
 [2026-04-03T20:59:40.031Z] 4:59:40 PM [vite] (client) page reload public/__manus__/version.json
+[2026-04-03T21:08:40.307Z] 5:08:40 PM [vite] (client) hmr update /src/pages/Triage.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T21:11:46.733Z] 5:11:46 PM [vite] (client) hmr update /src/App.tsx?v=cp3zTIKNMZJDQTsfpyEp7, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T21:12:17.533Z] 5:12:17 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T21:12:56.163Z] 5:12:56 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T21:14:40.130Z] 5:14:40 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T21:14:54.203Z] 5:14:54 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T21:15:47.219Z] 5:15:47 PM [vite] (client) page reload public/__manus__/version.json

@@ -641,6 +641,218 @@ const DEDUCCIONES_AUTONOMICAS: Record<string, DeduccionItem[]> = {
       icono: "🏫",
     },
   ],
+  aragon: [
+    {
+      id: "aut_ara_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Aragón?",
+      descripcion: "Deducción por nacimiento/adopción: 500 € (1º hijo), 1.000 € (2º), 1.500 € (3º o más).",
+      normativa: "Art. 110-3 DL 1/2005 Aragón",
+      ahorro_estimado: "500 € – 1.500 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_ara_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 35 años y renta < 15.000 € en Aragón?",
+      descripcion: "10% del alquiler anual, máximo 300 €.",
+      normativa: "Art. 110-14 DL 1/2005 Aragón",
+      ahorro_estimado: "Hasta 300 €/año",
+      icono: "🏙️",
+    },
+    {
+      id: "aut_ara_discapacidad",
+      pregunta: "¿Tienes o tienes a cargo un familiar con discapacidad reconocida en Aragón?",
+      descripcion: "150 € por persona con discapacidad igual o superior al 33%.",
+      normativa: "Art. 110-10 DL 1/2005 Aragón",
+      ahorro_estimado: "150 €/persona",
+      icono: "♿",
+    },
+  ],
+  asturias: [
+    {
+      id: "aut_ast_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 35 años y renta < 25.009 € en Asturias?",
+      descripcion: "10% del alquiler anual, máximo 455 €.",
+      normativa: "Art. 4 DL 2/2014 Asturias",
+      ahorro_estimado: "Hasta 455 €/año",
+      icono: "🏙️",
+    },
+    {
+      id: "aut_ast_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Asturias?",
+      descripcion: "Deducción por nacimiento/adopción: 505 € (1º hijo), 1.010 € (2º), 2.020 € (3º o más).",
+      normativa: "Art. 3 DL 2/2014 Asturias",
+      ahorro_estimado: "505 € – 2.020 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_ast_discapacidad",
+      pregunta: "¿Tienes reconocida una discapacidad igual o superior al 65% y resides en Asturias?",
+      descripcion: "300 € de deducción por discapacidad propia.",
+      normativa: "Art. 6 DL 2/2014 Asturias",
+      ahorro_estimado: "300 €",
+      icono: "♿",
+    },
+  ],
+  baleares: [
+    {
+      id: "aut_bal_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 36 años y renta < 36.000 € en Baleares?",
+      descripcion: "15% del alquiler anual, máximo 530 €.",
+      normativa: "Art. 3 bis DL 1/2014 Baleares",
+      ahorro_estimado: "Hasta 530 €/año",
+      icono: "🏙️",
+    },
+    {
+      id: "aut_bal_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Baleares?",
+      descripcion: "Deducción por nacimiento/adopción: 600 € (1º hijo), 700 € (2º), 900 € (3º o más).",
+      normativa: "Art. 3 DL 1/2014 Baleares",
+      ahorro_estimado: "600 € – 900 €",
+      icono: "👶",
+    },
+  ],
+  cantabria: [
+    {
+      id: "aut_cant_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 35 años y renta < 22.000 € en Cantabria?",
+      descripcion: "10% del alquiler anual, máximo 300 €.",
+      normativa: "Art. 2 DL 62/2008 Cantabria",
+      ahorro_estimado: "Hasta 300 €/año",
+      icono: "🏙️",
+    },
+    {
+      id: "aut_cant_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Cantabria?",
+      descripcion: "Deducción por nacimiento/adopción: 240 € (1º hijo), 480 € (2º), 720 € (3º o más).",
+      normativa: "Art. 3 DL 62/2008 Cantabria",
+      ahorro_estimado: "240 € – 720 €",
+      icono: "👶",
+    },
+  ],
+  castilla_la_mancha: [
+    {
+      id: "aut_clm_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Castilla-La Mancha?",
+      descripcion: "Deducción por nacimiento/adopción: 100 € (1º hijo), 500 € (2º), 900 € (3º o más).",
+      normativa: "Art. 7 DL 1/2010 Castilla-La Mancha",
+      ahorro_estimado: "100 € – 900 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_clm_discapacidad",
+      pregunta: "¿Tienes reconocida una discapacidad igual o superior al 65% y resides en Castilla-La Mancha?",
+      descripcion: "300 € de deducción por discapacidad propia.",
+      normativa: "Art. 10 DL 1/2010 Castilla-La Mancha",
+      ahorro_estimado: "300 €",
+      icono: "♿",
+    },
+  ],
+  castilla_y_leon: [
+    {
+      id: "aut_cyl_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 36 años y renta < 18.900 € en Castilla y León?",
+      descripcion: "15% del alquiler anual, máximo 459 €.",
+      normativa: "Art. 5 DL 1/2013 Castilla y León",
+      ahorro_estimado: "Hasta 459 €/año",
+      icono: "🏙️",
+    },
+    {
+      id: "aut_cyl_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Castilla y León?",
+      descripcion: "Deducción por nacimiento/adopción: 1.010 € (1º hijo), 1.265 € (2º), 1.520 € (3º o más).",
+      normativa: "Art. 3 DL 1/2013 Castilla y León",
+      ahorro_estimado: "1.010 € – 1.520 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_cyl_vivienda_rural",
+      pregunta: "¿Has adquirido o rehabilitado tu vivienda habitual en un municipio rural de Castilla y León?",
+      descripcion: "7,5% de la inversión, máximo 9.040 €. Para municipios de menos de 10.000 habitantes.",
+      normativa: "Art. 8 DL 1/2013 Castilla y León",
+      ahorro_estimado: "Hasta 9.040 €",
+      icono: "🏡",
+    },
+  ],
+  extremadura: [
+    {
+      id: "aut_ext_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Extremadura?",
+      descripcion: "Deducción por nacimiento/adopción: 300 € (1º hijo), 400 € (2º), 500 € (3º o más).",
+      normativa: "Art. 7 DL 1/2018 Extremadura",
+      ahorro_estimado: "300 € – 500 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_ext_vivienda_rural",
+      pregunta: "¿Has adquirido tu vivienda habitual en un municipio rural de Extremadura (menos de 3.000 hab.)?",
+      descripcion: "5% de la inversión, máximo 300 €.",
+      normativa: "Art. 12 DL 1/2018 Extremadura",
+      ahorro_estimado: "Hasta 300 €",
+      icono: "🏡",
+    },
+  ],
+  galicia: [
+    {
+      id: "aut_gal_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Galicia?",
+      descripcion: "Deducción por nacimiento/adopción: 300 € (1º hijo), 600 € (2º), 1.200 € (3º o más). Parto múltiple: 2.400 €.",
+      normativa: "Art. 5 DL 1/2011 Galicia",
+      ahorro_estimado: "300 € – 2.400 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_gal_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 35 años y renta < 22.000 € en Galicia?",
+      descripcion: "10% del alquiler anual, máximo 300 €.",
+      normativa: "Art. 8 DL 1/2011 Galicia",
+      ahorro_estimado: "Hasta 300 €/año",
+      icono: "🏙️",
+    },
+    {
+      id: "aut_gal_cuidado_mayores",
+      pregunta: "¿Tienes a cargo ascendientes mayores de 65 años o con discapacidad en Galicia?",
+      descripcion: "Deducción por cuidado de familiares mayores: 250 € por ascendiente.",
+      normativa: "Art. 10 DL 1/2011 Galicia",
+      ahorro_estimado: "250 €/ascendiente",
+      icono: "👋",
+    },
+  ],
+  murcia: [
+    {
+      id: "aut_mur_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Murcia?",
+      descripcion: "Deducción por nacimiento/adopción: 600 € (1º hijo), 600 € (2º), 1.200 € (3º o más).",
+      normativa: "Art. 4 DL 1/2010 Murcia",
+      ahorro_estimado: "600 € – 1.200 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_mur_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 35 años y renta < 24.000 € en Murcia?",
+      descripcion: "10% del alquiler anual, máximo 300 €.",
+      normativa: "Art. 6 DL 1/2010 Murcia",
+      ahorro_estimado: "Hasta 300 €/año",
+      icono: "🏙️",
+    },
+  ],
+  la_rioja: [
+    {
+      id: "aut_rio_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en La Rioja?",
+      descripcion: "Deducción por nacimiento/adopción: 150 € (1º hijo), 180 € (2º), 300 € (3º o más).",
+      normativa: "Art. 4 DL 1/2006 La Rioja",
+      ahorro_estimado: "150 € – 300 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_rio_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 36 años y renta < 18.030 € en La Rioja?",
+      descripcion: "10% del alquiler anual, máximo 300 €.",
+      normativa: "Art. 7 DL 1/2006 La Rioja",
+      ahorro_estimado: "Hasta 300 €/año",
+      icono: "🏙️",
+    },
+  ],
 };
 
 function normalizarComunidad(comunidad: string): string {
@@ -650,6 +862,16 @@ function normalizarComunidad(comunidad: string): string {
   if (c.includes("catalu") || c.includes("catalan")) return "cataluna";
   if (c.includes("valenci")) return "valencia";
   if (c.includes("canaria")) return "canarias";
+  if (c.includes("aragon")) return "aragon";
+  if (c.includes("asturias") || c.includes("astur")) return "asturias";
+  if (c.includes("balear") || c.includes("illes")) return "baleares";
+  if (c.includes("cantabria")) return "cantabria";
+  if (c.includes("castilla-la mancha") || c.includes("castilla la mancha")) return "castilla_la_mancha";
+  if (c.includes("castilla y leon") || c.includes("castilla leon")) return "castilla_y_leon";
+  if (c.includes("extremadura")) return "extremadura";
+  if (c.includes("galicia") || c.includes("galiz")) return "galicia";
+  if (c.includes("murcia")) return "murcia";
+  if (c.includes("rioja")) return "la_rioja";
   return "";
 }
 
@@ -657,10 +879,12 @@ function ModuloDeducciones({
   expedienteId,
   estado,
   comunidad,
+  onCompletado,
 }: {
   expedienteId: string;
   estado: EstadoExpediente;
   comunidad: string;
+  onCompletado?: () => void;
 }) {
   const [pasoActual, setPasoActual] = useState(0);
   const [respuestas, setRespuestas] = useState<Record<string, boolean>>({});
@@ -669,6 +893,7 @@ function ModuloDeducciones({
   const confirmarMutation = trpc.simulador.confirmarDeducciones.useMutation({
     onSuccess: () => {
       setGuardado(true);
+      onCompletado?.();
     },
     onError: () => {
       toast.error("Error al guardar. Inténtalo de nuevo.");
@@ -898,6 +1123,7 @@ function ModuloDeducciones({
 export default function MiRenta() {
   const { expedienteId } = useParams<{ expedienteId: string }>();
   const [, navigate] = useLocation();
+  const [deduccionesCompletadas, setDeduccionesCompletadas] = useState(false);
 
   const { data: expediente, isLoading } = trpc.simulador.getExpediente.useQuery(
     { expedienteId: expedienteId || "" },
@@ -1162,16 +1388,35 @@ export default function MiRenta() {
               expedienteId={expedienteId || ""}
               estado={estado}
               comunidad={comunidad}
+              onCompletado={() => setDeduccionesCompletadas(true)}
             />
           )}
 
-          {/* ── Documentos (SEGUNDO PASO, después de deducciones) ── */}
+          {/* ── Documentos (SEGUNDO PASO, bloqueado hasta completar deducciones) ── */}
           {esPagado && (
-            <PanelDocumentos
-              expedienteId={expedienteId || ""}
-              estado={estado}
-              documentosRequeridos={documentosRequeridos}
-            />
+            deduccionesCompletadas ? (
+              <PanelDocumentos
+                expedienteId={expedienteId || ""}
+                estado={estado}
+                documentosRequeridos={documentosRequeridos}
+              />
+            ) : (
+              <Card className="border-0 shadow-sm bg-white mb-6 overflow-hidden opacity-60">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shrink-0">
+                      <Lock className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-500">Documentación requerida</p>
+                      <p className="text-xs text-gray-400">
+                        Completa el cuestionario de deducciones para desbloquear este paso.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )
           )}
 
           {/* ── Firma digital ── */}
