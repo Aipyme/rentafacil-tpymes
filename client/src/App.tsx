@@ -33,7 +33,7 @@ function AppRouter() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/simulador" component={Simulador} />
-      <Route path="/empezar"><Redirect to="/renta" /></Route>
+      <Route path="/empezar" component={Triage} />
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:slug" component={BlogArticle} />
       <Route path="/aviso-legal" component={AvisoLegal} />

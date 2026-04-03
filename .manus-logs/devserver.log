@@ -1710,3 +1710,55 @@
 [2026-03-28T16:22:50.927Z] cServer running on http://localhost:3000/
 [2026-03-28T16:23:04.387Z] 12:23:04 PM [tsx] change in ./server/_core/env.ts Restarting...
 [2026-03-28T16:23:07.035Z] cServer running on http://localhost:3000/
+[2026-03-29T08:06:20.061Z] 4:06:20 AM [vite] (client) page reload src/pages/Triage.tsx
+[2026-03-29T08:06:20.064Z] 4:06:20 AM [vite] (client) hmr update /src/pages/PanelAsesor.tsx, /src/index.css?v=AF_QPA1Wgg4sYdifBpkJw
+[2026-03-29T08:06:20.241Z] 4:06:20 AM [tsx] unlink in ./server/routers/firmas.ts Restarting...
+[2026-03-29T08:06:21.750Z] c[ROUTERS] simuladorRouter loaded, keys: calcular, guardarSimulacion, sheetDiag, getExpediente, crearSesionPago, confirmarPago, generarPDF, listar
+[2026-03-29T08:06:22.741Z] [STARTUP] Commit: 0fa6137-REAL | Routes: POST /api/stripe/webhook | GET /api/diag/sa | POST /api/presupuesto | POST /api/diag/router-check | POST /api/generate-xml | GET /api/health | GET /api/oauth/callback
+[2026-03-29T08:06:22.742Z] [STARTUP] SA_B64: NOT SET
+[2026-03-29T08:06:22.742Z] [STARTUP] SA_RAW: NOT SET
+[2026-03-29T08:06:22.743Z] Server running on http://localhost:3000/
+[2026-04-01T08:55:03.685Z] Dev server process group stopped
+[2026-04-01T08:55:06.724Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-04-01T08:55:08.509Z] [ROUTERS] simuladorRouter loaded, keys: calcular, guardarSimulacion, sheetDiag, getExpediente, crearSesionPago, confirmarPago, generarPDF, listar
+[2026-04-01T08:55:09.631Z] [STARTUP] Commit: 0fa6137-REAL | Routes: POST /api/stripe/webhook | GET /api/diag/sa | POST /api/presupuesto | POST /api/diag/router-check | POST /api/generate-xml | GET /api/health | GET /api/oauth/callback
+[2026-04-01T08:55:09.632Z] [STARTUP] SA_B64: NOT SET
+[2026-04-01T08:55:09.633Z] [STARTUP] SA_RAW: NOT SET
+[2026-04-01T08:55:09.634Z] Server running on http://localhost:3000/
+[2026-04-01T08:55:17.498Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-04-01T08:55:19.160Z] [ROUTERS] simuladorRouter loaded, keys: calcular, guardarSimulacion, sheetDiag, getExpediente, crearSesionPago, confirmarPago, generarPDF, listar
+[2026-04-01T08:55:20.218Z] [STARTUP] Commit: 0fa6137-REAL | Routes: POST /api/stripe/webhook | GET /api/diag/sa | POST /api/presupuesto | POST /api/diag/router-check | POST /api/generate-xml | GET /api/health | GET /api/oauth/callback
+[2026-04-01T08:55:20.268Z] [STARTUP] SA_B64: NOT SET
+[2026-04-01T08:55:20.275Z] [STARTUP] SA_RAW: NOT SET
+[2026-04-01T08:55:20.276Z] Server running on http://localhost:3000/
+[2026-04-03T08:39:01.325Z] Starting dev server with command: NODE_ENV=development tsx watch server/_core/index.ts
+[2026-04-03T08:39:03.089Z] [ROUTERS] simuladorRouter loaded, keys: calcular, guardarSimulacion, sheetDiag, getExpediente, crearSesionPago, confirmarPago, generarPDF, listar
+[2026-04-03T08:39:04.237Z] [STARTUP] Commit: 0fa6137-REAL | Routes: POST /api/stripe/webhook | GET /api/diag/sa | POST /api/presupuesto | POST /api/diag/router-check | POST /api/generate-xml | GET /api/health | GET /api/oauth/callback
+[2026-04-03T08:39:04.238Z] [STARTUP] SA_B64: NOT SET
+[2026-04-03T08:39:04.240Z] [STARTUP] SA_RAW: NOT SET
+[2026-04-03T08:39:04.241Z] Server running on http://localhost:3000/
+[2026-04-03T13:45:34.467Z] 9:45:34 AM [tsx] change in ./server/routers/simulador.ts Restarting...
+[2026-04-03T13:45:37.091Z] c[ROUTERS] simuladorRouter loaded, keys: calcular, guardarSimulacion, sheetDiag, getExpediente, crearSesionPago, confirmarPago, generarPDF, listar
+[2026-04-03T13:45:38.137Z] [STARTUP] Commit: 0fa6137-REAL | Routes: POST /api/stripe/webhook | GET /api/diag/sa | POST /api/presupuesto | POST /api/diag/router-check | POST /api/generate-xml | GET /api/health | GET /api/oauth/callback
+[2026-04-03T13:45:38.138Z] [STARTUP] SA_B64: NOT SET
+[2026-04-03T13:45:38.139Z] [STARTUP] SA_RAW: NOT SET
+[2026-04-03T13:45:38.139Z] Server running on http://localhost:3000/
+[2026-04-03T14:01:57.193Z] 10:01:57 AM [tsx] unlink in ./server/lib/motorFiscal.ts Restarting...
+[2026-04-03T14:02:01.369Z] c
+[2026-04-03T14:02:01.370Z] node:internal/modules/run_main:122
+[2026-04-03T14:02:01.371Z] triggerUncaughtException(
+[2026-04-03T14:02:01.371Z] ^
+[2026-04-03T14:02:01.371Z] Error [TransformError]: Transform failed with 1 error:
+[2026-04-03T14:02:01.372Z] /home/ubuntu/renta-facil-tpymes/server/routers/simulador.ts:164:0: ERROR: Expected identifier but found "<<"
+[2026-04-03T14:02:01.372Z] at failureErrorWithLog (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/esbuild@0.27.4/node_modules/esbuild/lib/main.js:1748:15)
+[2026-04-03T14:02:01.372Z] at /home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/esbuild@0.27.4/node_modules/esbuild/lib/main.js:1017:50
+[2026-04-03T14:02:01.373Z] at responseCallbacks.<computed> (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/esbuild@0.27.4/node_modules/esbuild/lib/main.js:884:9)
+[2026-04-03T14:02:01.373Z] at handleIncomingPacket (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/esbuild@0.27.4/node_modules/esbuild/lib/main.js:939:12)
+[2026-04-03T14:02:01.373Z] at Socket.readFromStdout (/home/ubuntu/renta-facil-tpymes/node_modules/.pnpm/esbuild@0.27.4/node_modules/esbuild/lib/main.js:862:7)
+[2026-04-03T14:02:01.373Z] at Socket.emit (node:events:524:28)
+[2026-04-03T14:02:01.374Z] at addChunk (node:internal/streams/readable:561:12)
+[2026-04-03T14:02:01.374Z] at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+[2026-04-03T14:02:01.374Z] at Readable.push (node:internal/streams/readable:392:5)
+[2026-04-03T14:02:01.375Z] at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+[2026-04-03T14:02:01.375Z] 
+[2026-04-03T14:02:01.375Z] Node.js v22.13.0

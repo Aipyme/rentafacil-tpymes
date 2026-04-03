@@ -230,3 +230,18 @@
 - [x] stripeWebhook.ts: integrar upsert Sheet y creación de evento Calendar tras checkout.session.completed
 - [ ] schema.ts: añadir campo calendarEventId a tabla declaraciones
 - [x] env.ts: añadir GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_CALENDAR_ID, CALENDAR_EVENT_DURATION_MINUTES
+
+## Mejoras estilo TaxDown (sesión 03/04/2026)
+- [ ] Triage: rediseño visual por bloques (TaxDown style) con iconos, progreso y preguntas claras
+- [ ] Triage: añadir campo ded_actividadFisica a TriageData y buildPayload
+- [ ] Triage: mapear todos los campos del Sheet (153 columnas) desde el payload del triage
+- [ ] Triage: añadir bloque "Vivienda" separado con preguntas específicas
+- [ ] Triage: añadir porcentaje de discapacidad cuando tieneDiscapacidad=si
+- [ ] Triage: mostrar desglose de suplementos de precio en resultado
+- [ ] /mi-renta: añadir progress bar visual del estado del expediente
+- [ ] /mi-renta: integrar DocumentosPanel directamente en la página
+- [ ] /mi-renta: integrar FirmaDigital cuando el estado es borrador_listo
+- [ ] /mi-renta: corregir teléfono y email de contacto con datos reales de TPymes
+- [ ] App.tsx: hacer /empezar la ruta principal del triage (sin redirección a /renta)
+- [ ] Navbar: corregir link "Empezar" para que apunte directamente a /empezar
+- [ ] Backend simulador.ts: enriquecer payload del Sheet con todos los campos faltantes

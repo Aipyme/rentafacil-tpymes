@@ -37,12 +37,12 @@ export default function Navbar() {
             Inicio
           </Link>
           <Link
-            href="/simulador"
+            href="/empezar"
             className={`text-sm font-medium transition-colors no-underline ${
-              location === "/simulador" ? "text-[#1a365d]" : "text-gray-500 hover:text-[#1a365d]"
+              location === "/empezar" ? "text-[#1a365d]" : "text-gray-500 hover:text-[#1a365d]"
             }`}
           >
-            Simulador
+            Hacer mi renta
           </Link>
           <a
             href="#como-funciona"
@@ -111,11 +111,11 @@ export default function Navbar() {
                 Inicio
               </Link>
               <Link
-                href="/simulador"
+                href="/empezar"
                 className="text-sm font-medium text-gray-700 py-2 no-underline"
                 onClick={() => setIsOpen(false)}
               >
-                Simulador
+                Hacer mi renta
               </Link>
               <a href="#como-funciona" className="text-sm font-medium text-gray-700 py-2 no-underline" onClick={() => setIsOpen(false)}>
                 Cómo funciona

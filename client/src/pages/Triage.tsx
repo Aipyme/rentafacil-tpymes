@@ -119,6 +119,7 @@ interface TriageData {
   ded_inversionViviendaHabitual: string;
   ded_donativos: string;
   ded_emprendedores: string;
+  ded_actividadFisica: string;
 }
 
 const INITIAL: TriageData = {
@@ -164,6 +165,7 @@ const INITIAL: TriageData = {
   ded_inversionViviendaHabitual: "",
   ded_donativos: "",
   ded_emprendedores: "",
+  ded_actividadFisica: "",
 };
 
 // Deducciones autonómicas disponibles por comunidad
@@ -291,23 +293,36 @@ function getComplejidad(data: TriageData): "simple" | "medio" | "complejo" | "no
   return "simple";
 }
 
-function getPrecio(complejidad: string, data?: TriageData): string {
+interface PrecioDesglose {
+  base: number;
+  suplementos: { concepto: string; importe: number }[];
+  total: number;
+}
+
+function getPrecioDesglose(complejidad: string, data?: TriageData): PrecioDesglose {
   let base = 0;
   switch (complejidad) {
     case "simple": base = 39; break;
     case "medio": base = 69; break;
     case "complejo": base = 99; break;
-    default: return "Presupuesto personalizado";
+    default: return { base: 0, suplementos: [], total: 0 };
   }
-  // Suplementos por situación específica
+  const suplementos: { concepto: string; importe: number }[] = [];
   if (data) {
-    if (data.tieneInmuebles === "uno") base += 20;
-    if (data.tieneInmuebles === "varios") base += 40;
-    if (data.tieneDiscapacidad === "si") base += 10;
-    if (data.tieneInversiones === "si") base += 15;
-    if (data.tieneHipotecaPre2013 === "si") base += 10;
+    if (data.tieneInmuebles === "uno") suplementos.push({ concepto: "Inmueble en propiedad", importe: 20 });
+    if (data.tieneInmuebles === "varios") suplementos.push({ concepto: "Varios inmuebles", importe: 40 });
+    if (data.tieneInversiones === "si") suplementos.push({ concepto: "Inversiones financieras", importe: 15 });
+    if (data.tieneHipotecaPre2013 === "si") suplementos.push({ concepto: "Hipoteca anterior a 2013", importe: 10 });
+    if (data.tieneDiscapacidad === "si") suplementos.push({ concepto: "Discapacidad", importe: 10 });
   }
-  return `${base}€`;
+  const total = base + suplementos.reduce((acc, s) => acc + s.importe, 0);
+  return { base, suplementos, total };
+}
+
+function getPrecio(complejidad: string, data?: TriageData): string {
+  const { total } = getPrecioDesglose(complejidad, data);
+  if (total === 0) return "Presupuesto personalizado";
+  return `${total}€`;
 }
 
 function getPlan(complejidad: string): string {
@@ -469,6 +484,7 @@ export default function Triage() {
   const complejidad = getComplejidad(data);
   const deducciones = getDeduccionesDetectadas(data);
   const documentos = getDocumentosNecesarios(data);
+  const precioDesglose = getPrecioDesglose(complejidad, data);
 
   const [isSending, setIsSending] = useState(false);
   const [webhookSent, setWebhookSent] = useState(false);
@@ -558,8 +574,18 @@ export default function Triage() {
     complejidad,
     plan: getPlan(complejidad),
     precio: getPrecio(complejidad, data),
+    precioBase: precioDesglose.base,
+    precioTotal: precioDesglose.total,
+    suplementos: precioDesglose.suplementos.map(s => `${s.concepto}: +${s.importe}€`).join(', '),
     deduccionesDetectadas: deducciones.join(', '),
     documentosNecesarios: documentos.join(', '),
+    // Campos adicionales para el asesor
+    alquilerVivienda: data.pagaAlquilerVivienda === 'si' ? 'Si' : 'No',
+    vendioInmueble: data.haVendidoInmueble === 'si' ? 'Si' : 'No',
+    segundoPagadorImporte: data.segundoPagadorImporte || 'N/A',
+    numHijosDetalle: data.numHijos || '0',
+    tieneDatosFiscalesAEAT: data.tieneDatosFiscalesAEAT === 'si' ? 'Si' : 'No',
+    tieneReferenciaCatastral: data.tieneReferenciaCatastral === 'si' ? 'Si' : 'No',
     // Col AL-AN: empresa pagadora
     fechaRegistro: getFechaES(),
     nombreEmpresa: data.nombreEmpresa || '',
@@ -1547,23 +1573,44 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                         </div>
                       </div>
 
-                      {/* Card precio */}
+                      {/* Card precio con desglose transparente */}
                       {complejidad !== "no_apto" && (
                         <div className="bg-gradient-to-br from-[#1a365d] to-[#2d4a7a] rounded-2xl p-6 text-white">
-                          <div className="text-center mb-4">
-                            <p className="text-white/60 text-sm mb-1">Tu servicio recomendado</p>
-                            <p className="font-['DM_Sans'] text-3xl font-bold mb-1">
+                          <div className="text-center mb-5">
+                            <p className="text-white/60 text-sm mb-1">Tu plan recomendado</p>
+                            <p className="font-['DM_Sans'] text-2xl font-bold mb-1">
                               {getPlan(complejidad)}
                             </p>
-                            <p className="text-emerald-400 text-sm font-medium mt-1">Un asesor te contactará en menos de 24h con el presupuesto exacto</p>
                           </div>
+
+                          {/* Desglose de precio transparente */}
+                          <div className="bg-white/10 rounded-xl p-4 mb-4">
+                            <p className="text-xs text-white/60 uppercase tracking-wide mb-3">Desglose del precio</p>
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="text-white/80">Servicio base ({getPlan(complejidad)})</span>
+                                <span className="font-semibold text-white">{precioDesglose.base}€</span>
+                              </div>
+                              {precioDesglose.suplementos.map((sup, i) => (
+                                <div key={i} className="flex justify-between items-center text-sm">
+                                  <span className="text-white/70">+ {sup.concepto}</span>
+                                  <span className="text-emerald-300">+{sup.importe}€</span>
+                                </div>
+                              ))}
+                              <div className="border-t border-white/20 pt-2 flex justify-between items-center">
+                                <span className="font-semibold text-white">Total</span>
+                                <span className="font-['DM_Sans'] text-2xl font-bold text-emerald-400">{precioDesglose.total}€</span>
+                              </div>
+                            </div>
+                          </div>
+
                           <div className="space-y-2">
                             {[
-                              "Simulación y análisis fiscal completo",
-                              "Recogida automática de documentación",
+                              "Análisis fiscal completo de tu caso",
                               "Revisión por asesor fiscal profesional",
                               "Presentación telemática ante la AEAT",
                               complejidad === "complejo" ? "Asesor fiscal dedicado + consulta telefónica" : "Soporte por email y WhatsApp",
+                              "Gestión de documentación incluida",
                             ].map((f, i) => (
                               <div key={i} className="flex items-center gap-2 text-sm text-white/80">
                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />

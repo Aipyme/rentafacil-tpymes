@@ -278,26 +278,49 @@ function ForWhom() {
 
 function Pricing() {
   const plans = [
-    { badge: "Primer paso", name: "Simulación inicial", price: "Gratis",
-      desc: "El primer paso para saber si tu caso encaja dentro del alcance actual del servicio.",
-      items: ["Recogida inicial de información", "Clasificación del caso", "Orientación sobre el siguiente paso", "Visión clara antes de decidir"],
-      cta: "Empezar gratis", featured: false,
-      btnStyle: { background: "#1a365d", color: "#fff", border: "none", boxShadow: "0 6px 18px rgba(26,54,93,.18)" } as React.CSSProperties,
-    },
     {
-      badge: "Más habitual", name: "Renta Ágil", price: "39 €",
-      desc: "Para expedientes con una estructura clara y un proceso de gestión más directo.",
-      items: ["Revisión dentro del flujo ágil", "Validación básica del expediente", "Seguimiento del proceso", "Comunicación clara del estado"],
-      cta: "Ver si mi caso encaja", featured: true,
+      badge: "Más habitual", name: "Renta Simple", price: "39 €",
+      desc: "Para asalariados y pensionistas con un solo pagador y situación fiscal sencilla.",
+      items: [
+        "Análisis fiscal completo",
+        "Revisión por asesor profesional",
+        "Presentación telemática AEAT",
+        "Soporte por email y WhatsApp",
+      ],
+      cta: "Empezar ahora", featured: true,
       btnStyle: { background: "linear-gradient(135deg,#059669,#10b981)", color: "#fff", border: "none", boxShadow: "0 10px 24px rgba(5,150,105,.22)" } as React.CSSProperties,
     },
     {
-      badge: "Con validación adicional", name: "Renta con Revisión", price: "69 €",
-      desc: "Para casos que necesitan una validación adicional antes de cerrar la gestión.",
-      items: ["Revisión más detallada", "Validación de circunstancias del expediente", "Seguimiento y comunicación del caso", "Mayor acompañamiento en el proceso"],
-      cta: "Entender mi siguiente paso", featured: false,
+      badge: "Con más fuentes", name: "Renta Media", price: "69 €",
+      desc: "Varios pagadores, alquiler de inmuebles o inversiones financieras.",
+      items: [
+        "Todo lo del plan Simple",
+        "Gestión de múltiples fuentes de renta",
+        "Revisión de rendimientos del capital",
+        "Mayor acompañamiento en el proceso",
+      ],
+      cta: "Ver si es mi caso", featured: false,
       btnStyle: { background: "linear-gradient(135deg,#0f7a52,#1a365d)", color: "#fff", border: "none", boxShadow: "0 6px 18px rgba(26,54,93,.18)" } as React.CSSProperties,
     },
+    {
+      badge: "Caso complejo", name: "Renta Compleja", price: "99 €",
+      desc: "Venta de inmuebles, herencias, ganancias patrimoniales o situaciones especiales.",
+      items: [
+        "Todo lo del plan Media",
+        "Asesor fiscal dedicado",
+        "Consulta telefónica incluida",
+        "Gestión de ganancias y pérdidas patrimoniales",
+      ],
+      cta: "Analizar mi caso", featured: false,
+      btnStyle: { background: "#1a365d", color: "#fff", border: "none", boxShadow: "0 6px 18px rgba(26,54,93,.18)" } as React.CSSProperties,
+    },
+  ];
+  const suplementos = [
+    { concepto: "Inmueble en propiedad", importe: "+20€" },
+    { concepto: "Varios inmuebles", importe: "+40€" },
+    { concepto: "Inversiones financieras", importe: "+15€" },
+    { concepto: "Hipoteca anterior a 2013", importe: "+10€" },
+    { concepto: "Discapacidad reconocida", importe: "+10€" },
   ];
   return (
     <section id="precios" style={{ padding: "84px 0", background: "#fff" }}>
@@ -306,12 +329,12 @@ function Pricing() {
           Precios claros antes de avanzar
         </div>
         <h2 className="font-bold mb-4" style={{ fontSize: "clamp(30px,4vw,46px)", letterSpacing: "-0.03em", color: "#1a365d", lineHeight: 1.08 }}>
-          Empieza sabiendo si tu caso encaja
+          Precio exacto antes de contratar
         </h2>
         <p className="mb-10" style={{ color: "#5b677a", fontSize: 18, maxWidth: 760 }}>
-          La simulación inicial te ayuda a entender tu situación antes de avanzar.
+          Sin sorpresas. El simulador calcula tu precio en 3 minutos y te lo muestra antes de pagar.
         </p>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-6 mb-10">
           {plans.map((plan, i) => (
             <div
               key={i}
@@ -327,7 +350,8 @@ function Pricing() {
                 {plan.badge}
               </div>
               <h3 className="font-bold mb-2" style={{ fontSize: 22, color: "#1a365d", letterSpacing: "-0.02em" }}>{plan.name}</h3>
-              <div className="font-bold mb-3" style={{ fontSize: 44, color: "#1a365d", letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</div>
+              <div className="font-bold mb-1" style={{ fontSize: 44, color: "#1a365d", letterSpacing: "-0.04em", lineHeight: 1 }}>{plan.price}</div>
+              <p className="mb-1 text-xs" style={{ color: "#059669" }}>precio base</p>
               <p className="mb-5" style={{ color: "#5b677a", fontSize: 15, minHeight: 60 }}>{plan.desc}</p>
               <ul className="flex flex-col gap-3 mb-6 flex-1">
                 {plan.items.map((item, j) => (
@@ -345,8 +369,23 @@ function Pricing() {
             </div>
           ))}
         </div>
+
+        {/* Suplementos */}
+        <div className="rounded-2xl p-6" style={{ background: "#f7f9fc", border: "1px solid #e6edf5" }}>
+          <p className="font-bold mb-1" style={{ color: "#1a365d", fontSize: 16 }}>Suplementos por situación específica</p>
+          <p className="text-sm mb-4" style={{ color: "#5b677a" }}>Se añaden automáticamente al precio base según tu caso. El simulador los calcula por ti.</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {suplementos.map((s, i) => (
+              <div key={i} className="flex items-center justify-between rounded-xl px-4 py-3" style={{ background: "#fff", border: "1px solid #e6edf5" }}>
+                <span className="text-sm" style={{ color: "#314056" }}>{s.concepto}</span>
+                <span className="text-sm font-bold" style={{ color: "#059669" }}>{s.importe}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <p className="mt-6 text-sm" style={{ color: "#5b677a" }}>
-          Si el expediente requiere un tratamiento distinto o queda fuera del alcance actual del servicio, te lo indicaremos antes de contratar.
+          Los autónomos y casos especiales se gestionan con un asesor fiscal dedicado. El precio se acuerda antes de empezar.
         </p>
       </div>
     </section>
