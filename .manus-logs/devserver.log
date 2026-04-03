@@ -1921,3 +1921,7 @@
 [2026-04-03T18:26:45.181Z] 2:26:45 PM [vite] (client) hmr update /src/pages/SimuladorFiscal.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
 [2026-04-03T18:28:08.179Z] 2:28:08 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
 [2026-04-03T18:28:40.441Z] 2:28:40 PM [vite] (client) page reload public/__manus__/version.json
+[2026-04-03T20:55:58.476Z] 4:55:58 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T20:57:56.842Z] 4:57:56 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T20:58:59.312Z] 4:58:59 PM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=cp3zTIKNMZJDQTsfpyEp7
+[2026-04-03T20:59:40.031Z] 4:59:40 PM [vite] (client) page reload public/__manus__/version.json

@@ -449,7 +449,7 @@ function PanelFirma({
   );
 }
 
-// ─── Módulo de deducciones ───────────────────────────────────────────────────
+// ─── Módulo de deducciones (wizard pregunta a pregunta, estilo TaxDown) ────────
 interface DeduccionItem {
   id: string;
   pregunta: string;
@@ -662,13 +662,13 @@ function ModuloDeducciones({
   estado: EstadoExpediente;
   comunidad: string;
 }) {
+  const [pasoActual, setPasoActual] = useState(0);
   const [respuestas, setRespuestas] = useState<Record<string, boolean>>({});
   const [guardado, setGuardado] = useState(false);
 
   const confirmarMutation = trpc.simulador.confirmarDeducciones.useMutation({
     onSuccess: () => {
       setGuardado(true);
-      toast.success("Deducciones registradas. Tu asesor las tendrá en cuenta al preparar tu declaración.");
     },
     onError: () => {
       toast.error("Error al guardar. Inténtalo de nuevo.");
@@ -682,7 +682,9 @@ function ModuloDeducciones({
   const ccaaNorm = normalizarComunidad(comunidad);
   const deduccionesAutonomicas = DEDUCCIONES_AUTONOMICAS[ccaaNorm] || [];
   const todasDeducciones = [...DEDUCCIONES_ESTATALES, ...deduccionesAutonomicas];
+  const totalPreguntas = todasDeducciones.length;
   const seleccionadas = Object.entries(respuestas).filter(([, v]) => v).map(([k]) => k);
+  const completado = pasoActual >= totalPreguntas;
 
   // Ahorro estimado mínimo de las deducciones seleccionadas
   const ahorroEstimado = seleccionadas.reduce((total, id) => {
@@ -691,6 +693,13 @@ function ModuloDeducciones({
     const match = ded.ahorro_estimado.match(/(\d+)/);
     return total + (match ? parseInt(match[1]) : 0);
   }, 0);
+
+  const handleRespuesta = (valor: boolean) => {
+    const deduccionActual = todasDeducciones[pasoActual];
+    if (!deduccionActual) return;
+    setRespuestas((prev) => ({ ...prev, [deduccionActual.id]: valor }));
+    setPasoActual((prev) => prev + 1);
+  };
 
   const handleGuardar = () => {
     const deduccionesPayload = seleccionadas.map(id => {
@@ -708,150 +717,178 @@ function ModuloDeducciones({
     confirmarMutation.mutate({ expedienteId, deducciones: deduccionesPayload });
   };
 
+  const deduccionActual = todasDeducciones[pasoActual];
+  const esAutonomica = deduccionActual && deduccionesAutonomicas.some(d => d.id === deduccionActual.id);
+  const porcentajeProgreso = Math.round((pasoActual / totalPreguntas) * 100);
+
   return (
-    <Card className="border-0 shadow-sm bg-white mb-6">
-      <CardContent className="p-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center">
-            <Euro className="w-4 h-4 text-emerald-600" />
+    <Card className="border-0 shadow-sm bg-white mb-6 overflow-hidden">
+      <CardContent className="p-0">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#1a365d] to-[#2d4a7a] p-5 text-white">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Euro className="w-4 h-4 text-emerald-400" />
+              <h2 className="font-['DM_Sans'] text-sm font-bold">Detectamos tus deducciones</h2>
+            </div>
+            {!guardado && (
+              <span className="text-xs text-white/60">
+                {completado ? "Completado" : `${pasoActual + 1} / ${totalPreguntas}`}
+              </span>
+            )}
           </div>
-          <div>
-            <h2 className="font-['DM_Sans'] text-base font-bold text-[#1a365d]">
-              Deducciones que podrían aplicarte
-            </h2>
-            <p className="text-xs text-gray-400">
-              Marca las que correspondan a tu situación — tu asesor las verificará
-            </p>
-          </div>
+          {/* Barra de progreso */}
+          {!guardado && (
+            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-emerald-400 rounded-full transition-all duration-500"
+                style={{ width: `${completado ? 100 : porcentajeProgreso}%` }}
+              />
+            </div>
+          )}
         </div>
 
-        {guardado ? (
-          <div className="mt-4 space-y-3">
-            <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-emerald-800">Deducciones registradas</p>
-                <p className="text-xs text-emerald-600">
-                  {seleccionadas.length > 0
-                    ? `Tu asesor revisará ${seleccionadas.length} deducción${seleccionadas.length > 1 ? "es" : ""} (ahorro estimado mínimo: ${ahorroEstimado.toLocaleString("es-ES")} €).`
-                    : "Hemos registrado que no aplican deducciones adicionales."}
-                </p>
+        <div className="p-6">
+          {guardado ? (
+            /* ── Estado: guardado ── */
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-emerald-800">¡Deducciones registradas!</p>
+                  <p className="text-xs text-emerald-600 mt-0.5">
+                    {seleccionadas.length > 0
+                      ? `Tu asesor revisará ${seleccionadas.length} deducción${seleccionadas.length > 1 ? "es" : ""}. Ahorro estimado mínimo: ${ahorroEstimado.toLocaleString("es-ES")} €.`
+                      : "Hemos registrado que no aplican deducciones adicionales a tu caso."}
+                  </p>
+                </div>
               </div>
-            </div>
-          </div>
-        ) : (
-          <div className="mt-4">
-            {/* Sección estatales */}
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Deducciones estatales</p>
-            <div className="space-y-2 mb-4">
-              {DEDUCCIONES_ESTATALES.map((d) => {
-                const marcada = respuestas[d.id] === true;
-                return (
-                  <div
-                    key={d.id}
-                    onClick={() => setRespuestas((prev) => ({ ...prev, [d.id]: !prev[d.id] }))}
-                    className={`cursor-pointer rounded-xl border p-4 transition-all ${
-                      marcada ? "border-emerald-300 bg-emerald-50" : "border-gray-100 bg-gray-50 hover:border-gray-200"
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-xl shrink-0 mt-0.5">{d.icono}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium leading-snug ${marcada ? "text-emerald-800" : "text-gray-700"}`}>
-                          {d.pregunta}
-                        </p>
-                        {marcada && (
-                          <div className="mt-2 space-y-1">
-                            <p className="text-xs text-emerald-700 leading-relaxed">{d.descripcion}</p>
-                            <div className="flex items-center gap-3 mt-1">
-                              <span className="text-xs text-emerald-600 font-semibold bg-emerald-100 px-2 py-0.5 rounded-full">{d.ahorro_estimado}</span>
-                              <span className="text-xs text-gray-400">{d.normativa}</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all ${
-                        marcada ? "border-emerald-500 bg-emerald-500" : "border-gray-300"
-                      }`}>
-                        {marcada && <CheckCircle2 className="w-3 h-3 text-white" />}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Sección autonómicas */}
-            {deduccionesAutonomicas.length > 0 && (
-              <>
-                <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">
-                  Deducciones autonómicas — {comunidad}
-                </p>
-                <div className="space-y-2 mb-4">
-                  {deduccionesAutonomicas.map((d) => {
-                    const marcada = respuestas[d.id] === true;
+              {seleccionadas.length > 0 && (
+                <div className="space-y-1">
+                  {seleccionadas.map(id => {
+                    const ded = todasDeducciones.find(d => d.id === id);
+                    if (!ded) return null;
                     return (
-                      <div
-                        key={d.id}
-                        onClick={() => setRespuestas((prev) => ({ ...prev, [d.id]: !prev[d.id] }))}
-                        className={`cursor-pointer rounded-xl border p-4 transition-all ${
-                          marcada ? "border-blue-300 bg-blue-50" : "border-gray-100 bg-gray-50 hover:border-gray-200"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="text-xl shrink-0 mt-0.5">{d.icono}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-medium leading-snug ${marcada ? "text-blue-800" : "text-gray-700"}`}>
-                              {d.pregunta}
-                            </p>
-                            {marcada && (
-                              <div className="mt-2 space-y-1">
-                                <p className="text-xs text-blue-700 leading-relaxed">{d.descripcion}</p>
-                                <div className="flex items-center gap-3 mt-1">
-                                  <span className="text-xs text-blue-600 font-semibold bg-blue-100 px-2 py-0.5 rounded-full">{d.ahorro_estimado}</span>
-                                  <span className="text-xs text-gray-400">{d.normativa}</span>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all ${
-                            marcada ? "border-blue-500 bg-blue-500" : "border-gray-300"
-                          }`}>
-                            {marcada && <CheckCircle2 className="w-3 h-3 text-white" />}
-                          </div>
-                        </div>
+                      <div key={id} className="flex items-center gap-2 text-xs text-gray-600 py-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <span>{ded.icono} {ded.pregunta.replace(/^¿/, "").replace(/\?$/, "")}</span>
+                        <span className="ml-auto text-emerald-600 font-semibold">{ded.ahorro_estimado}</span>
                       </div>
                     );
                   })}
                 </div>
-              </>
-            )}
-
-            {/* Ahorro estimado + botón confirmar */}
-            {seleccionadas.length > 0 && (
-              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 mb-3">
-                <p className="text-xs text-emerald-700 font-semibold">
-                  ✨ Ahorro estimado mínimo con {seleccionadas.length} deducción{seleccionadas.length > 1 ? "es" : ""} seleccionada{seleccionadas.length > 1 ? "s" : ""}: <span className="text-emerald-800">{ahorroEstimado.toLocaleString("es-ES")} €</span>
+              )}
+            </div>
+          ) : completado ? (
+            /* ── Estado: todas respondidas, pendiente de guardar ── */
+            <div className="space-y-4">
+              <div className="text-center py-2">
+                <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle2 className="w-7 h-7 text-emerald-600" />
+                </div>
+                <h3 className="font-['DM_Sans'] text-lg font-bold text-[#1a365d] mb-1">
+                  ¡Cuestionario completado!
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {seleccionadas.length > 0
+                    ? `Hemos detectado ${seleccionadas.length} deducción${seleccionadas.length > 1 ? "es" : ""} que podrían aplicarte.`
+                    : "No hemos detectado deducciones adicionales para tu caso."}
                 </p>
               </div>
-            )}
 
-            <Button
-              onClick={handleGuardar}
-              disabled={confirmarMutation.isPending}
-              className="w-full bg-[#1a365d] hover:bg-[#1a365d]/90 text-white h-11 font-semibold gap-2"
-            >
-              {confirmarMutation.isPending ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Guardando...</>
-              ) : (
-                <><CheckCircle2 className="w-4 h-4" /> Confirmar deducciones ({seleccionadas.length} seleccionadas)</>
+              {seleccionadas.length > 0 && (
+                <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
+                  <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">Ahorro estimado mínimo</p>
+                  <p className="font-['DM_Sans'] text-2xl font-bold text-emerald-700">
+                    {ahorroEstimado.toLocaleString("es-ES")} €
+                  </p>
+                  <p className="text-xs text-emerald-600 mt-1">Tu asesor verificará cada deducción con tu documentación</p>
+                  <div className="mt-3 space-y-1">
+                    {seleccionadas.map(id => {
+                      const ded = todasDeducciones.find(d => d.id === id);
+                      if (!ded) return null;
+                      return (
+                        <div key={id} className="flex items-center gap-2 text-xs text-emerald-700">
+                          <span>{ded.icono}</span>
+                          <span>{ded.pregunta.replace(/^¿/, "").replace(/\?$/, "")}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
-            </Button>
-            <p className="text-xs text-gray-400 text-center mt-2">
-              Tu asesor verificará cada deducción con la documentación que aportes
-            </p>
-          </div>
-        )}
+
+              <Button
+                onClick={handleGuardar}
+                disabled={confirmarMutation.isPending}
+                className="w-full bg-[#059669] hover:bg-[#047857] text-white h-12 font-bold text-base gap-2"
+              >
+                {confirmarMutation.isPending ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Guardando...</>
+                ) : (
+                  <><CheckCircle2 className="w-5 h-5" /> Confirmar y continuar</>
+                )}
+              </Button>
+            </div>
+          ) : (
+            /* ── Estado: pregunta actual ── */
+            <div>
+              {/* Etiqueta de sección */}
+              <div className="mb-4">
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  esAutonomica ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
+                }`}>
+                  {esAutonomica ? `🏛️ Deducción autonómica — ${comunidad}` : "🇪🇸 Deducción estatal"}
+                </span>
+              </div>
+
+              {/* Pregunta grande */}
+              <div className="mb-6">
+                <div className="text-4xl mb-4 text-center">{deduccionActual?.icono}</div>
+                <h3 className="font-['DM_Sans'] text-xl font-bold text-[#1a365d] text-center leading-tight mb-2">
+                  {deduccionActual?.pregunta}
+                </h3>
+                <p className="text-sm text-gray-500 text-center leading-relaxed">
+                  {deduccionActual?.descripcion}
+                </p>
+                <div className="flex items-center justify-center gap-3 mt-3">
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                    esAutonomica ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
+                  }`}>
+                    💰 {deduccionActual?.ahorro_estimado}
+                  </span>
+                  <span className="text-xs text-gray-400">{deduccionActual?.normativa}</span>
+                </div>
+              </div>
+
+              {/* Botones Sí / No grandes */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => handleRespuesta(false)}
+                  className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all font-semibold text-gray-600 text-lg"
+                >
+                  <span className="text-3xl">✗</span>
+                  No
+                </button>
+                <button
+                  onClick={() => handleRespuesta(true)}
+                  className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 border-emerald-400 bg-emerald-50 hover:border-emerald-500 hover:bg-emerald-100 transition-all font-bold text-emerald-700 text-lg"
+                >
+                  <span className="text-3xl">✓</span>
+                  Sí
+                </button>
+              </div>
+
+              {/* Opción de saltar */}
+              <button
+                onClick={() => setPasoActual(prev => prev + 1)}
+                className="w-full mt-3 text-xs text-gray-400 hover:text-gray-600 transition-colors py-2"
+              >
+                No estoy seguro/a — saltar esta pregunta
+              </button>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
@@ -1119,21 +1156,21 @@ export default function MiRenta() {
             </Card>
           )}
 
-          {/* ── Documentos ── */}
-          {esPagado && (
-            <PanelDocumentos
-              expedienteId={expedienteId || ""}
-              estado={estado}
-              documentosRequeridos={documentosRequeridos}
-            />
-          )}
-
-          {/* ── Módulo de deducciones ── */}
+          {/* ── Cuestionario de deducciones (PRIMER PASO OBLIGATORIO) ── */}
           {esPagado && (
             <ModuloDeducciones
               expedienteId={expedienteId || ""}
               estado={estado}
               comunidad={comunidad}
+            />
+          )}
+
+          {/* ── Documentos (SEGUNDO PASO, después de deducciones) ── */}
+          {esPagado && (
+            <PanelDocumentos
+              expedienteId={expedienteId || ""}
+              estado={estado}
+              documentosRequeridos={documentosRequeridos}
             />
           )}
 
