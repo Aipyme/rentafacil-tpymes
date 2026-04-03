@@ -43,6 +43,95 @@ export async function registerRoutes(
     res.json(d);
   });
 
+  // Diagnostic: test email sending
+  app.get("/api/diag/email", async (req, res) => {
+    const apiKey = process.env.BREVO_API_KEY;
+    const fromEmail = process.env.EMAIL_FROM;
+    const fromName = process.env.EMAIL_FROM_NAME;
+    const testTo = (req.query.to as string) || "eliaicheckpyme@gmail.com";
+
+    const d: Record<string, unknown> = {
+      BREVO_API_KEY_present: !!apiKey,
+      BREVO_API_KEY_length: apiKey?.length || 0,
+      EMAIL_FROM: fromEmail || "NOT_SET",
+      EMAIL_FROM_NAME: fromName || "NOT_SET",
+      test_to: testTo,
+    };
+
+    if (!apiKey) {
+      d.result = "SKIP — BREVO_API_KEY not configured";
+      return res.json(d);
+    }
+
+    try {
+      const payload = {
+        sender: { name: fromName || "Renta Fácil TPymes", email: fromEmail || "noreply@rentafacil.es" },
+        to: [{ email: testTo }],
+        subject: "[DIAG] Test email Renta Fácil TPymes",
+        htmlContent: `<p>Email de prueba enviado desde el servidor de diagnóstico. Timestamp: ${new Date().toISOString()}</p>`,
+      };
+      const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "api-key": apiKey },
+        body: JSON.stringify(payload),
+      });
+      const body = await resp.text();
+      d.brevo_status = resp.status;
+      d.brevo_response = body.substring(0, 300);
+      d.result = resp.ok ? "OK" : `FAIL ${resp.status}`;
+    } catch (e: any) {
+      d.result = `ERROR: ${e.message}`;
+    }
+    return res.json(d);
+  });
+
+  // Diagnostic: test Google Sheet write
+  app.get("/api/diag/sheet", async (_req, res) => {
+    const sheetId = process.env.GOOGLE_SHEETS_ID;
+    const d: Record<string, unknown> = {
+      GOOGLE_SHEETS_ID: sheetId ? `${sheetId.substring(0, 15)}...` : "NOT_SET",
+      GOOGLE_SHEETS_API_KEY: process.env.GOOGLE_SHEETS_API_KEY ? "SET" : "NOT_SET",
+    };
+    try {
+      const { upsertDeclaracionSheet } = await import("./lib/googleSheets");
+      const testRow = {
+        expediente_id: `DIAG-${Date.now()}`,
+        nombre: "Test Diagnóstico",
+        email: "test@diag.com",
+        telefono: "600000000",
+        comunidad: "Madrid",
+        situacion: "asalariado",
+        precio_eur: "29.90",
+        precio_centimos: "2990",
+        precio_base_eur: "29.90",
+        suplementos: "[]",
+        payment_status: "diag_test",
+        resultado_euros: "0",
+        resultado_estimado: "0",
+        tipo_resultado: "A devolver",
+        resultado_borrador: "0",
+        ahorro_vs_borrador: "0",
+        base_imponible: "0",
+        cuota_integra: "0",
+        cuota_liquida: "0",
+        total_deducciones: "0",
+        casilla_001: "0",
+        casilla_011: "0",
+        casilla_545: "0",
+        casilla_620: "0",
+        casilla_621: "0",
+        casilla_670: "0",
+        observaciones: "diag test",
+      };
+      const result = await upsertDeclaracionSheet(testRow, "casos_master_v2");
+      d.result = "OK";
+      d.action = result.action;
+    } catch (e: any) {
+      d.result = `FAIL: ${e.message}`;
+    }
+    return res.json(d);
+  });
+
   // Get all declarations
   app.get("/api/declarations", async (_req, res) => {
     const declarations = await storage.getDeclarations();

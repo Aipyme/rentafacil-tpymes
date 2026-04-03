@@ -518,6 +518,118 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
   },
 ];
 
+// ─── Deducciones autonómicas por comunidad ───────────────────────────────────
+const DEDUCCIONES_AUTONOMICAS: Record<string, DeduccionItem[]> = {
+  madrid: [
+    {
+      id: "aut_mad_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual y tienes menos de 35 años (o menos de 40 con renta < 25.620 €)?",
+      descripcion: "Deducción autonómica Madrid: 30% del alquiler anual, máximo 1.000 €.",
+      normativa: "Art. 4 Ley 9/1999 CCAA Madrid",
+      ahorro_estimado: "Hasta 1.000 €/año",
+      icono: "🏙️",
+    },
+    {
+      id: "aut_mad_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en Madrid?",
+      descripcion: "Deducción por nacimiento o adopción: 600 € (1º hijo), 750 € (2º), 900 € (3º o más).",
+      normativa: "Art. 5 Ley 9/1999 CCAA Madrid",
+      ahorro_estimado: "600 € – 900 €",
+      icono: "👶",
+    },
+    {
+      id: "aut_mad_guarderia",
+      pregunta: "¿Tienes hijos menores de 3 años y has pagado guardería en 2025?",
+      descripcion: "20% de los gastos de guardería, máximo 1.000 € por hijo menor de 3 años.",
+      normativa: "Art. 6 Ley 9/1999 CCAA Madrid",
+      ahorro_estimado: "Hasta 1.000 €/hijo",
+      icono: "🏫",
+    },
+    {
+      id: "aut_mad_escolaridad",
+      pregunta: "¿Tienes hijos en edad escolar (3-12 años) y has pagado gastos de escolaridad?",
+      descripcion: "15% de gastos de escolaridad (libros, uniformes, actividades), máximo 400 € por hijo.",
+      normativa: "Art. 11 Ley 9/1999 CCAA Madrid",
+      ahorro_estimado: "Hasta 400 €/hijo",
+      icono: "📚",
+    },
+  ],
+  andalucia: [
+    {
+      id: "aut_and_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 35 años y renta < 19.000 €?",
+      descripcion: "15% del alquiler anual, máximo 500 €. Andalucía.",
+      normativa: "Art. 12 bis DL 1/2018 Andalucía",
+      ahorro_estimado: "Hasta 500 €/año",
+      icono: "🏙️",
+    },
+    {
+      id: "aut_and_guarderia",
+      pregunta: "¿Tienes hijos menores de 3 años y has pagado guardería en Andalucía?",
+      descripcion: "15% de gastos de guardería, máximo 250 € por hijo menor de 3 años.",
+      normativa: "Art. 12 ter DL 1/2018 Andalucía",
+      ahorro_estimado: "Hasta 250 €/hijo",
+      icono: "🏫",
+    },
+  ],
+  cataluna: [
+    {
+      id: "aut_cat_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 33 años (o más de 65) y renta < 20.000 €?",
+      descripcion: "10% del alquiler anual, máximo 300 €. Cataluña.",
+      normativa: "Art. 3 Ley 31/2002 CCAA Cataluña",
+      ahorro_estimado: "Hasta 300 €/año",
+      icono: "🏙️",
+    },
+  ],
+  valencia: [
+    {
+      id: "aut_val_nacimiento",
+      pregunta: "¿Has tenido o adoptado un hijo en 2025 y resides en la Comunitat Valenciana?",
+      descripcion: "Deducción por nacimiento/adopción: 270 € (1º hijo), 246 € (2º o más).",
+      normativa: "Art. 4 Ley 13/1997 CCAA Valencia",
+      ahorro_estimado: "246 € – 270 €/hijo",
+      icono: "👶",
+    },
+    {
+      id: "aut_val_alquiler",
+      pregunta: "¿Alquilas tu vivienda habitual, tienes menos de 35 años y renta < 25.000 €?",
+      descripcion: "15% del alquiler anual, máximo 550 €. Comunitat Valenciana.",
+      normativa: "Art. 4 ter Ley 13/1997 CCAA Valencia",
+      ahorro_estimado: "Hasta 550 €/año",
+      icono: "🏙️",
+    },
+  ],
+  canarias: [
+    {
+      id: "aut_can_familia_numerosa",
+      pregunta: "¿Tienes título de familia numerosa y resides en Canarias?",
+      descripcion: "200 € (familia numerosa general) o 600 € (familia numerosa especial).",
+      normativa: "Art. 8 DL 1/2009 Canarias",
+      ahorro_estimado: "200 € – 600 €",
+      icono: "👨‍👩‍👧‍👦",
+    },
+    {
+      id: "aut_can_guarderia",
+      pregunta: "¿Tienes hijos menores de 3 años y has pagado guardería en Canarias?",
+      descripcion: "15% de gastos de guardería, máximo 400 € por hijo.",
+      normativa: "Art. 9 DL 1/2009 Canarias",
+      ahorro_estimado: "Hasta 400 €/hijo",
+      icono: "🏫",
+    },
+  ],
+};
+
+function normalizarComunidad(comunidad: string): string {
+  const c = comunidad.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (c.includes("madrid")) return "madrid";
+  if (c.includes("andalucia") || c.includes("andaluz")) return "andalucia";
+  if (c.includes("catalu") || c.includes("catalan")) return "cataluna";
+  if (c.includes("valenci")) return "valencia";
+  if (c.includes("canaria")) return "canarias";
+  return "";
+}
+
 function ModuloDeducciones({
   expedienteId,
   estado,
@@ -529,26 +641,48 @@ function ModuloDeducciones({
 }) {
   const [respuestas, setRespuestas] = useState<Record<string, boolean>>({});
   const [guardado, setGuardado] = useState(false);
-  const [guardando, setGuardando] = useState(false);
+
+  const confirmarMutation = trpc.simulador.confirmarDeducciones.useMutation({
+    onSuccess: () => {
+      setGuardado(true);
+      toast.success("Deducciones registradas. Tu asesor las tendrá en cuenta al preparar tu declaración.");
+    },
+    onError: () => {
+      toast.error("Error al guardar. Inténtalo de nuevo.");
+    },
+  });
 
   // Solo mostrar si el expediente está en proceso de documentación
   const mostrar = ["pagado", "docs_pendientes", "en_proceso"].includes(estado);
   if (!mostrar) return null;
 
-  const deduccionesAplicables = DEDUCCIONES_ESTATALES;
+  const ccaaNorm = normalizarComunidad(comunidad);
+  const deduccionesAutonomicas = DEDUCCIONES_AUTONOMICAS[ccaaNorm] || [];
+  const todasDeducciones = [...DEDUCCIONES_ESTATALES, ...deduccionesAutonomicas];
   const seleccionadas = Object.entries(respuestas).filter(([, v]) => v).map(([k]) => k);
 
-  const handleGuardar = async () => {
-    setGuardando(true);
-    try {
-      await new Promise((r) => setTimeout(r, 800));
-      setGuardado(true);
-      toast.success("Deducciones registradas. Tu asesor las tendrá en cuenta al preparar tu declaración.");
-    } catch {
-      toast.error("Error al guardar. Inténtalo de nuevo.");
-    } finally {
-      setGuardando(false);
-    }
+  // Ahorro estimado mínimo de las deducciones seleccionadas
+  const ahorroEstimado = seleccionadas.reduce((total, id) => {
+    const ded = todasDeducciones.find(d => d.id === id);
+    if (!ded) return total;
+    const match = ded.ahorro_estimado.match(/(\d+)/);
+    return total + (match ? parseInt(match[1]) : 0);
+  }, 0);
+
+  const handleGuardar = () => {
+    const deduccionesPayload = seleccionadas.map(id => {
+      const ded = todasDeducciones.find(d => d.id === id)!;
+      const esAutonomica = deduccionesAutonomicas.some(d => d.id === id);
+      const match = ded.ahorro_estimado.match(/(\d+)/);
+      return {
+        id: ded.id,
+        nombre: ded.pregunta.replace(/^¿/, "").replace(/\?$/, "").trim(),
+        importe: match ? parseInt(match[1]) : 0,
+        tipo: (esAutonomica ? "autonomica" : "estatal") as "estatal" | "autonomica",
+        normativa: ded.normativa,
+      };
+    });
+    confirmarMutation.mutate({ expedienteId, deducciones: deduccionesPayload });
   };
 
   return (
@@ -569,73 +703,128 @@ function ModuloDeducciones({
         </div>
 
         {guardado ? (
-          <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200 mt-4">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-emerald-800">Deducciones registradas</p>
-              <p className="text-xs text-emerald-600">
-                {seleccionadas.length > 0
-                  ? `Tu asesor revisará ${seleccionadas.length} deducción${seleccionadas.length > 1 ? "es" : ""} para tu declaración.`
-                  : "Hemos registrado que no aplican deducciones adicionales."}
-              </p>
+          <div className="mt-4 space-y-3">
+            <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-emerald-800">Deducciones registradas</p>
+                <p className="text-xs text-emerald-600">
+                  {seleccionadas.length > 0
+                    ? `Tu asesor revisará ${seleccionadas.length} deducción${seleccionadas.length > 1 ? "es" : ""} (ahorro estimado mínimo: ${ahorroEstimado.toLocaleString("es-ES")} €).`
+                    : "Hemos registrado que no aplican deducciones adicionales."}
+                </p>
+              </div>
             </div>
           </div>
         ) : (
-          <div className="space-y-3 mt-4">
-            {deduccionesAplicables.map((d) => {
-              const marcada = respuestas[d.id] === true;
-              return (
-                <div
-                  key={d.id}
-                  onClick={() => setRespuestas((prev) => ({ ...prev, [d.id]: !prev[d.id] }))}
-                  className={`cursor-pointer rounded-xl border p-4 transition-all ${
-                    marcada
-                      ? "border-emerald-300 bg-emerald-50"
-                      : "border-gray-100 bg-gray-50 hover:border-gray-200"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="text-xl shrink-0 mt-0.5">{d.icono}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium leading-snug ${
-                        marcada ? "text-emerald-800" : "text-gray-700"
-                      }`}>
-                        {d.pregunta}
-                      </p>
-                      {marcada && (
-                        <div className="mt-2 space-y-1">
-                          <p className="text-xs text-emerald-700 leading-relaxed">{d.descripcion}</p>
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className="text-xs text-emerald-600 font-semibold bg-emerald-100 px-2 py-0.5 rounded-full">
-                              {d.ahorro_estimado}
-                            </span>
-                            <span className="text-xs text-gray-400">{d.normativa}</span>
+          <div className="mt-4">
+            {/* Sección estatales */}
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Deducciones estatales</p>
+            <div className="space-y-2 mb-4">
+              {DEDUCCIONES_ESTATALES.map((d) => {
+                const marcada = respuestas[d.id] === true;
+                return (
+                  <div
+                    key={d.id}
+                    onClick={() => setRespuestas((prev) => ({ ...prev, [d.id]: !prev[d.id] }))}
+                    className={`cursor-pointer rounded-xl border p-4 transition-all ${
+                      marcada ? "border-emerald-300 bg-emerald-50" : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl shrink-0 mt-0.5">{d.icono}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium leading-snug ${marcada ? "text-emerald-800" : "text-gray-700"}`}>
+                          {d.pregunta}
+                        </p>
+                        {marcada && (
+                          <div className="mt-2 space-y-1">
+                            <p className="text-xs text-emerald-700 leading-relaxed">{d.descripcion}</p>
+                            <div className="flex items-center gap-3 mt-1">
+                              <span className="text-xs text-emerald-600 font-semibold bg-emerald-100 px-2 py-0.5 rounded-full">{d.ahorro_estimado}</span>
+                              <span className="text-xs text-gray-400">{d.normativa}</span>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all ${
-                      marcada ? "border-emerald-500 bg-emerald-500" : "border-gray-300"
-                    }`}>
-                      {marcada && <CheckCircle2 className="w-3 h-3 text-white" />}
+                        )}
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all ${
+                        marcada ? "border-emerald-500 bg-emerald-500" : "border-gray-300"
+                      }`}>
+                        {marcada && <CheckCircle2 className="w-3 h-3 text-white" />}
+                      </div>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* Sección autonómicas */}
+            {deduccionesAutonomicas.length > 0 && (
+              <>
+                <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">
+                  Deducciones autonómicas — {comunidad}
+                </p>
+                <div className="space-y-2 mb-4">
+                  {deduccionesAutonomicas.map((d) => {
+                    const marcada = respuestas[d.id] === true;
+                    return (
+                      <div
+                        key={d.id}
+                        onClick={() => setRespuestas((prev) => ({ ...prev, [d.id]: !prev[d.id] }))}
+                        className={`cursor-pointer rounded-xl border p-4 transition-all ${
+                          marcada ? "border-blue-300 bg-blue-50" : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="text-xl shrink-0 mt-0.5">{d.icono}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium leading-snug ${marcada ? "text-blue-800" : "text-gray-700"}`}>
+                              {d.pregunta}
+                            </p>
+                            {marcada && (
+                              <div className="mt-2 space-y-1">
+                                <p className="text-xs text-blue-700 leading-relaxed">{d.descripcion}</p>
+                                <div className="flex items-center gap-3 mt-1">
+                                  <span className="text-xs text-blue-600 font-semibold bg-blue-100 px-2 py-0.5 rounded-full">{d.ahorro_estimado}</span>
+                                  <span className="text-xs text-gray-400">{d.normativa}</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all ${
+                            marcada ? "border-blue-500 bg-blue-500" : "border-gray-300"
+                          }`}>
+                            {marcada && <CheckCircle2 className="w-3 h-3 text-white" />}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </>
+            )}
+
+            {/* Ahorro estimado + botón confirmar */}
+            {seleccionadas.length > 0 && (
+              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 mb-3">
+                <p className="text-xs text-emerald-700 font-semibold">
+                  ✨ Ahorro estimado mínimo con {seleccionadas.length} deducción{seleccionadas.length > 1 ? "es" : ""} seleccionada{seleccionadas.length > 1 ? "s" : ""}: <span className="text-emerald-800">{ahorroEstimado.toLocaleString("es-ES")} €</span>
+                </p>
+              </div>
+            )}
 
             <Button
               onClick={handleGuardar}
-              disabled={guardando}
-              className="w-full bg-[#1a365d] hover:bg-[#1a365d]/90 text-white h-11 font-semibold gap-2 mt-2"
+              disabled={confirmarMutation.isPending}
+              className="w-full bg-[#1a365d] hover:bg-[#1a365d]/90 text-white h-11 font-semibold gap-2"
             >
-              {guardando ? (
+              {confirmarMutation.isPending ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Guardando...</>
               ) : (
                 <><CheckCircle2 className="w-4 h-4" /> Confirmar deducciones ({seleccionadas.length} seleccionadas)</>
               )}
             </Button>
-            <p className="text-xs text-gray-400 text-center">
+            <p className="text-xs text-gray-400 text-center mt-2">
               Tu asesor verificará cada deducción con la documentación que aportes
             </p>
           </div>

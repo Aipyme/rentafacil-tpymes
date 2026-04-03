@@ -385,6 +385,49 @@ export const simuladorRouter = router({
     }),
 
   /**
+   * Confirmar deducciones seleccionadas por el cliente
+   * Guarda en BD y notifica al asesor asignado
+   */
+  confirmarDeducciones: publicProcedure
+    .input(z.object({
+      expedienteId: z.string(),
+      deducciones: z.array(z.object({
+        id: z.string(),
+        nombre: z.string(),
+        importe: z.number(),
+        tipo: z.enum(["estatal", "autonomica"]),
+        normativa: z.string().optional(),
+      })),
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      // Guardar en BD
+      await db
+        .update(declaraciones)
+        .set({
+          deduccionesSeleccionadas: input.deducciones as any,
+          deduccionesConfirmadasAt: new Date(),
+        })
+        .where(eq(declaraciones.expedienteId, input.expedienteId));
+      // Notificar al asesor (best-effort)
+      try {
+        const totalAhorro = input.deducciones.reduce((s, d) => s + d.importe, 0);
+        const listaHtml = input.deducciones
+          .map(d => `<li><strong>${d.nombre}</strong>: ${d.importe.toLocaleString("es-ES", { style: "currency", currency: "EUR" })} (${d.tipo === "estatal" ? "Estatal" : "Auton\u00f3mica"})</li>`)
+          .join("");
+        const { notifyOwner } = await import("../_core/notification");
+        await notifyOwner({
+          title: `\u2705 Deducciones confirmadas \u2014 Expediente ${input.expedienteId}`,
+          content: `El cliente ha confirmado ${input.deducciones.length} deducci${input.deducciones.length === 1 ? "\u00f3n" : "ones"} con un ahorro total estimado de <strong>${totalAhorro.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}</strong>.<br><br><ul>${listaHtml}</ul>`,
+        });
+      } catch (notifyErr) {
+        console.warn("[confirmarDeducciones] Notificaci\u00f3n al asesor fallida (best-effort):", notifyErr);
+      }
+      return { success: true, total: input.deducciones.length };
+    }),
+
+  /**
    * Listar declaraciones (para panel admin)
    */
   listar: publicProcedure

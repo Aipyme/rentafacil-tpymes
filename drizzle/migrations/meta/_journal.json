@@ -64,6 +64,13 @@
       "when": 1774610631202,
       "tag": "0008_lucky_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1775232538903,
+      "tag": "0009_youthful_sentinels",
+      "breakpoints": true
     }
   ]
 }

@@ -144,6 +144,10 @@ export const declaraciones = mysqlTable("declaraciones", {
   stripeEventId: varchar("stripeEventId", { length: 255 }).unique(),
   /** Timestamp exacto de confirmación del pago (UTC) */
   paymentConfirmedAt: timestamp("paymentConfirmedAt"),
+  /** Deducciones seleccionadas por el cliente en el módulo de deducciones (JSON: [{id, nombre, importe, tipo}]) */
+  deduccionesSeleccionadas: json("deduccionesSeleccionadas"),
+  /** Timestamp en que el cliente confirmó sus deducciones */
+  deduccionesConfirmadasAt: timestamp("deduccionesConfirmadasAt"),
   /** URL del informe PDF generado */
   informePdfUrl: text("informePdfUrl"),
   /** Clave S3 del informe PDF */
