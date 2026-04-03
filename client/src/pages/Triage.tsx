@@ -1755,10 +1755,22 @@ ${documentos.map(d => `- ${d}`).join("\n")}
                               <p className="text-sm font-bold text-emerald-800">Solicitud enviada correctamente</p>
                               <p className="text-xs text-emerald-600 mt-0.5">
                                 Tu expediente <span className="font-mono font-bold">{expedienteId}</span> ha sido registrado.
-                                Te contactaremos en menos de 24 horas por {data.prefiereContacto || "email"}.
+                                {complejidad !== "no_apto"
+                                  ? " Completa el pago para que comencemos a gestionar tu declaración."
+                                  : ` Te contactaremos en menos de 24 horas por ${data.prefiereContacto || "email"}.`}
                               </p>
                             </div>
                           </div>
+                          {/* Botón de pago directo para rentas automatizables */}
+                          {complejidad !== "no_apto" && (
+                            <Link href={`/pago/${expedienteId}`}>
+                              <Button className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold h-12 text-base shadow-lg shadow-emerald-200/50 gap-2">
+                                <Euro className="w-4 h-4" />
+                                Pagar y empezar mi declaración — {precioDesglose.total}€
+                                <ArrowRight className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                          )}
                           <div className="flex gap-3">
                             <Button
                               variant="outline"

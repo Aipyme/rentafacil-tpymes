@@ -449,6 +449,202 @@ function PanelFirma({
   );
 }
 
+// ─── Módulo de deducciones ───────────────────────────────────────────────────
+interface DeduccionItem {
+  id: string;
+  pregunta: string;
+  descripcion: string;
+  normativa: string;
+  ahorro_estimado: string;
+  icono: string;
+}
+
+const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
+  {
+    id: "hipoteca_pre2013",
+    pregunta: "¿Tienes hipoteca firmada antes del 1 de enero de 2013?",
+    descripcion: "Deducción por inversión en vivienda habitual. Hasta el 15% de lo pagado, con un máximo de 9.040€/año.",
+    normativa: "Disp. Trans. 18ª LIRPF",
+    ahorro_estimado: "Hasta 1.356€/año",
+    icono: "🏠",
+  },
+  {
+    id: "alquiler_pre2015",
+    pregunta: "¿Tienes contrato de alquiler de vivienda habitual firmado antes del 1 de enero de 2015?",
+    descripcion: "Deducción por alquiler de vivienda habitual. 10,05% de las cantidades satisfechas, con base máxima de 9.040€.",
+    normativa: "Disp. Trans. 15ª LIRPF",
+    ahorro_estimado: "Hasta 909€/año",
+    icono: "🔑",
+  },
+  {
+    id: "plan_pensiones",
+    pregunta: "¿Has aportado a un plan de pensiones, EPSV o mutualidad en 2025?",
+    descripcion: "Reducción en la base imponible. Límite: el menor de 1.500€ o el 30% de los rendimientos netos del trabajo.",
+    normativa: "Art. 51 LIRPF",
+    ahorro_estimado: "Variable según tipo marginal",
+    icono: "💰",
+  },
+  {
+    id: "maternidad",
+    pregunta: "¿Eres madre con hijos menores de 3 años y trabajas fuera del hogar?",
+    descripcion: "Deducción por maternidad de hasta 1.200€/año por hijo menor de 3 años. Ampliable si tienes gastos de guardería.",
+    normativa: "Art. 81 LIRPF",
+    ahorro_estimado: "Hasta 1.200€ + guardería",
+    icono: "👶",
+  },
+  {
+    id: "familia_numerosa",
+    pregunta: "¿Tienes título de familia numerosa o familia con personas con discapacidad a cargo?",
+    descripcion: "Deducciones de 1.200€ (general) o 2.400€ (especial) por familia numerosa. También por ascendientes/descendientes con discapacidad.",
+    normativa: "Art. 81 bis LIRPF",
+    ahorro_estimado: "1.200€ – 2.400€/año",
+    icono: "👨‍👩‍👧‍👦",
+  },
+  {
+    id: "donaciones",
+    pregunta: "¿Has realizado donativos a ONGs, fundaciones o entidades sin ánimo de lucro en 2025?",
+    descripcion: "80% de los primeros 250€ donados y 40% del resto. Si donas a la misma entidad 3 años seguidos, el porcentaje sube al 45%.",
+    normativa: "Ley 49/2002",
+    ahorro_estimado: "Hasta 80% de los primeros 250€",
+    icono: "❤️",
+  },
+  {
+    id: "eficiencia_energetica",
+    pregunta: "¿Has realizado obras de mejora de eficiencia energética en tu vivienda habitual en 2025?",
+    descripcion: "Deducción del 20% al 60% de las cantidades invertidas en obras de mejora energética, según el tipo de mejora.",
+    normativa: "Art. 92 bis LIRPF",
+    ahorro_estimado: "20% – 60% de la inversión",
+    icono: "♻️",
+  },
+];
+
+function ModuloDeducciones({
+  expedienteId,
+  estado,
+  comunidad,
+}: {
+  expedienteId: string;
+  estado: EstadoExpediente;
+  comunidad: string;
+}) {
+  const [respuestas, setRespuestas] = useState<Record<string, boolean>>({});
+  const [guardado, setGuardado] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+
+  // Solo mostrar si el expediente está en proceso de documentación
+  const mostrar = ["pagado", "docs_pendientes", "en_proceso"].includes(estado);
+  if (!mostrar) return null;
+
+  const deduccionesAplicables = DEDUCCIONES_ESTATALES;
+  const seleccionadas = Object.entries(respuestas).filter(([, v]) => v).map(([k]) => k);
+
+  const handleGuardar = async () => {
+    setGuardando(true);
+    try {
+      await new Promise((r) => setTimeout(r, 800));
+      setGuardado(true);
+      toast.success("Deducciones registradas. Tu asesor las tendrá en cuenta al preparar tu declaración.");
+    } catch {
+      toast.error("Error al guardar. Inténtalo de nuevo.");
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  return (
+    <Card className="border-0 shadow-sm bg-white mb-6">
+      <CardContent className="p-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center">
+            <Euro className="w-4 h-4 text-emerald-600" />
+          </div>
+          <div>
+            <h2 className="font-['DM_Sans'] text-base font-bold text-[#1a365d]">
+              Deducciones que podrían aplicarte
+            </h2>
+            <p className="text-xs text-gray-400">
+              Marca las que correspondan a tu situación — tu asesor las verificará
+            </p>
+          </div>
+        </div>
+
+        {guardado ? (
+          <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200 mt-4">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-emerald-800">Deducciones registradas</p>
+              <p className="text-xs text-emerald-600">
+                {seleccionadas.length > 0
+                  ? `Tu asesor revisará ${seleccionadas.length} deducción${seleccionadas.length > 1 ? "es" : ""} para tu declaración.`
+                  : "Hemos registrado que no aplican deducciones adicionales."}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3 mt-4">
+            {deduccionesAplicables.map((d) => {
+              const marcada = respuestas[d.id] === true;
+              return (
+                <div
+                  key={d.id}
+                  onClick={() => setRespuestas((prev) => ({ ...prev, [d.id]: !prev[d.id] }))}
+                  className={`cursor-pointer rounded-xl border p-4 transition-all ${
+                    marcada
+                      ? "border-emerald-300 bg-emerald-50"
+                      : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl shrink-0 mt-0.5">{d.icono}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium leading-snug ${
+                        marcada ? "text-emerald-800" : "text-gray-700"
+                      }`}>
+                        {d.pregunta}
+                      </p>
+                      {marcada && (
+                        <div className="mt-2 space-y-1">
+                          <p className="text-xs text-emerald-700 leading-relaxed">{d.descripcion}</p>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-xs text-emerald-600 font-semibold bg-emerald-100 px-2 py-0.5 rounded-full">
+                              {d.ahorro_estimado}
+                            </span>
+                            <span className="text-xs text-gray-400">{d.normativa}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center transition-all ${
+                      marcada ? "border-emerald-500 bg-emerald-500" : "border-gray-300"
+                    }`}>
+                      {marcada && <CheckCircle2 className="w-3 h-3 text-white" />}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            <Button
+              onClick={handleGuardar}
+              disabled={guardando}
+              className="w-full bg-[#1a365d] hover:bg-[#1a365d]/90 text-white h-11 font-semibold gap-2 mt-2"
+            >
+              {guardando ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Guardando...</>
+              ) : (
+                <><CheckCircle2 className="w-4 h-4" /> Confirmar deducciones ({seleccionadas.length} seleccionadas)</>
+              )}
+            </Button>
+            <p className="text-xs text-gray-400 text-center">
+              Tu asesor verificará cada deducción con la documentación que aportes
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Componente principal ─────────────────────────────────────────────────────
 export default function MiRenta() {
   const { expedienteId } = useParams<{ expedienteId: string }>();
@@ -621,61 +817,92 @@ export default function MiRenta() {
 
           {/* ── Resultado fiscal ── */}
           {resultado && (
-            <Card className="border-0 shadow-sm bg-white mb-6">
-              <CardContent className="p-6">
-                <h2 className="font-['DM_Sans'] text-base font-bold text-[#1a365d] mb-4">
-                  Estimación de tu declaración
-                </h2>
-
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="bg-gray-50 rounded-xl p-4 text-center">
-                    <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Borrador AEAT</p>
-                    <p className={`font-['DM_Sans'] text-2xl font-bold ${(resultado.resultado_borrador ?? 0) < 0 ? "text-emerald-600" : "text-red-500"}`}>
-                      {(resultado.resultado_borrador ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
-                    </p>
-                    <p className={`text-xs font-semibold mt-1 ${(resultado.resultado_borrador ?? 0) < 0 ? "text-emerald-600" : "text-red-500"}`}>
-                      {(resultado.resultado_borrador ?? 0) < 0 ? "A DEVOLVER" : "A PAGAR"}
-                    </p>
-                  </div>
-                  <div className="bg-emerald-50 rounded-xl p-4 text-center border-2 border-emerald-200">
-                    <p className="text-xs text-emerald-600 uppercase tracking-wide mb-1">Con Renta Fácil</p>
-                    <p className={`font-['DM_Sans'] text-2xl font-bold ${(resultado.resultado ?? 0) < 0 ? "text-emerald-600" : "text-red-500"}`}>
-                      {(resultado.resultado ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
-                    </p>
-                    <p className={`text-xs font-semibold mt-1 ${(resultado.resultado ?? 0) < 0 ? "text-emerald-600" : "text-red-500"}`}>
-                      {(resultado.resultado ?? 0) < 0 ? "A DEVOLVER" : "A PAGAR"}
-                    </p>
-                  </div>
-                </div>
-
+            <Card className="border-0 shadow-sm bg-white mb-6 overflow-hidden">
+              <CardContent className="p-0">
+                {/* Banner de ahorro */}
                 {resultado.ahorro_vs_borrador > 0 && (
-                  <div className="bg-emerald-600 rounded-xl p-4 text-white text-center">
-                    <TrendingDown className="w-5 h-5 mx-auto mb-1 opacity-80" />
-                    <p className="text-sm opacity-80">Ahorro estimado</p>
-                    <p className="font-['DM_Sans'] text-3xl font-bold">
-                      {resultado.ahorro_vs_borrador.toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
-                    </p>
-                    <p className="text-xs opacity-60 mt-1">vs. borrador de Hacienda</p>
-                  </div>
-                )}
-
-                {resultado.desglose_deducciones?.length > 0 && (
-                  <div className="mt-4">
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      Deducciones detectadas
-                    </h3>
-                    <div className="space-y-2">
-                      {resultado.desglose_deducciones.map((d: any, i: number) => (
-                        <div key={i} className="flex justify-between items-center py-1.5 border-b border-gray-100">
-                          <span className="text-sm text-gray-600">{d.concepto}</span>
-                          <span className="text-sm font-semibold text-emerald-600">
-                            -{d.importe?.toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
-                          </span>
-                        </div>
-                      ))}
+                  <div className="bg-gradient-to-r from-[#059669] to-emerald-500 p-5 text-white">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+                        <TrendingDown className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white/80">Ahorro conseguido con deducciones</p>
+                        <p className="font-['DM_Sans'] text-3xl font-bold">
+                          {resultado.ahorro_vs_borrador.toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
+                        </p>
+                        <p className="text-xs text-white/60">vs. borrador de Hacienda sin optimizar</p>
+                      </div>
                     </div>
                   </div>
                 )}
+
+                <div className="p-6">
+                  <h2 className="font-['DM_Sans'] text-base font-bold text-[#1a365d] mb-4">
+                    Estimación de tu declaración
+                  </h2>
+
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Borrador AEAT</p>
+                      <p className={`font-['DM_Sans'] text-2xl font-bold ${(resultado.resultado_borrador ?? 0) < 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {(resultado.resultado_borrador ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
+                      </p>
+                      <p className={`text-xs font-semibold mt-1 ${(resultado.resultado_borrador ?? 0) < 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {(resultado.resultado_borrador ?? 0) < 0 ? "A DEVOLVER" : "A PAGAR"}
+                      </p>
+                    </div>
+                    <div className="bg-emerald-50 rounded-xl p-4 text-center border-2 border-emerald-200">
+                      <p className="text-xs text-emerald-600 uppercase tracking-wide mb-1">Con Renta Fácil</p>
+                      <p className={`font-['DM_Sans'] text-2xl font-bold ${(resultado.resultado ?? 0) < 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {(resultado.resultado ?? 0).toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
+                      </p>
+                      <p className={`text-xs font-semibold mt-1 ${(resultado.resultado ?? 0) < 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {(resultado.resultado ?? 0) < 0 ? "A DEVOLVER" : "A PAGAR"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {resultado.desglose_deducciones?.length > 0 && (
+                    <div className="mt-2">
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                        Deducciones aplicadas
+                      </h3>
+                      <div className="space-y-1">
+                        {resultado.desglose_deducciones.map((d: any, i: number) => (
+                          <div key={i} className="flex justify-between items-center py-1.5 border-b border-gray-100 last:border-0">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                              <span className="text-sm text-gray-600">{d.concepto}</span>
+                            </div>
+                            <span className="text-sm font-semibold text-emerald-600">
+                              −{d.importe?.toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Botón de asistencia prominente */}
+                  <div className="mt-5 pt-4 border-t border-gray-100">
+                    <p className="text-xs text-gray-400 mb-3">¿Tienes dudas sobre tu resultado?</p>
+                    <div className="flex gap-2">
+                      <a href="mailto:eliaicheckpyme@gmail.com" className="flex-1">
+                        <Button variant="outline" className="w-full gap-2 text-xs h-9">
+                          <Mail className="w-3.5 h-3.5" />
+                          Consultar por email
+                        </Button>
+                      </a>
+                      <a href="https://wa.me/34600000000" target="_blank" rel="noopener noreferrer" className="flex-1">
+                        <Button className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white gap-2 text-xs h-9">
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          WhatsApp
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -686,6 +913,15 @@ export default function MiRenta() {
               expedienteId={expedienteId || ""}
               estado={estado}
               documentosRequeridos={documentosRequeridos}
+            />
+          )}
+
+          {/* ── Módulo de deducciones ── */}
+          {esPagado && (
+            <ModuloDeducciones
+              expedienteId={expedienteId || ""}
+              estado={estado}
+              comunidad={comunidad}
             />
           )}
 
