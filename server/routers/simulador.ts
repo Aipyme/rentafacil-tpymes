@@ -161,9 +161,9 @@ export const simuladorRouter = router({
         precio_base_eur: String((precio.precioBase / 100).toFixed(2)),
         suplementos: JSON.stringify(precio.suplementos || []),
         payment_status: "pending",
-<<<<<<< Updated upstream
         // Resultado del cálculo
         resultado_euros: String(resultado.resultado?.toFixed(2) || "0"),
+        resultado_estimado: String(resultado.resultado || ""),
         tipo_resultado: (resultado.resultado || 0) < 0 ? "A devolver" : "A ingresar",
         resultado_borrador: String(resultado.resultado_borrador?.toFixed(2) || "0"),
         ahorro_vs_borrador: String(resultado.ahorro_vs_borrador?.toFixed(2) || "0"),
@@ -178,10 +178,6 @@ export const simuladorRouter = router({
         casilla_620: String(resultado.casillas?.["620"] || "0"),
         casilla_621: String(resultado.casillas?.["621"] || "0"),
         casilla_670: String(resultado.casillas?.["670"] || "0"),
-=======
-        resultado_estimado: String(resultado.resultado || ""),
-        tipo_resultado: resultado.resultado < 0 ? "A devolver" : "A pagar",
->>>>>>> Stashed changes
         observaciones: resultado.motivo_complejidad || "",
       };
       // Await Sheet write with logging — need to debug why fire-and-forget produces no output

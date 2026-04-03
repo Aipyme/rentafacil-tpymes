@@ -517,28 +517,6 @@ export default function MiRenta() {
   const precioTotal = (expediente.precioTotal || 0) / 100;
   const esPagado = ["pagado", "docs_pendientes", "en_proceso", "borrador_listo", "firma_pendiente", "completado", "derivado"].includes(estado);
 
-<<<<<<< Updated upstream
-  const esPagado = ["pagado", "en_proceso", "completado", "derivado"].includes(expediente.estado);
-  const subestado = (expediente as any).subestado || "";
-
-  // Progress steps
-  const pasos = [
-    { id: "pago", label: "Pago recibido", icon: "💳" },
-    { id: "docs", label: "Documentos", icon: "📎" },
-    { id: "borrador", label: "Borrador listo", icon: "📝" },
-    { id: "firma", label: "Firmado", icon: "✍️" },
-    { id: "presentada", label: "Presentada AEAT", icon: "🎉" },
-  ];
-
-  const pasoActual = (() => {
-    if (expediente.estado === "completado" || subestado === "presentada_aeat") return 5;
-    if (subestado === "firmado" || subestado === "firmado_pendiente_presentacion") return 4;
-    if (subestado === "borrador_listo") return 3;
-    if (subestado === "pendiente_documentacion" || subestado === "documentacion_completa") return 2;
-    if (esPagado) return 1;
-    return 0;
-  })();
-=======
   // Documentos requeridos según el perfil del contribuyente
   const documentosRequeridos: DocumentoItem[] = [
     {
@@ -587,7 +565,6 @@ export default function MiRenta() {
       requerido: false,
     });
   }
->>>>>>> Stashed changes
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f5f2]">
@@ -617,49 +594,12 @@ export default function MiRenta() {
             </p>
           </div>
 
-<<<<<<< Updated upstream
-          {/* Progress bar */}
-          {esPagado && (
-            <div className="mb-8 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                {pasos.map((paso, i) => (
-                  <div key={paso.id} className="flex flex-col items-center flex-1">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg mb-2 transition-all ${
-                      i < pasoActual
-                        ? "bg-emerald-100 ring-2 ring-emerald-500"
-                        : i === pasoActual
-                          ? "bg-blue-100 ring-2 ring-blue-500 animate-pulse"
-                          : "bg-gray-100"
-                    }`}>
-                      {i < pasoActual ? "✅" : paso.icon}
-                    </div>
-                    <p className={`text-xs text-center font-medium ${
-                      i < pasoActual ? "text-emerald-700" : i === pasoActual ? "text-blue-700" : "text-gray-400"
-                    }`}>{paso.label}</p>
-                  </div>
-                ))}
-              </div>
-              {/* Línea de progreso */}
-              <div className="relative h-2 bg-gray-200 rounded-full mt-1">
-                <div
-                  className="absolute h-2 bg-emerald-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min((pasoActual / pasos.length) * 100, 100)}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Alerta si no está pagado */}
-          {!esPagado && expediente.estado !== "completado" && (
-            <Card className="border-amber-200 bg-amber-50 mb-6">
-=======
           {/* ── Barra de progreso ── */}
           <BarraProgreso estado={estado} />
 
           {/* ── Alerta pago pendiente ── */}
           {!esPagado && (
             <Card className="border-amber-200 bg-amber-50 mb-6 shadow-sm">
->>>>>>> Stashed changes
               <CardContent className="p-4 flex items-center gap-3">
                 <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
                 <div className="flex-1">

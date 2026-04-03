@@ -246,7 +246,6 @@ export const asesorRouter = router({
               reserved_slot: reservedSlot,
               link_expediente: `https://rentatpymes.aicheckpyme.co/mi-renta/${input.expedienteId || ""}`,
             },
-            timestamp: ahora,
           };
 
           const fetchHeaders: Record<string, string> = { "Content-Type": "application/json" };
