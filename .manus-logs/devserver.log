@@ -1810,3 +1810,16 @@
 [2026-04-03T14:11:33.495Z] [STARTUP] SA_B64: NOT SET
 [2026-04-03T14:11:33.495Z] [STARTUP] SA_RAW: NOT SET
 [2026-04-03T14:11:33.496Z] Server running on http://localhost:3000/
+[2026-04-03T14:14:46.604Z] 10:14:46 AM [vite] (client) page reload index.html
+[2026-04-03T14:15:15.545Z] 10:15:15 AM [vite] (client) hmr update /src/index.css?v=tfIjTn93WorlcqeT5Y13C, /src/pages/NotFound.tsx, /src/pages/Blog.tsx, /src/pages/Simulador.tsx, /src/pages/AvisoLegal.tsx, /src/pages/PoliticaPrivacidad.tsx, /src/pages/PoliticaCookies.tsx, /src/pages/Home.tsx, /src/pages/BlogArticle.tsx, /src/pages/Triage.tsx, /src/pages/Canarias.tsx
+[2026-04-03T14:15:16.408Z] 10:15:16 AM [vite] (client) hmr invalidate /src/pages/Blog.tsx Could not Fast Refresh ("BLOG_POSTS" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-04-03T14:15:16.410Z] 10:15:16 AM [vite] (client) hmr update /src/App.tsx?v=tfIjTn93WorlcqeT5Y13C, /src/index.css?v=tfIjTn93WorlcqeT5Y13C, /src/pages/BlogArticle.tsx
+[2026-04-03T14:15:34.244Z] 10:15:34 AM [vite] (client) hmr update /src/pages/Andalucia.tsx, /src/index.css?v=tfIjTn93WorlcqeT5Y13C
+[2026-04-03T14:15:45.418Z] 10:15:45 AM [vite] (client) hmr update /src/pages/Andalucia.tsx, /src/index.css?v=tfIjTn93WorlcqeT5Y13C
+[2026-04-03T14:16:18.891Z] 10:16:18 AM [vite] (client) hmr update /src/pages/Madrid.tsx, /src/index.css?v=tfIjTn93WorlcqeT5Y13C
+[2026-04-03T14:16:26.723Z] 10:16:26 AM [vite] (client) hmr update /src/pages/Cataluna.tsx, /src/index.css?v=tfIjTn93WorlcqeT5Y13C
+[2026-04-03T14:16:26.726Z] 10:16:26 AM [vite] (client) hmr update /src/pages/Valencia.tsx, /src/index.css?v=tfIjTn93WorlcqeT5Y13C
+[2026-04-03T14:16:47.263Z] 10:16:47 AM [vite] (client) hmr update /src/pages/Cataluna.tsx, /src/index.css?v=tfIjTn93WorlcqeT5Y13C
+[2026-04-03T14:16:59.391Z] 10:16:59 AM [vite] (client) hmr update /src/pages/Valencia.tsx, /src/index.css?v=tfIjTn93WorlcqeT5Y13C
+[2026-04-03T14:17:17.912Z] 10:17:17 AM [vite] (client) hmr update /src/pages/AsesorFiscal.tsx, /src/index.css?v=tfIjTn93WorlcqeT5Y13C
+[2026-04-03T14:18:57.015Z] 10:18:57 AM [vite] (client) page reload public/__manus__/version.json

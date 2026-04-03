@@ -3,7 +3,8 @@
  * Deducciones autonómicas valencianas 2025, contexto local, CTA directo
  */
 
-import { useState } from "react";
+import { useState } from 'react';
+import { useSEO } from '@/hooks/useSEO';
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import {
@@ -147,6 +148,12 @@ function Section({
 
 export default function Valencia() {
   const [expandedDeduccion, setExpandedDeduccion] = useState<number | null>(null);
+
+  useSEO({
+    title: "Declaración de la Renta 2025 en la Comunitat Valenciana — Deducciones autonómicas",
+    description: "Haz tu declaración de la renta 2025 en la Comunitat Valenciana y aprovecha las deducciones autonómicas: familia, discapacidad, alquiler y más. Precio desde 49 €.",
+    canonical: "/valencia",
+  });
 
   return (
     <div className="min-h-screen bg-white">

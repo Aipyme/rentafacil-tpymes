@@ -1,0 +1,22 @@
+{
+  "name": "Renta Fácil TPymes",
+  "short_name": "Renta Fácil",
+  "description": "Declaración de la renta 2025 fácil y sin complicaciones",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#1a365d",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

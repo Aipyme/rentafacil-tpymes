@@ -1,0 +1,14 @@
+# robots.txt — Renta Fácil TPymes
+# https://rentatpymes.aicheckpyme.co
+
+User-agent: *
+Allow: /
+
+# Bloquear rutas privadas y de administración
+Disallow: /panel-asesor
+Disallow: /derivaciones
+Disallow: /api/
+Disallow: /404
+
+# Sitemap
+Sitemap: https://rentatpymes.aicheckpyme.co/sitemap.xml

@@ -12,6 +12,7 @@
  */
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useSEO } from "@/hooks/useSEO";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,6 +93,13 @@ function formatearSlot(isoSlot: string): string {
 }
 
 export default function AsesorFiscal() {
+  useSEO({
+    title: "Asesor Fiscal para tu Declaración de la Renta 2025 — Casos Complejos",
+    description: "Revisión especializada de tu declaración de la renta por un asesor fiscal. Para casos con varios pagadores, inmuebles, actividades económicas o deducciones especiales.",
+    canonical: "/asesor-fiscal",
+    noindex: false,
+  });
+
   const [, navigate] = useLocation();
 
   // Leer parámetros de la URL (pasados desde el simulador)
