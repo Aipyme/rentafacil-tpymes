@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, log } from "./vite";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { startRecordatorio24hJob } from "./jobs/recordatorio24h";
 
 const app = express();
 app.use(express.json());
@@ -61,5 +62,9 @@ const httpServer = createServer(app);
   const port = parseInt(process.env.PORT || "5000");
   httpServer.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
+    // Iniciar job de recordatorio 24h (solo en producción o si se fuerza)
+    if (process.env.NODE_ENV === "production" || process.env.ENABLE_JOBS === "true") {
+      startRecordatorio24hJob();
+    }
   });
 })();

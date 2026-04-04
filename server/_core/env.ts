@@ -32,4 +32,6 @@ export const ENV = {
   calendarDaysAhead: parseInt(process.env.CALENDAR_DAYS_AHEAD || "2", 10),
   calendarDefaultHour: process.env.CALENDAR_DEFAULT_HOUR ?? "10:00",
   calendarEventDurationMin: parseInt(process.env.CALENDAR_EVENT_DURATION_MIN || "30", 10),
+  // Email del equipo asesor para notificaciones de nuevos pagos (fallback: CALENDAR_ADVISOR_EMAIL)
+  asesorNotifEmail: process.env.ASESOR_NOTIF_EMAIL ?? process.env.CALENDAR_ADVISOR_EMAIL ?? "",
 };

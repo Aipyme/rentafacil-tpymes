@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
 import {
-  ChevronRight, ChevronLeft, Calculator, CheckCircle2,
+  ChevronRight, ChevronLeft, ChevronUp, ChevronDown, Calculator, CheckCircle2,
   TrendingDown, Euro, AlertTriangle, Loader2, User,
   Home, Heart, Briefcase, MapPin, CreditCard, FileText
 } from "lucide-react";
@@ -1065,21 +1065,9 @@ function ResultadoComparativa({
         </div>
       )}
 
-      {/* Desglose deducciones */}
+      {/* Desglose deducciones mejorado */}
       {resultado.desglose_deducciones?.length > 0 && (
-        <div>
-          <h3 className="font-semibold text-[#1a365d] mb-3 text-sm">Deducciones aplicadas:</h3>
-          <div className="space-y-2">
-            {resultado.desglose_deducciones.map((d: any, i: number) => (
-              <div key={i} className="flex justify-between items-center py-2 border-b border-gray-100">
-                <span className="text-sm text-gray-600">{d.concepto}</span>
-                <span className="text-sm font-semibold text-emerald-600">
-                  -{d.importe.toLocaleString("es-ES", { minimumFractionDigits: 2 })} €
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <DesgloseDeduccionesPanel deducciones={resultado.desglose_deducciones} />
       )}
 
       {/* Caso complejo */}
@@ -1156,6 +1144,146 @@ function ResultadoComparativa({
       <p className="text-center text-xs text-gray-400">
         * Resultado orientativo. El cálculo exacto puede variar según tu situación fiscal completa.
       </p>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Componente: DesgloseDeduccionesPanel
+// Muestra el desglose detallado de deducciones aplicadas con separación
+// entre estatales y autonómicas, totales parciales y barra de progreso visual.
+// ─────────────────────────────────────────────────────────────────────────────
+
+type DeduccionItem = {
+  concepto: string;
+  importe: number;
+  tipo: "estatal" | "autonomica";
+};
+
+function DesgloseDeduccionesPanel({ deducciones }: { deducciones: DeduccionItem[] }) {
+  const [expandido, setExpandido] = useState(false);
+
+  const estatales = deducciones.filter(d => d.tipo === "estatal");
+  const autonomicas = deducciones.filter(d => d.tipo === "autonomica");
+  const totalEstatales = estatales.reduce((s, d) => s + d.importe, 0);
+  const totalAutonomicas = autonomicas.reduce((s, d) => s + d.importe, 0);
+  const totalGeneral = totalEstatales + totalAutonomicas;
+
+  const fmt = (n: number) =>
+    n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Mostrar solo las 3 deducciones más grandes si no está expandido
+  const topDeducciones = [...deducciones]
+    .sort((a, b) => b.importe - a.importe)
+    .slice(0, 3);
+
+  const mostradas = expandido ? deducciones : topDeducciones;
+  const hayMas = deducciones.length > 3;
+
+  return (
+    <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 overflow-hidden">
+      {/* Cabecera */}
+      <div className="bg-emerald-600 px-5 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <TrendingDown className="w-4 h-4 text-white" />
+          <span className="text-sm font-bold text-white">Deducciones aplicadas</span>
+        </div>
+        <div className="bg-white/20 rounded-full px-3 py-0.5">
+          <span className="text-xs font-bold text-white">-{fmt(totalGeneral)} €</span>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-4">
+        {/* Resumen visual por tipo */}
+        {totalEstatales > 0 && totalAutonomicas > 0 && (
+          <div className="flex gap-3">
+            <div className="flex-1 bg-white rounded-xl p-3 border border-emerald-100">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Estatales</p>
+              <p className="font-['DM_Sans'] text-lg font-bold text-emerald-600">-{fmt(totalEstatales)} €</p>
+              <p className="text-xs text-gray-400 mt-0.5">{estatales.length} deducción{estatales.length !== 1 ? "es" : ""}</p>
+            </div>
+            <div className="flex-1 bg-white rounded-xl p-3 border border-emerald-100">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Autonómicas</p>
+              <p className="font-['DM_Sans'] text-lg font-bold text-emerald-600">-{fmt(totalAutonomicas)} €</p>
+              <p className="text-xs text-gray-400 mt-0.5">{autonomicas.length} deducción{autonomicas.length !== 1 ? "es" : ""}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Barra de proporción */}
+        {totalEstatales > 0 && totalAutonomicas > 0 && (
+          <div>
+            <div className="flex justify-between text-xs text-gray-400 mb-1">
+              <span>Estatales</span>
+              <span>Autonómicas</span>
+            </div>
+            <div className="h-2 rounded-full bg-emerald-100 overflow-hidden flex">
+              <div
+                className="h-full bg-emerald-600 rounded-l-full"
+                style={{ width: `${(totalEstatales / totalGeneral) * 100}%` }}
+              />
+              <div
+                className="h-full bg-emerald-400 rounded-r-full"
+                style={{ width: `${(totalAutonomicas / totalGeneral) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Lista de deducciones */}
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+            {expandido ? "Todas las deducciones" : "Principales deducciones"}
+          </p>
+          <div className="space-y-1">
+            {mostradas.map((d, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between py-2 px-3 rounded-lg bg-white border border-gray-100"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                    d.tipo === "estatal" ? "bg-emerald-600" : "bg-emerald-400"
+                  }`} />
+                  <span className="text-sm text-gray-700 truncate">{d.concepto}</span>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                  <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                    d.tipo === "estatal"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-teal-100 text-teal-700"
+                  }`}>
+                    {d.tipo === "estatal" ? "Estatal" : "Autonómica"}
+                  </span>
+                  <span className="text-sm font-bold text-emerald-600 whitespace-nowrap">
+                    -{fmt(d.importe)} €
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Botón expandir/contraer */}
+        {hayMas && (
+          <button
+            onClick={() => setExpandido(!expandido)}
+            className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 py-1 flex items-center justify-center gap-1"
+          >
+            {expandido ? (
+              <>Mostrar menos <ChevronUp className="w-3.5 h-3.5" /></>
+            ) : (
+              <>Ver las {deducciones.length - 3} deducciones restantes <ChevronDown className="w-3.5 h-3.5" /></>
+            )}
+          </button>
+        )}
+
+        {/* Total */}
+        <div className="flex justify-between items-center pt-2 border-t border-emerald-200">
+          <span className="text-sm font-bold text-[#1a365d]">Total deducciones aplicadas</span>
+          <span className="font-['DM_Sans'] text-lg font-bold text-emerald-600">-{fmt(totalGeneral)} €</span>
+        </div>
+      </div>
     </div>
   );
 }

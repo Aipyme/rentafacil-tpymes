@@ -32,6 +32,7 @@ import { eq } from "drizzle-orm";
 import { buildSheetRowPayload, upsertDeclaracionSheet } from "./lib/googleSheets";
 import { crearEventoCalendar } from "./lib/googleCalendar";
 import { sendEmail, buildEmailConfirmacionPago } from "./lib/email";
+import { ENV } from "./_core/env";
 
 // ============================================================
 // HELPERS
@@ -404,6 +405,138 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           }
         } else {
           console.warn(`[Stripe Webhook] No hay email del cliente para ${expedienteId} — email omitido`);
+        }
+
+        // ── PASO D: Notificación al equipo asesor ──
+        const asesorEmail = ENV.asesorNotifEmail;
+        if (asesorEmail) {
+          const precioFormateado = new Intl.NumberFormat("es-ES", {
+            style: "currency", currency: "EUR", minimumFractionDigits: 2,
+          }).format(precioFinal);
+          const resultadoCalcNum = Number((expData?.resultadoCalculo as any)?.resultado || 0);
+          const resultadoFormateado = new Intl.NumberFormat("es-ES", {
+            style: "currency", currency: "EUR", minimumFractionDigits: 2,
+          }).format(Math.abs(resultadoCalcNum));
+          const resultadoLabel = resultadoCalcNum < 0 ? "A DEVOLVER" : "A PAGAR";
+          const resultadoColor = resultadoCalcNum < 0 ? "#059669" : "#dc2626";
+          const panelUrl = `${ENV.appBaseUrl}/panel-asesor`;
+          const expedienteUrl = `${ENV.appBaseUrl}/pago/${expedienteId}`;
+          const ingresos = Number((expData?.datosContribuyente as any)?.ingresos_brutos || (expData?.datosContribuyente as any)?.ingresosBrutos || 0);
+          const esComplejo = Boolean((expData?.resultadoCalculo as any)?.es_complejo);
+          const motivoComplejidad = String((expData?.resultadoCalculo as any)?.motivo_complejidad || "");
+          const nHijos = Number((expData?.datosContribuyente as any)?.n_hijos || 0);
+          const situacionLabel = situacion || "No especificada";
+
+          const htmlAsesor = `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#1a365d 0%,#2d5a9e 100%);padding:28px 40px;">
+              <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;">NUEVO PAGO CONFIRMADO</p>
+              <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff;">💰 ${nombreCliente || "Cliente"}</h1>
+              <p style="margin:6px 0 0;font-size:14px;color:rgba(255,255,255,0.7);">${expedienteId} · ${new Date().toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 40px;">
+              <!-- DATOS CLAVE -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:13px;color:#718096;">Email cliente</span>
+                    <span style="float:right;font-size:13px;font-weight:600;color:#1a365d;">${emailCliente}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:13px;color:#718096;">Comunidad autónoma</span>
+                    <span style="float:right;font-size:13px;font-weight:600;color:#1a365d;">${comunidad || "No especificada"}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:13px;color:#718096;">Situación laboral</span>
+                    <span style="float:right;font-size:13px;font-weight:600;color:#1a365d;">${situacionLabel}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:13px;color:#718096;">Ingresos brutos</span>
+                    <span style="float:right;font-size:13px;font-weight:600;color:#1a365d;">${new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(ingresos)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:13px;color:#718096;">Hijos a cargo</span>
+                    <span style="float:right;font-size:13px;font-weight:600;color:#1a365d;">${nHijos}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:13px;color:#718096;">Resultado estimado</span>
+                    <span style="float:right;font-size:13px;font-weight:700;color:${resultadoColor};">${resultadoFormateado} ${resultadoLabel}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:13px;color:#718096;">Complejidad</span>
+                    <span style="float:right;font-size:13px;font-weight:600;color:${esComplejo ? "#dc2626" : "#059669"};">● ${esComplejo ? "COMPLEJO" : "SIMPLE"}${motivoComplejidad ? " — " + motivoComplejidad : ""}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0 0;">
+                    <span style="font-size:14px;font-weight:600;color:#718096;">Importe pagado</span>
+                    <span style="float:right;font-size:20px;font-weight:700;color:#059669;">${precioFormateado}</span>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTAs -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding-right:8px;" width="50%">
+                    <a href="${panelUrl}" style="display:block;background:#1a365d;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 20px;border-radius:8px;text-align:center;">
+                      Abrir Panel Asesor →
+                    </a>
+                  </td>
+                  <td style="padding-left:8px;" width="50%">
+                    <a href="${expedienteUrl}" style="display:block;background:#059669;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 20px;border-radius:8px;text-align:center;">
+                      Ver Expediente →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#f8fafc;padding:16px 40px;border-top:1px solid #e2e8f0;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#a0aec0;">Renta Fácil by TPymes · Notificación interna</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+          const asesorEmailResult = await sendEmail({
+            to: asesorEmail,
+            subject: `💰 Nuevo pago — ${nombreCliente || "Cliente"} | ${expedienteId}`,
+            htmlContent: htmlAsesor,
+          });
+          if (asesorEmailResult.success) {
+            console.log(`[Stripe Webhook] Notificación al asesor enviada a ${asesorEmail} (${expedienteId})`);
+          } else {
+            console.warn(`[Stripe Webhook] Error notificando al asesor: ${asesorEmailResult.error}`);
+          }
+        } else {
+          console.log(`[Stripe Webhook] ASESOR_NOTIF_EMAIL no configurado — notificación al asesor omitida`);
         }
 
         break;
