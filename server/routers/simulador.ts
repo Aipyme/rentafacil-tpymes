@@ -460,6 +460,92 @@ export const simuladorRouter = router({
     }),
 
   /**
+   * Recalcular resultado fiscal con datos completos del wizard post-pago
+   * Permite calcular en tiempo real sin guardar (para preview)
+   */
+  recalcularConDatos: publicProcedure
+    .input(z.object({
+      datos: RespuestasSchema.extend({
+        segundo_pagador_importe: z.number().optional(),
+        tiene_capital_mobiliario: z.boolean().optional(),
+        importe_capital_mobiliario: z.number().optional(),
+        tiene_capital_inmobiliario: z.boolean().optional(),
+        importe_capital_inmobiliario: z.number().optional(),
+        tiene_ganancias_patrimoniales: z.boolean().optional(),
+        importe_ganancias_patrimoniales: z.number().optional(),
+        tiene_prestaciones: z.boolean().optional(),
+        tiene_imputacion_rentas: z.boolean().optional(),
+      }),
+    }))
+    .mutation(async ({ input }) => {
+      const resultado = calcularRenta(input.datos as RespuestasSimulador);
+      return { resultado };
+    }),
+
+  /**
+   * Guardar datos completos del wizard post-pago y recalcular
+   * Actualiza datosContribuyente y resultadoCalculo en la BD
+   */
+  actualizarDatosWizard: publicProcedure
+    .input(z.object({
+      expedienteId: z.string(),
+      datos: RespuestasSchema.extend({
+        segundo_pagador_importe: z.number().optional(),
+        tiene_capital_mobiliario: z.boolean().optional(),
+        importe_capital_mobiliario: z.number().optional(),
+        tiene_capital_inmobiliario: z.boolean().optional(),
+        importe_capital_inmobiliario: z.number().optional(),
+        tiene_ganancias_patrimoniales: z.boolean().optional(),
+        importe_ganancias_patrimoniales: z.number().optional(),
+        tiene_prestaciones: z.boolean().optional(),
+        tiene_imputacion_rentas: z.boolean().optional(),
+      }),
+      resultadoBorrador: z.number().optional(), // resultado del borrador de Hacienda
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const resultado = calcularRenta(input.datos as RespuestasSimulador);
+
+      // Enriquecer resultado con comparación del borrador si se proporcionó
+      const resultadoFinal = {
+        ...resultado,
+        resultado_borrador_hacienda: input.resultadoBorrador ?? resultado.resultado_borrador,
+        ahorro_vs_borrador_hacienda: input.resultadoBorrador !== undefined
+          ? Math.round((input.resultadoBorrador - resultado.resultado) * 100) / 100
+          : resultado.ahorro_vs_borrador,
+      };
+
+      await db
+        .update(declaraciones)
+        .set({
+          datosContribuyente: input.datos as any,
+          resultadoCalculo: resultadoFinal as any,
+          deduccionesConfirmadasAt: new Date(),
+          deduccionesSeleccionadas: resultado.desglose_deducciones as any,
+        })
+        .where(eq(declaraciones.expedienteId, input.expedienteId));
+
+      // Notificar al asesor (best-effort)
+      try {
+        const { notifyOwner } = await import("../_core/notification");
+        const ahorroTotal = resultadoFinal.ahorro_vs_borrador_hacienda;
+        const resultadoStr = resultado.resultado < 0
+          ? `A devolver: ${Math.abs(resultado.resultado).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}`
+          : `A ingresar: ${resultado.resultado.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}`;
+        await notifyOwner({
+          title: `🎯 Wizard completado — Expediente ${input.expedienteId}`,
+          content: `El cliente ha completado el wizard fiscal.<br><br><strong>Resultado:</strong> ${resultadoStr}<br><strong>Ahorro vs borrador:</strong> ${ahorroTotal.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}<br><strong>Deducciones aplicadas:</strong> ${resultado.desglose_deducciones.length}`,
+        });
+      } catch (e) {
+        console.warn("[actualizarDatosWizard] Notificación fallida:", e);
+      }
+
+      return { resultado: resultadoFinal, success: true };
+    }),
+
+  /**
    * Listar declaraciones (para panel admin)
    */
   listar: publicProcedure

@@ -4,6 +4,7 @@
  * descarga del borrador PDF y contacto real con el asesor.
  */
 import { useState, useRef, useEffect } from "react";
+import { WizardFiscal } from "@/components/WizardFiscal";
 import { useParams, useLocation, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -1558,12 +1559,18 @@ export default function MiRenta() {
             </Card>
           )}
 
-          {/* ── Cuestionario de deducciones (PRIMER PASO OBLIGATORIO) ── */}
+          {/* ── Wizard fiscal completo (PRIMER PASO OBLIGATORIO) ── */}
           {esPagado && (
-            <ModuloDeducciones
+            <WizardFiscal
               expedienteId={expedienteId || ""}
-              estado={estado}
-              comunidad={comunidad}
+              datosIniciales={{
+                situacion: datos?.situacion || "Asalariado",
+                ingresos_brutos: datos?.ingresos_brutos || 0,
+                retenciones: datos?.retenciones || 0,
+                comunidad: datos?.comunidad || comunidad || "",
+                n_hijos: datos?.n_hijos || 0,
+              }}
+              resultadoInicial={deduccionesCompletadas ? resultado : null}
               onCompletado={() => setDeduccionesCompletadas(true)}
             />
           )}
