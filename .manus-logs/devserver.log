@@ -2008,3 +2008,11 @@
 [2026-04-04T08:57:21.448Z] [STARTUP] SA_B64: NOT SET
 [2026-04-04T08:57:21.449Z] [STARTUP] SA_RAW: NOT SET
 [2026-04-04T08:57:21.449Z] Server running on http://localhost:3000/
+[2026-04-04T09:27:49.361Z] 5:27:49 AM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=Vy7F6IVDYsbZv07Cn27Ql
+[2026-04-04T09:28:43.748Z] 5:28:43 AM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=Vy7F6IVDYsbZv07Cn27Ql
+[2026-04-04T09:29:30.817Z] 5:29:30 AM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=Vy7F6IVDYsbZv07Cn27Ql
+[2026-04-04T09:29:41.883Z] 5:29:41 AM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=Vy7F6IVDYsbZv07Cn27Ql
+[2026-04-04T09:30:14.745Z] 5:30:14 AM [vite] (client) hmr update /src/pages/MiRenta.tsx, /src/index.css?v=Vy7F6IVDYsbZv07Cn27Ql
+[2026-04-04T09:32:19.454Z] 5:32:19 AM [vite] (client) hmr update /src/App.tsx?v=Vy7F6IVDYsbZv07Cn27Ql, /src/index.css?v=Vy7F6IVDYsbZv07Cn27Ql
+[2026-04-04T09:32:44.175Z] 5:32:44 AM [vite] (client) hmr update /src/components/PanelDeclaraciones.tsx, /src/index.css?v=Vy7F6IVDYsbZv07Cn27Ql
+[2026-04-04T09:33:19.408Z] 5:33:19 AM [vite] (client) page reload public/__manus__/version.json

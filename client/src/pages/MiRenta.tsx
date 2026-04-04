@@ -457,6 +457,14 @@ interface DeduccionItem {
   normativa: string;
   ahorro_estimado: string;
   icono: string;
+  // Si tiene campo de importe, se muestra un input numérico cuando el cliente responde "Sí"
+  campoImporte?: {
+    label: string;       // ej: "¿Cuánto pagaste en total en 2025?"
+    placeholder: string; // ej: "Ej: 600"
+    unidad: string;      // ej: "€/año"
+    max?: number;        // límite máximo orientativo
+    clave: string;       // clave en autonomica_checks o campo directo
+  };
 }
 
 const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
@@ -467,6 +475,13 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     normativa: "Disp. Trans. 18ª LIRPF",
     ahorro_estimado: "Hasta 1.356€/año",
     icono: "🏠",
+    campoImporte: {
+      label: "¿Cuánto pagaste en total por la hipoteca en 2025 (capital + intereses)?",
+      placeholder: "Ej: 7.200",
+      unidad: "€/año",
+      max: 9040,
+      clave: "vivienda_precio",
+    },
   },
   {
     id: "alquiler_pre2015",
@@ -475,6 +490,13 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     normativa: "Disp. Trans. 15ª LIRPF",
     ahorro_estimado: "Hasta 909€/año",
     icono: "🔑",
+    campoImporte: {
+      label: "¿Cuánto pagaste en total de alquiler en 2025?",
+      placeholder: "Ej: 8.400",
+      unidad: "€/año",
+      max: 9040,
+      clave: "alquiler_pre2015_amount",
+    },
   },
   {
     id: "plan_pensiones",
@@ -483,6 +505,13 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     normativa: "Art. 51 LIRPF",
     ahorro_estimado: "Variable según tipo marginal",
     icono: "💰",
+    campoImporte: {
+      label: "¿Cuánto aportaste en total al plan de pensiones en 2025?",
+      placeholder: "Ej: 1.500",
+      unidad: "€/año",
+      max: 1500,
+      clave: "importe_planes",
+    },
   },
   {
     id: "maternidad",
@@ -507,6 +536,12 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     normativa: "Ley 49/2002",
     ahorro_estimado: "Hasta 80% de los primeros 250€",
     icono: "❤️",
+    campoImporte: {
+      label: "¿Cuánto donaste en total en 2025?",
+      placeholder: "Ej: 300",
+      unidad: "€/año",
+      clave: "importe_donaciones",
+    },
   },
   {
     id: "eficiencia_energetica",
@@ -515,6 +550,12 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     normativa: "Art. 92 bis LIRPF",
     ahorro_estimado: "20% – 60% de la inversión",
     icono: "♻️",
+    campoImporte: {
+      label: "¿Cuánto invertiste en las obras de mejora energética en 2025?",
+      placeholder: "Ej: 5.000",
+      unidad: "€",
+      clave: "eficiencia_energetica_amount",
+    },
   },
   {
     id: "vehiculo_electrico",
@@ -523,6 +564,13 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     normativa: "DA 58ª LIRPF (RDL 5/2023, prorrogado RDL 9/2024)",
     ahorro_estimado: "Hasta 3.000€",
     icono: "🚗",
+    campoImporte: {
+      label: "¿Cuál fue el precio de compra del vehículo (sin IVA)?",
+      placeholder: "Ej: 25.000",
+      unidad: "€ (sin IVA)",
+      max: 45000,
+      clave: "vehiculo_electrico_precio",
+    },
   },
   {
     id: "inversion_startup",
@@ -531,6 +579,13 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     normativa: "Art. 68.1 LIRPF (Ley 28/2022 de Startups)",
     ahorro_estimado: "50% de la inversión, máx. 50.000€",
     icono: "🚀",
+    campoImporte: {
+      label: "¿Cuánto invertiste en total en la startup en 2025?",
+      placeholder: "Ej: 10.000",
+      unidad: "€",
+      max: 100000,
+      clave: "startup_inversion",
+    },
   },
   {
     id: "cuotas_gimnasio",
@@ -539,6 +594,13 @@ const DEDUCCIONES_ESTATALES: DeduccionItem[] = [
     normativa: "RDL 4/2024 (nueva deducción IRPF 2025)",
     ahorro_estimado: "Hasta 150€/año",
     icono: "🏋️",
+    campoImporte: {
+      label: "¿Cuánto pagaste en total en cuotas deportivas en 2025?",
+      placeholder: "Ej: 600",
+      unidad: "€/año",
+      max: 1000,
+      clave: "gym_amount",
+    },
   },
 ];
 // ─── Deducciones autonómicas por comunidadd ───────────────────────────────────
@@ -887,7 +949,13 @@ function ModuloDeducciones({
   onCompletado?: () => void;
 }) {
   const [pasoActual, setPasoActual] = useState(0);
+  // respuestas: true = sí, false = no
   const [respuestas, setRespuestas] = useState<Record<string, boolean>>({});
+  // importes: clave -> valor numérico capturado en el sub-paso
+  const [importes, setImportes] = useState<Record<string, number>>({});
+  // subPaso: 0 = pregunta sí/no, 1 = campo de importe (si aplica)
+  const [subPaso, setSubPaso] = useState<0 | 1>(0);
+  const [importeInput, setImporteInput] = useState("");
   const [guardado, setGuardado] = useState(false);
 
   const confirmarMutation = trpc.simulador.confirmarDeducciones.useMutation({
@@ -911,18 +979,56 @@ function ModuloDeducciones({
   const seleccionadas = Object.entries(respuestas).filter(([, v]) => v).map(([k]) => k);
   const completado = pasoActual >= totalPreguntas;
 
-  // Ahorro estimado mínimo de las deducciones seleccionadas
+  // Ahorro estimado calculado a partir de importes reales cuando están disponibles
   const ahorroEstimado = seleccionadas.reduce((total, id) => {
     const ded = todasDeducciones.find(d => d.id === id);
     if (!ded) return total;
+    // Si tenemos importe real, calcular el ahorro estimado
+    if (ded.campoImporte && importes[ded.campoImporte.clave]) {
+      const imp = importes[ded.campoImporte.clave];
+      // Estimación conservadora: 15% para la mayoría, 50% para startup
+      const pct = id === "inversion_startup" ? 0.50 : id === "plan_pensiones" ? 0.20 : 0.15;
+      const max = ded.campoImporte.max ? ded.campoImporte.max * pct : Infinity;
+      return total + Math.min(imp * pct, max);
+    }
     const match = ded.ahorro_estimado.match(/(\d+)/);
     return total + (match ? parseInt(match[1]) : 0);
   }, 0);
 
-  const handleRespuesta = (valor: boolean) => {
+  const handleRespuestaSi = () => {
     const deduccionActual = todasDeducciones[pasoActual];
     if (!deduccionActual) return;
-    setRespuestas((prev) => ({ ...prev, [deduccionActual.id]: valor }));
+    setRespuestas((prev) => ({ ...prev, [deduccionActual.id]: true }));
+    // Si tiene campo de importe, ir al sub-paso de importe
+    if (deduccionActual.campoImporte) {
+      setSubPaso(1);
+      setImporteInput("");
+    } else {
+      setPasoActual((prev) => prev + 1);
+    }
+  };
+
+  const handleRespuestaNo = () => {
+    const deduccionActual = todasDeducciones[pasoActual];
+    if (!deduccionActual) return;
+    setRespuestas((prev) => ({ ...prev, [deduccionActual.id]: false }));
+    setSubPaso(0);
+    setPasoActual((prev) => prev + 1);
+  };
+
+  const handleConfirmarImporte = () => {
+    const deduccionActual = todasDeducciones[pasoActual];
+    if (!deduccionActual?.campoImporte) return;
+    const valor = parseFloat(importeInput.replace(/[.,]/g, (m) => m === "." ? "." : "").replace(",", ".")) || 0;
+    if (valor > 0) {
+      setImportes((prev) => ({ ...prev, [deduccionActual.campoImporte!.clave]: valor }));
+    }
+    setSubPaso(0);
+    setPasoActual((prev) => prev + 1);
+  };
+
+  const handleSaltarImporte = () => {
+    setSubPaso(0);
     setPasoActual((prev) => prev + 1);
   };
 
@@ -930,11 +1036,21 @@ function ModuloDeducciones({
     const deduccionesPayload = seleccionadas.map(id => {
       const ded = todasDeducciones.find(d => d.id === id)!;
       const esAutonomica = deduccionesAutonomicas.some(d => d.id === id);
-      const match = ded.ahorro_estimado.match(/(\d+)/);
+      // Calcular importe real si está disponible
+      let importeReal = 0;
+      if (ded.campoImporte && importes[ded.campoImporte.clave]) {
+        const imp = importes[ded.campoImporte.clave];
+        const pct = id === "inversion_startup" ? 0.50 : id === "plan_pensiones" ? 0.20 : 0.15;
+        const max = ded.campoImporte.max ? ded.campoImporte.max * pct : Infinity;
+        importeReal = Math.round(Math.min(imp * pct, max) * 100) / 100;
+      } else {
+        const match = ded.ahorro_estimado.match(/(\d+)/);
+        importeReal = match ? parseInt(match[1]) : 0;
+      }
       return {
         id: ded.id,
         nombre: ded.pregunta.replace(/^¿/, "").replace(/\?$/, "").trim(),
-        importe: match ? parseInt(match[1]) : 0,
+        importe: importeReal,
         tipo: (esAutonomica ? "autonomica" : "estatal") as "estatal" | "autonomica",
         normativa: ded.normativa,
       };
@@ -1056,61 +1172,110 @@ function ModuloDeducciones({
               </Button>
             </div>
           ) : (
-            /* ── Estado: pregunta actual ── */
+            /* ── Estado: pregunta actual (sub-paso 0 = sí/no, sub-paso 1 = importe) ── */
             <div>
-              {/* Etiqueta de sección */}
-              <div className="mb-4">
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                  esAutonomica ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
-                }`}>
-                  {esAutonomica ? `🏛️ Deducción autonómica — ${comunidad}` : "🇪🇸 Deducción estatal"}
-                </span>
-              </div>
-
-              {/* Pregunta grande */}
-              <div className="mb-6">
-                <div className="text-4xl mb-4 text-center">{deduccionActual?.icono}</div>
-                <h3 className="font-['DM_Sans'] text-xl font-bold text-[#1a365d] text-center leading-tight mb-2">
-                  {deduccionActual?.pregunta}
-                </h3>
-                <p className="text-sm text-gray-500 text-center leading-relaxed">
-                  {deduccionActual?.descripcion}
-                </p>
-                <div className="flex items-center justify-center gap-3 mt-3">
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                    esAutonomica ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
-                  }`}>
-                    💰 {deduccionActual?.ahorro_estimado}
-                  </span>
-                  <span className="text-xs text-gray-400">{deduccionActual?.normativa}</span>
+              {subPaso === 1 && deduccionActual?.campoImporte ? (
+                /* ── Sub-paso: captura de importe ── */
+                <div>
+                  <div className="text-4xl mb-4 text-center">{deduccionActual.icono}</div>
+                  <h3 className="font-['DM_Sans'] text-xl font-bold text-[#1a365d] text-center leading-tight mb-2">
+                    {deduccionActual.campoImporte.label}
+                  </h3>
+                  <p className="text-xs text-gray-400 text-center mb-6">
+                    {deduccionActual.campoImporte.max
+                      ? `Máximo deducible: ${deduccionActual.campoImporte.max.toLocaleString("es-ES")} ${deduccionActual.campoImporte.unidad}`
+                      : deduccionActual.campoImporte.unidad}
+                  </p>
+                  <div className="relative mb-4">
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      max={deduccionActual.campoImporte.max || undefined}
+                      value={importeInput}
+                      onChange={(e) => setImporteInput(e.target.value)}
+                      placeholder={deduccionActual.campoImporte.placeholder}
+                      className="w-full h-14 text-2xl font-bold text-center border-2 border-emerald-300 rounded-2xl focus:outline-none focus:border-emerald-500 bg-emerald-50 text-[#1a365d] placeholder:text-gray-300"
+                      onKeyDown={(e) => { if (e.key === "Enter") handleConfirmarImporte(); }}
+                      autoFocus
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">
+                      {deduccionActual.campoImporte.unidad}
+                    </span>
+                  </div>
+                  <Button
+                    onClick={handleConfirmarImporte}
+                    disabled={!importeInput || parseFloat(importeInput) <= 0}
+                    className="w-full bg-[#059669] hover:bg-[#047857] text-white h-12 font-bold text-base gap-2 mb-2"
+                  >
+                    <CheckCircle2 className="w-5 h-5" />
+                    Confirmar importe
+                  </Button>
+                  <button
+                    onClick={handleSaltarImporte}
+                    className="w-full text-xs text-gray-400 hover:text-gray-600 transition-colors py-2"
+                  >
+                    No recuerdo el importe exacto — continuar sin importe
+                  </button>
                 </div>
-              </div>
+              ) : (
+                /* ── Sub-paso 0: pregunta sí/no ── */
+                <div>
+                  {/* Etiqueta de sección */}
+                  <div className="mb-4">
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                      esAutonomica ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
+                    }`}>
+                      {esAutonomica ? `🏗️ Deducción autonómica — ${comunidad}` : "🇪🇸 Deducción estatal"}
+                    </span>
+                  </div>
 
-              {/* Botones Sí / No grandes */}
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => handleRespuesta(false)}
-                  className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all font-semibold text-gray-600 text-lg"
-                >
-                  <span className="text-3xl">✗</span>
-                  No
-                </button>
-                <button
-                  onClick={() => handleRespuesta(true)}
-                  className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 border-emerald-400 bg-emerald-50 hover:border-emerald-500 hover:bg-emerald-100 transition-all font-bold text-emerald-700 text-lg"
-                >
-                  <span className="text-3xl">✓</span>
-                  Sí
-                </button>
-              </div>
+                  {/* Pregunta grande */}
+                  <div className="mb-6">
+                    <div className="text-4xl mb-4 text-center">{deduccionActual?.icono}</div>
+                    <h3 className="font-['DM_Sans'] text-xl font-bold text-[#1a365d] text-center leading-tight mb-2">
+                      {deduccionActual?.pregunta}
+                    </h3>
+                    <p className="text-sm text-gray-500 text-center leading-relaxed">
+                      {deduccionActual?.descripcion}
+                    </p>
+                    <div className="flex items-center justify-center gap-3 mt-3">
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                        esAutonomica ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
+                      }`}>
+                        💰 {deduccionActual?.ahorro_estimado}
+                      </span>
+                      <span className="text-xs text-gray-400">{deduccionActual?.normativa}</span>
+                    </div>
+                  </div>
 
-              {/* Opción de saltar */}
-              <button
-                onClick={() => setPasoActual(prev => prev + 1)}
-                className="w-full mt-3 text-xs text-gray-400 hover:text-gray-600 transition-colors py-2"
-              >
-                No estoy seguro/a — saltar esta pregunta
-              </button>
+                  {/* Botones Sí / No grandes */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={handleRespuestaNo}
+                      className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all font-semibold text-gray-600 text-lg"
+                    >
+                      <span className="text-3xl">✗</span>
+                      No
+                    </button>
+                    <button
+                      onClick={handleRespuestaSi}
+                      className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 border-emerald-400 bg-emerald-50 hover:border-emerald-500 hover:bg-emerald-100 transition-all font-bold text-emerald-700 text-lg"
+                    >
+                      <span className="text-3xl">✓</span>
+                      Sí
+                    </button>
+                  </div>
+
+                  {/* Opción de saltar */}
+                  <button
+                    onClick={() => { setSubPaso(0); setPasoActual(prev => prev + 1); }}
+                    className="w-full mt-3 text-xs text-gray-400 hover:text-gray-600 transition-colors py-2"
+                  >
+                    No estoy seguro/a — saltar esta pregunta
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

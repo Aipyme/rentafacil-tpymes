@@ -239,6 +239,7 @@ export default function PanelDeclaraciones() {
                   <th className="text-left px-3 py-2 text-gray-500 font-medium hidden lg:table-cell">Comunidad</th>
                   <th className="text-left px-3 py-2 text-gray-500 font-medium hidden lg:table-cell">Situación</th>
                   <th className="text-left px-3 py-2 text-gray-500 font-medium">Estado</th>
+                  <th className="text-left px-3 py-2 text-gray-500 font-medium hidden md:table-cell" title="Cuestionario de deducciones completado">Deduc.</th>
                   <th className="text-right px-3 py-2 text-gray-500 font-medium hidden md:table-cell">Precio</th>
                   <th className="text-left px-3 py-2 text-gray-500 font-medium hidden xl:table-cell">Resultado</th>
                   <th className="text-left px-3 py-2 text-gray-500 font-medium hidden sm:table-cell">Fecha</th>
@@ -269,6 +270,18 @@ export default function PanelDeclaraciones() {
                       )}
                       {d.environment === "test" && (
                         <span className="ml-1 text-xs text-gray-400">[test]</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 hidden md:table-cell">
+                      {d.deduccionesConfirmadasAt ? (
+                        <span
+                          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700"
+                          title={`Deducciones confirmadas el ${new Date(d.deduccionesConfirmadasAt).toLocaleDateString("es-ES")}`}
+                        >
+                          ✓ OK
+                        </span>
+                      ) : (
+                        <span className="text-gray-300 text-xs">—</span>
                       )}
                     </td>
                     <td className="px-3 py-2 text-right font-medium text-gray-800 hidden md:table-cell">
