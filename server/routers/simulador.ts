@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { generarInformePDF } from "../lib/generarPDF";
 import { storagePut } from "../storage";
 import { sendEmail } from "../lib/email";
-import { buildEmailBienvenida, buildEmailConfirmacionDeducciones, getDocumentosNecesarios } from "../lib/emailTemplates";
+import { buildEmailBienvenida, buildEmailConfirmacionDeducciones, buildEmailResultadoSimulacion, getDocumentosNecesarios } from "../lib/emailTemplates";
 
 // ============================================================
 // Zod schema para las respuestas del simulador
@@ -44,6 +44,15 @@ const RespuestasSchema = z.object({
     edad: z.number().optional(),
     discapacidad: z.boolean().optional(),
     porcentaje_discapacidad: z.number().optional(),
+    estado_civil: z.enum(["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a", "Pareja de hecho"]).optional(),
+    // Datos empresa pagadora
+    empresa_nombre: z.string().optional(),
+    empresa_nif: z.string().optional(),
+    // Documentación previa
+    tiene_datos_aeat: z.boolean().optional(),
+    tiene_referencia_catastral: z.boolean().optional(),
+    // Preferencia de contacto
+    contacto_preferido: z.string().optional(),
   }).optional(),
 });
 
@@ -848,6 +857,35 @@ export const simuladorRouter = router({
         test_email_messageId: emailResult.messageId,
         test_email_error: emailResult.error,
       };
+    }),
+
+  /**
+   * Diagnóstico de la base de datos
+   */
+  dbDiag: publicProcedure
+    .query(async () => {
+      const db = await getDb();
+      if (!db) return { db_available: false, error: "DB not connected" };
+      try {
+        // Obtener columnas de la tabla declaraciones
+        const cols = await db.execute(
+          `SHOW COLUMNS FROM declaraciones`
+        ) as any;
+        const colNames = (Array.isArray(cols) ? cols : cols[0] || []).map((c: any) => c.Field || c.COLUMN_NAME || c.field || Object.values(c)[0]);
+        // Contar filas
+        const count = await db.execute(`SELECT COUNT(*) as total FROM declaraciones`) as any;
+        const total = (Array.isArray(count) ? count[0] : count)?.[0]?.total ?? 0;
+        // Intentar un insert de prueba para ver el error exacto
+        let insertError = null;
+        try {
+          await db.execute(`SELECT deduccionesSeleccionadas FROM declaraciones LIMIT 1`);
+        } catch (e: any) {
+          insertError = e.message;
+        }
+        return { db_available: true, columns: colNames, total_rows: total, deduccionesSeleccionadas_error: insertError };
+      } catch (e: any) {
+        return { db_available: true, error: e.message };
+      }
     }),
 
   /**

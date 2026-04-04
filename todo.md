@@ -260,3 +260,6 @@
 - [ ] Diagnosticar Stripe: verificar webhook, payment_status en Sheet
 - [ ] Diagnosticar Sheet: verificar que las filas se escriben correctamente en producción
 - [ ] Reparar todos los problemas encontrados
+- [ ] BUG: Paso 5 del simulador — botón "Ver resultado" aparece en gris/disabled, no se puede clicar
+- [ ] Email con resultado fiscal al ver simulación (sin necesidad de pagar) — incluir resultado estimado, precio del servicio y CTA
+- [ ] BUG CRÍTICO: Página /pago/{id} muestra "Expediente no encontrado" — el expediente no se guarda en DB o el endpoint getExpediente falla

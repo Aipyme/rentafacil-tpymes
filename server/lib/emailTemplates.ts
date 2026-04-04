@@ -475,3 +475,76 @@ export function buildEmailConfirmacionDeducciones(data: ConfirmacionDeduccionesD
     ),
   };
 }
+
+// ============================================================
+// 6. EMAIL RESULTADO DE SIMULACIÓN (enviado al ver el resultado)
+// ============================================================
+
+interface ResultadoSimulacionData {
+  nombreCliente: string;
+  emailCliente: string;
+  expedienteId: string;
+  resultado: number;           // positivo = a pagar, negativo = a devolver
+  resultadoBorrador: number;
+  ahorroVsBorrador: number;
+  comunidad: string;
+  situacion: string;
+  complejidad: string;         // "Simple" | "Complejo"
+  precioTotal: number;         // en céntimos
+  urlSimulador: string;
+}
+
+export function buildEmailResultadoSimulacion(data: ResultadoSimulacionData) {
+  const nombre = data.nombreCliente || "Cliente";
+  const esDevolucion = data.resultado < 0;
+  const colorResultado = esDevolucion ? "#059669" : "#dc2626";
+  const labelResultado = esDevolucion ? "💰 TE DEVUELVEN" : "⚠️ TIENES QUE PAGAR";
+  const valorResultado = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Math.abs(data.resultado));
+  const precioServicio = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(data.precioTotal / 100);
+
+  const ahorroHtml = data.ahorroVsBorrador > 0
+    ? `<p style="margin:8px 0 0;font-size:13px;color:#059669;font-weight:600;">💰 Ahorro vs. borrador AEAT: ${new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(data.ahorroVsBorrador)} menos</p>`
+    : "";
+
+  const complejidadLabel = data.complejidad === "Complejo"
+    ? `<span style="background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600;">Revisión especializada</span>`
+    : `<span style="background:#ecfdf5;color:#059669;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600;">Declaración Simple</span>`;
+
+  const body = `
+    <p style="margin:0 0 8px;font-size:16px;color:#1a365d;font-weight:600;">Hola, ${nombre} 👋</p>
+    <p style="margin:0 0 24px;font-size:15px;color:#4a5568;line-height:1.6;">
+      Aquí tienes el resultado estimado de tu declaración de la renta 2025. Recuerda que es una estimación basada en los datos que nos has proporcionado.
+    </p>
+
+    <!-- RESULTADO GRANDE -->
+    <div style="background:${esDevolucion ? '#ecfdf5' : '#fef2f2'};border:2px solid ${colorResultado};border-radius:12px;padding:28px;text-align:center;margin-bottom:24px;">
+      <p style="margin:0;font-size:13px;color:#718096;text-transform:uppercase;letter-spacing:1px;">${labelResultado}</p>
+      <p style="margin:8px 0 0;font-size:40px;font-weight:800;color:${colorResultado};font-family:'Segoe UI',Arial,sans-serif;">${valorResultado}</p>
+      ${ahorroHtml}
+    </div>
+
+    <!-- DETALLES -->
+    ${infoTable(
+      infoRow("Nº Expediente", `<code style="font-family:monospace;">${data.expedienteId}</code>`) +
+      infoRow("Comunidad autónoma", data.comunidad || "—") +
+      infoRow("Situación fiscal", data.situacion || "—") +
+      infoRow("Tipo de declaración", complejidadLabel) +
+      infoRow("Precio del servicio", `<strong style="color:#1a365d;">${precioServicio}</strong>`)
+    )}
+
+    <p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a365d;">¿Quieres que lo gestionemos nosotros?</p>
+    <p style="margin:0 0 20px;font-size:14px;color:#4a5568;line-height:1.6;">
+      Por solo <strong>${precioServicio}</strong> nos encargamos de todo: preparamos tu declaración, la revisamos y la presentamos ante la AEAT. Precio cerrado, sin sorpresas.
+    </p>
+
+    ${ctaButton(data.urlSimulador, "Contratar gestión de mi declaración →")}
+
+    <p style="margin:0;font-size:12px;color:#a0aec0;text-align:center;">
+      Esta es una estimación orientativa. El resultado final puede variar según la información completa de tu declaración.
+    </p>`;
+
+  return {
+    subject: `📊 Tu resultado estimado: ${valorResultado} ${esDevolucion ? "a devolver" : "a pagar"} — Renta Fácil`,
+    html: wrapLayout(esDevolucion ? "#059669" : "#1a365d", "📊", "Tu resultado de la simulación", "Declaración de la Renta 2025", body),
+  };
+}
