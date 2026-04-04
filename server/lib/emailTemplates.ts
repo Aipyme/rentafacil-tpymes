@@ -98,10 +98,41 @@ interface BienvenidaData {
   complejidad: string;
   urlMiRenta: string;
   documentosNecesarios: string[];
+  // Resultado fiscal (opcional)
+  resultadoFiscal?: number;      // importe en EUR (positivo = a pagar, negativo = a devolver)
+  tipoResultado?: string;        // "a_devolver" | "a_pagar" | "sin_resultado"
+  precioServicio?: number;       // precio en céntimos
 }
 
 export function buildEmailBienvenida(data: BienvenidaData) {
   const nombre = data.nombreCliente || "Cliente";
+
+  // Bloque de resultado fiscal
+  let resultadoHtml = "";
+  if (data.resultadoFiscal !== undefined && data.tipoResultado && data.tipoResultado !== "sin_resultado") {
+    const esDevolucion = data.tipoResultado === "a_devolver";
+    const color = esDevolucion ? "#059669" : "#dc2626";
+    const label = esDevolucion ? "Hacienda te devolverá aproximadamente" : "Tendrás que pagar aproximadamente";
+    const valor = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Math.abs(data.resultadoFiscal));
+    const emoji = esDevolucion ? "💰" : "📋";
+    resultadoHtml = `
+      <div style="background:${esDevolucion ? '#ecfdf5' : '#fef2f2'};border:2px solid ${color};border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+        <p style="margin:0;font-size:14px;color:#718096;">${emoji} ${label}</p>
+        <p style="margin:8px 0 0;font-size:36px;font-weight:800;color:${color};">${valor}</p>
+        <p style="margin:8px 0 0;font-size:12px;color:#a0aec0;">Estimación orientativa. El resultado final puede variar.</p>
+      </div>`;
+  }
+
+  // Precio del servicio
+  let precioHtml = "";
+  if (data.precioServicio !== undefined && data.precioServicio > 0) {
+    const precioEur = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(data.precioServicio / 100);
+    precioHtml = `
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 20px;margin-bottom:24px;text-align:center;">
+        <p style="margin:0;font-size:14px;color:#166534;">Nuestro servicio de gestión completa: <strong>${precioEur}</strong></p>
+        <p style="margin:4px 0 0;font-size:12px;color:#4ade80;">Precio cerrado · Sin sorpresas</p>
+      </div>`;
+  }
 
   const docsHtml = data.documentosNecesarios.length > 0
     ? `<p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a365d;">📄 Documentos que necesitarás</p>
@@ -113,8 +144,11 @@ export function buildEmailBienvenida(data: BienvenidaData) {
   const body = `
     <p style="margin:0 0 8px;font-size:16px;color:#1a365d;font-weight:600;">¡Hola, ${nombre}! 👋</p>
     <p style="margin:0 0 24px;font-size:15px;color:#4a5568;line-height:1.6;">
-      Tu expediente ha sido creado correctamente. Ya puedes acceder a tu área personal para seguir el proceso.
+      Hemos calculado el resultado estimado de tu declaración de la renta 2024.
+      Aquí tienes tu resumen:
     </p>
+    ${resultadoHtml}
+    ${precioHtml}
     ${infoTable(
       infoRow("Nº Expediente", `<code style="font-family:monospace;font-weight:700;">${data.expedienteId}</code>`) +
       infoRow("Comunidad autónoma", data.comunidad || "—") +
@@ -135,8 +169,8 @@ export function buildEmailBienvenida(data: BienvenidaData) {
     </p>`;
 
   return {
-    subject: `📋 Expediente ${data.expedienteId} creado — Renta Fácil TPymes`,
-    html: wrapLayout("#2563eb", "📋", "Expediente creado", "Tu declaración de la renta ha comenzado", body),
+    subject: `📊 Tu resultado de la renta: ${data.tipoResultado === 'a_devolver' ? 'te devuelven' : 'a pagar'} — Renta Fácil TPymes`,
+    html: wrapLayout("#1a365d", "📊", "Tu resultado estimado", "Declaración de la Renta 2024 (ejercicio 2025)", body),
   };
 }
 

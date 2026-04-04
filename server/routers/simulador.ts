@@ -379,6 +379,10 @@ export const simuladorRouter = router({
             discapacidad: datos.contribuyente?.discapacidad,
           });
 
+          // Determinar tipo de resultado fiscal
+          const _resVal = resultado.resultado;
+          const _tipoRes = _resVal < 0 ? "a_devolver" : _resVal > 0 ? "a_pagar" : "sin_resultado";
+
           const emailData = buildEmailBienvenida({
             expedienteId,
             nombreCliente,
@@ -388,6 +392,9 @@ export const simuladorRouter = router({
             complejidad: resultado.es_complejo ? "Complejo" : "Simple",
             urlMiRenta,
             documentosNecesarios: docsNecesarios,
+            resultadoFiscal: _resVal,
+            tipoResultado: _tipoRes,
+            precioServicio: precio.precioTotal,
           });
 
           const emailResult = await sendEmail({
