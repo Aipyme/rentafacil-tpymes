@@ -3,7 +3,7 @@
  * Incluye: barra de progreso visual, subida de documentos, firma digital,
  * descarga del borrador PDF y contacto real con el asesor.
  */
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, useLocation, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -1123,12 +1123,23 @@ function ModuloDeducciones({
 export default function MiRenta() {
   const { expedienteId } = useParams<{ expedienteId: string }>();
   const [, navigate] = useLocation();
+  // Inicializar desde la BD: si deduccionesConfirmadasAt tiene valor, el wizard ya fue completado
   const [deduccionesCompletadas, setDeduccionesCompletadas] = useState(false);
+  const [deduccionesInicializadas, setDeduccionesInicializadas] = useState(false);
 
   const { data: expediente, isLoading } = trpc.simulador.getExpediente.useQuery(
     { expedienteId: expedienteId || "" },
     { enabled: !!expedienteId }
   );
+
+  // Sincronizar estado desde la BD cuando el expediente se carga por primera vez
+  useEffect(() => {
+    if (expediente && !deduccionesInicializadas) {
+      const yaConfirmadas = !!(expediente as any).deduccionesConfirmadasAt;
+      setDeduccionesCompletadas(yaConfirmadas);
+      setDeduccionesInicializadas(true);
+    }
+  }, [expediente, deduccionesInicializadas]);
 
   if (isLoading) {
     return (
