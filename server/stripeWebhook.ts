@@ -288,6 +288,29 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           console.warn(`[Stripe Webhook] Error actualizando casos_master_v2: ${cmErr.message}`);
         }
 
+        // ── PASO A3: Si es complejo → grabar en hoja Derivaciones ──
+        const esComplejo = (resultadoCalc.es_complejo as boolean) || false;
+        const motivoComplejidad = (resultadoCalc.motivo_complejidad as string) || "";
+        if (esComplejo) {
+          try {
+            const derivPayload: Record<string, unknown> = {
+              ...sheetPayload,
+              hoja: "Derivaciones",
+              motivo_derivacion: motivoComplejidad || "Caso complejo",
+              fecha_derivacion: paidAt,
+              estado_derivacion: "pendiente_asignacion",
+              asesor_asignado: "",
+              prioridad: motivoComplejidad.includes("autónomo") ? "Alta" : "Normal",
+              payment_status: "paid",
+              payment_confirmed_at: paidAt,
+            };
+            const derivResult = await upsertDeclaracionSheet(derivPayload, "Derivaciones");
+            console.log(`[Stripe Webhook] Derivaciones write: ${derivResult.action} para ${expedienteId} (${motivoComplejidad})`);
+          } catch (derivErr: any) {
+            console.warn(`[Stripe Webhook] Error escribiendo en Derivaciones: ${derivErr.message}`);
+          }
+        }
+
         // ── PASO B: Google Calendar — crear evento de revisión (WF09/WF10) ──
         // Best-effort: no bloquea si falla
         const calendarResult = await crearEventoCalendar({

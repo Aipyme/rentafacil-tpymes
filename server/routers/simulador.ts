@@ -189,6 +189,25 @@ export const simuladorRouter = router({
         console.error(`[Simulador] Sheet write ERROR for ${_sheetExpId}:`, sheetErr.message || sheetErr);
       }
 
+      // ── Si es complejo → grabar también en hoja Derivaciones ──
+      if (resultado.es_complejo) {
+        const _derivRow: Record<string, unknown> = {
+          ..._sheetRow,
+          hoja: "Derivaciones",
+          motivo_derivacion: resultado.motivo_complejidad || "Caso complejo",
+          fecha_derivacion: new Date().toISOString(),
+          estado_derivacion: "pendiente_asignacion",
+          asesor_asignado: "",
+          prioridad: resultado.motivo_complejidad?.includes("autónomo") ? "Alta" : "Normal",
+        };
+        try {
+          const derivResult = await upsertDeclaracionSheet(_derivRow, "Derivaciones");
+          console.log(`[Simulador] Derivaciones write for ${_sheetExpId}: ${derivResult.action}`);
+        } catch (derivErr: any) {
+          console.error(`[Simulador] Derivaciones write ERROR for ${_sheetExpId}:`, derivErr.message || derivErr);
+        }
+      }
+
       // ── Email de bienvenida al cliente (best-effort) ──
       if (input.emailContacto) {
         try {
@@ -517,6 +536,11 @@ export const simuladorRouter = router({
           : resultado.ahorro_vs_borrador,
       };
 
+      // Determinar si hay que derivar automáticamente al asesor
+      const esComplejo = resultado.es_complejo || false;
+      const motivoComplejidad = resultado.motivo_complejidad || "";
+      const nuevoEstado = esComplejo ? "derivado" : undefined;
+
       await db
         .update(declaraciones)
         .set({
@@ -524,6 +548,7 @@ export const simuladorRouter = router({
           resultadoCalculo: resultadoFinal as any,
           deduccionesConfirmadasAt: new Date(),
           deduccionesSeleccionadas: resultado.desglose_deducciones as any,
+          ...(nuevoEstado ? { estado: nuevoEstado } : {}),
         })
         .where(eq(declaraciones.expedienteId, input.expedienteId));
 
@@ -534,15 +559,29 @@ export const simuladorRouter = router({
         const resultadoStr = resultado.resultado < 0
           ? `A devolver: ${Math.abs(resultado.resultado).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}`
           : `A ingresar: ${resultado.resultado.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}`;
-        await notifyOwner({
-          title: `🎯 Wizard completado — Expediente ${input.expedienteId}`,
-          content: `El cliente ha completado el wizard fiscal.<br><br><strong>Resultado:</strong> ${resultadoStr}<br><strong>Ahorro vs borrador:</strong> ${ahorroTotal.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}<br><strong>Deducciones aplicadas:</strong> ${resultado.desglose_deducciones.length}`,
-        });
+
+        if (esComplejo) {
+          // Notificación urgente de derivación
+          await notifyOwner({
+            title: `🚨 DERIVACIÓN AUTOMÁTICA — Expediente ${input.expedienteId}`,
+            content: `El motor fiscal ha detectado complejidad y ha derivado automáticamente este expediente.<br><br><strong>Motivo:</strong> ${motivoComplejidad}<br><strong>Resultado calculado:</strong> ${resultadoStr}<br><strong>Acción requerida:</strong> Revisar el expediente y contactar con el cliente.`,
+          });
+        } else {
+          await notifyOwner({
+            title: `🎯 Wizard completado — Expediente ${input.expedienteId}`,
+            content: `El cliente ha completado el wizard fiscal.<br><br><strong>Resultado:</strong> ${resultadoStr}<br><strong>Ahorro vs borrador:</strong> ${ahorroTotal.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}<br><strong>Deducciones aplicadas:</strong> ${resultado.desglose_deducciones.length}`,
+          });
+        }
       } catch (e) {
         console.warn("[actualizarDatosWizard] Notificación fallida:", e);
       }
 
-      return { resultado: resultadoFinal, success: true };
+      return {
+        resultado: resultadoFinal,
+        success: true,
+        derivado: esComplejo,
+        motivoDerivacion: motivoComplejidad,
+      };
     }),
 
   /**

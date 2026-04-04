@@ -137,13 +137,23 @@ export function WizardFiscal({
     ...datosIniciales,
   });
   const [resultado, setResultado] = useState<any>(resultadoInicial || null);
+  const [derivado, setDerivado] = useState(false);
+  const [motivoDerivacion, setMotivoDerivacion] = useState("");
 
   const actualizarMutation = trpc.simulador.actualizarDatosWizard.useMutation({
     onSuccess: (data) => {
       setResultado(data.resultado);
-      setSeccionActual("resultado");
-      onCompletado?.(data.resultado);
-      toast.success("¡Declaración calculada! Revisa tu resultado.");
+      if (data.derivado) {
+        setDerivado(true);
+        setMotivoDerivacion(data.motivoDerivacion || "");
+        setSeccionActual("resultado");
+        onCompletado?.(data.resultado);
+        toast.warning("¡Tu caso requiere revisión! Un asesor se pondrá en contacto contigo.");
+      } else {
+        setSeccionActual("resultado");
+        onCompletado?.(data.resultado);
+        toast.success("¡Declaración calculada! Revisa tu resultado.");
+      }
     },
     onError: (err) => {
       toast.error("Error al calcular. Inténtalo de nuevo.");
@@ -204,7 +214,7 @@ export function WizardFiscal({
   };
 
   if (seccionActual === "resultado" && resultado) {
-    return <PantallaResultado resultado={resultado} expedienteId={expedienteId} />;
+    return <PantallaResultado resultado={resultado} expedienteId={expedienteId} derivado={derivado} motivoDerivacion={motivoDerivacion} />;
   }
 
   return (
@@ -1067,7 +1077,7 @@ function SeccionBorrador({
 }
 
 // ─── Pantalla de resultado ────────────────────────────────────────────────────
-function PantallaResultado({ resultado, expedienteId }: { resultado: any; expedienteId: string }) {
+function PantallaResultado({ resultado, expedienteId, derivado, motivoDerivacion }: { resultado: any; expedienteId: string; derivado?: boolean; motivoDerivacion?: string }) {
   const generarPDFMutation = trpc.simulador.generarPDF.useMutation({
     onSuccess: (data) => {
       window.open(data.url, "_blank");
@@ -1085,6 +1095,23 @@ function PantallaResultado({ resultado, expedienteId }: { resultado: any; expedi
 
   return (
     <div className="space-y-4 mb-6">
+      {/* Banner de derivación automática */}
+      {derivado && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+              <Users className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <h3 className="font-['DM_Sans'] font-bold text-amber-900 mb-1">Tu caso ha sido asignado a un asesor especialista</h3>
+              <p className="text-sm text-amber-700 leading-relaxed">
+                {motivoDerivacion || "Tu declaración tiene características que requieren revisión especializada."}  Un asesor de TPymes revisará tu expediente y se pondrá en contacto contigo en las próximas 24h.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Resultado principal */}
       <div className={`rounded-2xl p-6 text-white ${esDevolucion ? "bg-gradient-to-br from-emerald-600 to-emerald-700" : "bg-gradient-to-br from-[#1a365d] to-[#2d5a9e]"}`}>
         <div className="flex items-center gap-2 mb-2">
