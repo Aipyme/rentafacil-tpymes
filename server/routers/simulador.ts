@@ -132,168 +132,96 @@ export const simuladorRouter = router({
       const _dedCheck = Array.isArray(datos.deducciones_check) ? (datos.deducciones_check as string[]) : [];
       const _precioEur = (precio.precioTotal / 100).toFixed(2);
       const _desglose = resultado.desglose_deducciones || {};
+      // ── Solo las 44 columnas originales del usuario ──
       const _sheetRow: Record<string, unknown> = {
-        // ── Columnas 1-5: Identificación ──
+        // Col 1: expediente_id
         expediente_id: _sheetExpId,
+        // Col 2: environment
         environment: process.env.NODE_ENV === "production" ? "production" : "test",
-        created_at: _now.toISOString(),
-        updated_at: _now.toISOString(),
+        // Col 3: created_at
+        created_at: _nowEs,
+        // Col 4: updated_at
+        updated_at: _nowEs,
+        // Col 5: source_workflow
         source_workflow: "simulador_renta",
-        // ── Columnas 6-9: Cliente ──
+        // Col 6: cliente_nombre
         cliente_nombre: `${contrib.nombre || ""} ${contrib.apellidos || ""}`.trim(),
+        // Col 7: cliente_email
         cliente_email: input.emailContacto || "",
+        // Col 8: cliente_telefono
         cliente_telefono: input.telefonoContacto || "",
+        // Col 9: nif
         nif: (contrib.nif as string) || "",
-        // ── Columnas 10-30: Datos fiscales ──
+        // Col 10: nif_normalizado
         nif_normalizado: (contrib.nif as string) || "",
+        // Col 11: nif_valido
         nif_valido: contrib.nif ? "Sí" : "No",
+        // Col 12: ccaa
         ccaa: (datos.comunidad as string) || "",
+        // Col 13: estado_civil
         estado_civil: (contrib.estado_civil as string) || "",
+        // Col 14: num_hijos
         num_hijos: String(datos.n_hijos || "0"),
+        // Col 15: tipo_declaracion
         tipo_declaracion: "Individual",
+        // Col 16: contacto_preferido
         contacto_preferido: "email",
+        // Col 17: situacion_laboral
         situacion_laboral: (datos.situacion as string) || "",
+        // Col 18: ingresos_brutos
         ingresos_brutos: String(datos.ingresos_brutos || "0"),
+        // Col 19: num_pagadores
         num_pagadores: datos.mas_de_un_pagador ? "2+" : "1",
+        // Col 20: tiene_actividad_economica
         tiene_actividad_economica: datos.regimen_autonomo ? "Sí" : "No",
+        // Col 21: tiene_inmuebles_alquilados
         tiene_inmuebles_alquilados: datos.tiene_capital_inmobiliario ? "Sí" : "No",
+        // Col 22: tiene_inversiones
         tiene_inversiones: datos.tiene_ganancias_patrimoniales ? "Sí" : "No",
+        // Col 23: tiene_discapacidad
         tiene_discapacidad: contrib.discapacidad ? "Sí" : "No",
+        // Col 24: porcentaje_discapacidad
         porcentaje_discapacidad: String(contrib.porcentaje_discapacidad || "0"),
+        // Col 25: realiza_donaciones
         realiza_donaciones: _dedCheck.includes("donaciones") ? "Sí" : "No",
+        // Col 26: tiene_plan_pensiones
         tiene_plan_pensiones: _dedCheck.includes("planes_pensiones") ? "Sí" : "No",
+        // Col 27: tipo_vivienda
         tipo_vivienda: datos.vivienda_hipoteca ? "Con hipoteca" : "Sin hipoteca",
+        // Col 28: hipoteca_anterior_2013
         hipoteca_anterior_2013: datos.vivienda_hipoteca && datos.vivienda_fecha && new Date(datos.vivienda_fecha as string) < new Date("2013-01-01") ? "Sí" : "No",
+        // Col 29: otros_rendimientos_descripcion
         otros_rendimientos_descripcion: "",
+        // Col 30: deducciones_conocidas
         deducciones_conocidas: _dedCheck.join(", "),
-        // ── Columnas 31-36: Estado y precio ──
+        // Col 31: estado
         estado: "simulacion",
+        // Col 32: subestado
         subestado: "pendiente_pago",
+        // Col 33: complejidad
         complejidad: resultado.es_complejo ? "Complejo" : "Simple",
+        // Col 34: plan_code
         plan_code: resultado.plan_code || (resultado.es_complejo ? "COMPLEJO" : "SIMPLE"),
+        // Col 35: precio
         precio: _precioEur,
+        // Col 36: payment_status
         payment_status: "pending",
-        // ── Columnas 37-41: Resultado fiscal ──
+        // Col 37: payment_confirmed_at
         payment_confirmed_at: "",
+        // Col 38: resultado_estimado
         resultado_estimado: String(resultado.resultado?.toFixed(2) || "0"),
+        // Col 39: tipo_resultado
         tipo_resultado: (resultado.resultado || 0) < 0 ? "A devolver" : "A ingresar",
+        // Col 40: resultado_final
         resultado_final: "",
+        // Col 41: importe_resultado
         importe_resultado: String(resultado.resultado?.toFixed(2) || "0"),
-        // ── Columnas 42-59: Gestión ──
+        // Col 42: documentos_necesarios
         documentos_necesarios: "",
+        // Col 43: documentos_recibidos
         documentos_recibidos: "No",
+        // Col 44: asesor_asignado
         asesor_asignado: "",
-        asesor_email: "",
-        prioridad: resultado.es_complejo ? "Alta" : "Normal",
-        fecha_contacto: "",
-        fecha_revision: "",
-        fecha_presentacion: "",
-        calendar_event_id: "",
-        calendar_start: "",
-        calendar_end: "",
-        ultimo_recordatorio: "",
-        reminder_count: "0",
-        flag_revision: resultado.es_complejo ? "Sí" : "No",
-        confianza_clasificacion: "Alta",
-        razones_clasificacion: resultado.motivo_complejidad || "",
-        observaciones: resultado.motivo_complejidad || "",
-        raw_id_caso: _sheetExpId,
-        // ── Columnas 60-97: Datos fiscales detallados ──
-        legacy_timestamp: _nowEs,
-        retenciones_trabajo: String(datos.retenciones || "0"),
-        retenciones_capital_mob: "0",
-        retenciones_arrendamientos: "0",
-        retenciones_act_econ: "0",
-        pagos_fraccionados: "0",
-        total_pagos_cuenta: String(datos.retenciones || "0"),
-        base_imponible_general: String(resultado.base_imponible_general?.toFixed(2) || "0"),
-        base_imponible_ahorro: "0",
-        cuota_resultante: String(resultado.cuota_liquida?.toFixed(2) || "0"),
-        resultado_declaracion: String(resultado.resultado?.toFixed(2) || "0"),
-        deduccion_vivienda_pre2013: String(resultado.deduccion_vivienda?.toFixed(2) || "0"),
-        minimo_contribuyente: "5550.00",
-        minimo_descendientes: "0",
-        minimo_discapacidad: String(resultado.deduccion_discapacidad?.toFixed(2) || "0"),
-        deduccion_donativos: String(resultado.deduccion_donaciones?.toFixed(2) || "0"),
-        deducciones_autonomicas: String(resultado.deducciones_autonomicas?.toFixed(2) || "0"),
-        segundo_pagador_importe: String(datos.segundo_pagador_importe || "0"),
-        tipo_actividad: (datos.regimen_autonomo as string) || "",
-        dividendos_recibidos: String(datos.importe_capital_mobiliario || "0"),
-        importe_donaciones: String(datos.importe_donaciones || "0"),
-        aportacion_pensiones: String(datos.importe_planes || "0"),
-        amortizacion_hipoteca: String(datos.vivienda_precio || "0"),
-        raw_payload: JSON.stringify({ situacion: datos.situacion, comunidad: datos.comunidad, ingresos: datos.ingresos_brutos }),
-        ruta_preguntas: "",
-        n8n_execution_id: "",
-        estado_updated_by: "simulador_backend",
-        deduccion_gym_deporte: String((_desglose as any).gimnasio?.toFixed(2) || "0"),
-        deduccion_guarderia: String((_desglose as any).guarderia?.toFixed(2) || "0"),
-        deduccion_material_escolar: "0",
-        deduccion_alquiler_vivienda: String((_desglose as any).alquiler?.toFixed(2) || "0"),
-        deduccion_familia_numerosa: String((_desglose as any).familia_numerosa?.toFixed(2) || "0"),
-        deduccion_maternidad: String((_desglose as any).maternidad?.toFixed(2) || "0"),
-        deduccion_nacimiento_adopcion: String((_desglose as any).nacimiento?.toFixed(2) || "0"),
-        deduccion_dependencia_mayores: "0",
-        es_derivacion: resultado.es_complejo ? "Sí" : "No",
-        motivo_derivacion: resultado.motivo_complejidad || "",
-        derivacion_timestamp: resultado.es_complejo ? _now.toISOString() : "",
-        // ── Columnas 98-153: Legacy (uniformidad con n8n) ──
-        id_caso: _sheetExpId,
-        timestamp: _nowEs,
-        nombreCompleto: `${contrib.nombre || ""} ${contrib.apellidos || ""}`.trim(),
-        email: input.emailContacto || "",
-        telefono: input.telefonoContacto || "",
-        comunidadAutonoma: (datos.comunidad as string) || "",
-        estadoCivil: (contrib.estado_civil as string) || "",
-        numHijos: String(datos.n_hijos || "0"),
-        rendimientosTrabajo: String(datos.ingresos_brutos || "0"),
-        numPagadores: datos.mas_de_un_pagador ? "2" : "1",
-        tieneActividadEconomica: datos.regimen_autonomo ? "Si" : "No",
-        tieneInmueblesAlquilados: datos.tiene_capital_inmobiliario ? "Si" : "No",
-        tieneInversiones: datos.tiene_ganancias_patrimoniales ? "Si" : "No",
-        tieneDiscapacidad: contrib.discapacidad ? "Si" : "No",
-        realizaDonaciones: _dedCheck.includes("donaciones") ? "Si" : "No",
-        tienePlanPensiones: _dedCheck.includes("planes_pensiones") ? "Si" : "No",
-        aceptaPolitica: "Si",
-        aceptaTratamiento: "Si",
-        fecha_creacion: _nowEs,
-        contactoPreferido: "email",
-        situacionLaboral: (datos.situacion as string) || "",
-        ingresosBrutos: String(datos.ingresos_brutos || "0"),
-        tipoVivienda: datos.vivienda_hipoteca ? "Con hipoteca" : "Sin hipoteca",
-        hipotecaAnterior2013: datos.vivienda_hipoteca ? "Si" : "No",
-        otrosRendimientosDescripcion: "",
-        deduccionesConocidas: _dedCheck.join(", "),
-        porcentajeDiscapacidad: String(contrib.porcentaje_discapacidad || "0"),
-        tipo: resultado.es_complejo ? "Compleja" : "Simple",
-        expedienteId: _sheetExpId,
-        plan: resultado.plan_code || (resultado.es_complejo ? "COMPLETO" : "BASICO"),
-        deduccionesDetectadas: _dedCheck.join(", "),
-        documentosNecesarios: "",
-        fechaRegistro: _nowEs,
-        nombreEmpresa: "",
-        nifPagador: (contrib.nif as string) || "",
-        asesorAsignado: "",
-        notasAsesor: "",
-        documentosRecibidos: "No",
-        fechaContacto: "",
-        fechaRevision: "",
-        resultadoFinal: "",
-        importeResultado: String(resultado.resultado?.toFixed(2) || "0"),
-        fechaPresentacion: "",
-        ultimoRecordatorio: "",
-        tipoResultado: (resultado.resultado || 0) < 0 ? "A devolver" : "A ingresar",
-        resultadoEstimado: String(resultado.resultado?.toFixed(2) || "0"),
-        prompt_sistema: "",
-        prompt_usuario: "",
-        clasificacion: resultado.es_complejo ? "Compleja" : "Simple",
-        nivel: resultado.es_complejo ? "alto" : "bajo",
-        ruta: "",
-        confianza: "Alta",
-        razones: resultado.motivo_complejidad || "",
-        id_caso_buscar: _sheetExpId,
-        contacto: input.emailContacto || "",
-        datos_contribuyente: JSON.stringify({ nif: contrib.nif, nombre: contrib.nombre, apellidos: contrib.apellidos, edad: contrib.edad }),
       };
       // Await Sheet write with logging — need to debug why fire-and-forget produces no output
       console.log(`[Simulador] About to call upsertDeclaracionSheet for ${_sheetExpId}`);
@@ -305,15 +233,22 @@ export const simuladorRouter = router({
       }
 
       // ── Si es complejo → grabar también en hoja Derivaciones ──
+      // Columnas exactas: derivacion_id | expediente_id | nombre | email | telefono | motivo | reserved_slot | estado | timestamp
       if (resultado.es_complejo) {
+        const nombreCompleto = [
+          (input.respuestas.contribuyente as any)?.nombre || "",
+          (input.respuestas.contribuyente as any)?.apellidos || "",
+        ].filter(Boolean).join(" ") || (input.respuestas.contribuyente as any)?.nombreCompleto || "";
         const _derivRow: Record<string, unknown> = {
-          ..._sheetRow,
-          hoja: "Derivaciones",
-          motivo_derivacion: resultado.motivo_complejidad || "Caso complejo",
-          fecha_derivacion: new Date().toISOString(),
-          estado_derivacion: "pendiente_asignacion",
-          asesor_asignado: "",
-          prioridad: resultado.motivo_complejidad?.includes("autónomo") ? "Alta" : "Normal",
+          derivacion_id: `DRV-${_sheetExpId}`,
+          expediente_id: _sheetExpId,
+          nombre: nombreCompleto,
+          email: input.emailContacto || "",
+          telefono: input.telefonoContacto || "",
+          motivo: resultado.motivo_complejidad || "Caso complejo",
+          reserved_slot: "",
+          estado: "pendiente_asignacion",
+          timestamp: new Date().toLocaleString("es-ES", { timeZone: "Europe/Madrid" }),
         };
         try {
           const derivResult = await upsertDeclaracionSheet(_derivRow, "Derivaciones");

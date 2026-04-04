@@ -280,6 +280,8 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
             subestado: "pendiente_documentacion",
             payment_status: "paid",
             payment_confirmed_at: paidAt,
+            precio: amountEur,
+            importe_pagado: amountEur,
             updated_at: new Date().toISOString(),
           };
           await upsertDeclaracionSheet(casosMasterPayload, "casos_master_v2");
@@ -289,20 +291,21 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
         }
 
         // ── PASO A3: Si es complejo → grabar en hoja Derivaciones ──
+        // Columnas exactas: derivacion_id | expediente_id | nombre | email | telefono | motivo | reserved_slot | estado | timestamp
         const esComplejo = (resultadoCalc.es_complejo as boolean) || false;
         const motivoComplejidad = (resultadoCalc.motivo_complejidad as string) || "";
         if (esComplejo) {
           try {
             const derivPayload: Record<string, unknown> = {
-              ...sheetPayload,
-              hoja: "Derivaciones",
-              motivo_derivacion: motivoComplejidad || "Caso complejo",
-              fecha_derivacion: paidAt,
-              estado_derivacion: "pendiente_asignacion",
-              asesor_asignado: "",
-              prioridad: motivoComplejidad.includes("autónomo") ? "Alta" : "Normal",
-              payment_status: "paid",
-              payment_confirmed_at: paidAt,
+              derivacion_id: `DRV-${expedienteId}`,
+              expediente_id: expedienteId,
+              nombre: nombreCliente,
+              email: emailCliente,
+              telefono: "",
+              motivo: motivoComplejidad || "Caso complejo",
+              reserved_slot: "",
+              estado: "pendiente_asignacion",
+              timestamp: new Date().toLocaleString("es-ES", { timeZone: "Europe/Madrid" }),
             };
             const derivResult = await upsertDeclaracionSheet(derivPayload, "Derivaciones");
             console.log(`[Stripe Webhook] Derivaciones write: ${derivResult.action} para ${expedienteId} (${motivoComplejidad})`);
