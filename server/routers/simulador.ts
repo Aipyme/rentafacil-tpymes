@@ -860,6 +860,31 @@ export const simuladorRouter = router({
     }),
 
   /**
+   * Migrar columnas faltantes en la DB de producción
+   */
+  dbMigrate: publicProcedure
+    .mutation(async () => {
+      const db = await getDb();
+      if (!db) return { success: false, error: "DB not connected" };
+      const results: Record<string, string> = {};
+      const migrations = [
+        { col: "deduccionesSeleccionadas", sql: "ALTER TABLE declaraciones ADD COLUMN deduccionesSeleccionadas JSON" },
+        { col: "deduccionesConfirmadasAt", sql: "ALTER TABLE declaraciones ADD COLUMN deduccionesConfirmadasAt TIMESTAMP NULL" },
+        { col: "informePdfUrl", sql: "ALTER TABLE declaraciones ADD COLUMN informePdfUrl TEXT" },
+        { col: "informePdfS3Key", sql: "ALTER TABLE declaraciones ADD COLUMN informePdfS3Key VARCHAR(512)" },
+      ];
+      for (const m of migrations) {
+        try {
+          await db.execute(m.sql);
+          results[m.col] = "added";
+        } catch (e: any) {
+          results[m.col] = e.message.includes("Duplicate column") ? "already_exists" : `error: ${e.message}`;
+        }
+      }
+      return { success: true, results };
+    }),
+
+  /**
    * Diagnóstico de la base de datos
    */
   dbDiag: publicProcedure
