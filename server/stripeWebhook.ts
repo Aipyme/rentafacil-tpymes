@@ -426,6 +426,12 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
           const motivoComplejidad = String((expData?.resultadoCalculo as any)?.motivo_complejidad || "");
           const nHijos = Number((expData?.datosContribuyente as any)?.n_hijos || 0);
           const situacionLabel = situacion || "No especificada";
+          const nif = String(
+            (expData?.datosContribuyente as any)?.nif ||
+            (expData?.datosContribuyente as any)?.nie ||
+            (expData?.datosContribuyente as any)?.contribuyente?.nif ||
+            ""
+          ).toUpperCase();
 
           const htmlAsesor = `<!DOCTYPE html>
 <html lang="es">
@@ -446,6 +452,12 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
             <td style="padding:28px 40px;">
               <!-- DATOS CLAVE -->
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:13px;color:#718096;">NIF / NIE</span>
+                    <span style="float:right;font-size:13px;font-weight:700;color:#1a365d;letter-spacing:0.5px;font-family:monospace;">${nif || "No facilitado"}</span>
+                  </td>
+                </tr>
                 <tr>
                   <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
                     <span style="font-size:13px;color:#718096;">Email cliente</span>
