@@ -132,150 +132,193 @@ export const simuladorRouter = router({
       const _dedCheck = Array.isArray(datos.deducciones_check) ? (datos.deducciones_check as string[]) : [];
       const _precioEur = (precio.precioTotal / 100).toFixed(2);
       const _desglose = resultado.desglose_deducciones || {};
-      // ── Solo las 44 columnas originales del usuario ──
-      const _sheetRow: Record<string, unknown> = {
-        // Col 1: expediente_id
-        expediente_id: _sheetExpId,
-        // Col 2: environment
-        environment: process.env.NODE_ENV === "production" ? "production" : "test",
-        // Col 3: created_at
-        created_at: _nowEs,
-        // Col 4: updated_at
-        updated_at: _nowEs,
-        // Col 5: source_workflow
-        source_workflow: "simulador_renta",
-        // Col 6: cliente_nombre
-        cliente_nombre: `${contrib.nombre || ""} ${contrib.apellidos || ""}`.trim(),
-        // Col 7: cliente_email
-        cliente_email: input.emailContacto || "",
-        // Col 8: cliente_telefono
-        cliente_telefono: input.telefonoContacto || "",
-        // Col 9: nif
+      // ── Fila completa para casos_master_v2 (153 columnas exactas del Sheet) ──
+      const _nombreCompleto = `${contrib.nombre || ""} ${contrib.apellidos || ""}`.trim();
+      const _esHipotecaPre2013 = datos.vivienda_hipoteca && datos.vivienda_fecha &&
+        new Date(datos.vivienda_fecha as string) < new Date("2013-01-01");
+      const _retenciones = Number(datos.retenciones || resultado.retenciones || 0);
+      const _ingresos = Number(datos.ingresos_brutos || resultado.ingresos_brutos || 0);
+      const _nHijos = Number(datos.n_hijos || 0);
+      const _pctDiscap = Number(contrib.porcentaje_discapacidad || 0);
+      const _impteDonaciones = Number(datos.importe_donaciones || 0);
+      const _aportPlanes = Number(datos.importe_planes || 0);
+      const _rawPayload = JSON.stringify({ situacion: datos.situacion, comunidad: datos.comunidad, ingresos: _ingresos });
+      const _contactoJson = JSON.stringify({ nombre: _nombreCompleto, email: input.emailContacto || "", telefono: input.telefonoContacto || "" });
+      const _datosContribJson = JSON.stringify({
         nif: (contrib.nif as string) || "",
-        // Col 10: nif_normalizado
-        nif_normalizado: (contrib.nif as string) || "",
-        // Col 11: nif_valido
-        nif_valido: contrib.nif ? "Si" : "No",
-        // Col 12: ccaa
-        ccaa: (datos.comunidad as string) || "",
-        // Col 13: estado_civil
-        estado_civil: (contrib.estado_civil as string) || "",
-        // Col 14: num_hijos
-        num_hijos: String(datos.n_hijos || "0"),
-        // Col 15: tipo_declaracion
-        tipo_declaracion: "Individual",
-        // Col 16: contacto_preferido
-        contacto_preferido: "email",
-        // Col 17: situacion_laboral
-        situacion_laboral: (datos.situacion as string) || "",
-        // Col 18: ingresos_brutos
-        ingresos_brutos: String(datos.ingresos_brutos || "0"),
-        // Col 19: num_pagadores
-        num_pagadores: datos.mas_de_un_pagador ? "2+" : "1",
-        // Col 20: tiene_actividad_economica
-        tiene_actividad_economica: datos.regimen_autonomo ? "Si" : "No",
-        // Col 21: tiene_inmuebles_alquilados
-        tiene_inmuebles_alquilados: datos.tiene_capital_inmobiliario ? "Si" : "No",
-        // Col 22: tiene_inversiones
-        tiene_inversiones: datos.tiene_ganancias_patrimoniales ? "Si" : "No",
-        // Col 23: tiene_discapacidad
-        tiene_discapacidad: contrib.discapacidad ? "Si" : "No",
-        // Col 24: porcentaje_discapacidad
-        porcentaje_discapacidad: String(contrib.porcentaje_discapacidad || "0"),
-        // Col 25: realiza_donaciones
-        realiza_donaciones: _dedCheck.includes("donaciones") ? "Si" : "No",
-        // Col 26: tiene_plan_pensiones
-        tiene_plan_pensiones: _dedCheck.includes("planes_pensiones") ? "Si" : "No",
-        // Col 27: tipo_vivienda
-        tipo_vivienda: datos.vivienda_hipoteca ? "Con hipoteca" : "Sin hipoteca",
-        // Col 28: hipoteca_anterior_2013
-        hipoteca_anterior_2013: datos.vivienda_hipoteca && datos.vivienda_fecha && new Date(datos.vivienda_fecha as string) < new Date("2013-01-01") ? "Si" : "No",
-        // Col 29: otros_rendimientos_descripcion
-        otros_rendimientos_descripcion: "",
-        // Col 30: deducciones_conocidas
-        deducciones_conocidas: _dedCheck.join(", "),
-        // Col 31: estado
-        estado: "simulacion",
-        // Col 32: subestado
-        subestado: "pendiente_pago",
-        // Col 33: complejidad
-        complejidad: resultado.es_complejo ? "Complejo" : "Simple",
-        // Col 34: plan_code
-        plan_code: resultado.plan_code || (resultado.es_complejo ? "COMPLEJO" : "SIMPLE"),
-        // Col 35: precio
-        precio: _precioEur,
-        // Col 36: payment_status
-        payment_status: "pending",
-        // Col 37: payment_confirmed_at
-        payment_confirmed_at: "",
-        // Col 38: resultado_estimado
-        resultado_estimado: String(resultado.resultado?.toFixed(2) || "0"),
-        // Col 39: tipo_resultado
-        tipo_resultado: (resultado.resultado || 0) < 0 ? "A devolver" : "A ingresar",
-        // Col 40: resultado_final
-        resultado_final: "",
-        // Col 41: importe_resultado
-        importe_resultado: String(resultado.resultado?.toFixed(2) || "0"),
-        // Col 42: documentos_necesarios
-        documentos_necesarios: "",
-        // Col 43: documentos_recibidos
-        documentos_recibidos: "No",
-        // Col 44: asesor_asignado
-        asesor_asignado: "",
+        nombre: contrib.nombre || "",
+        apellidos: contrib.apellidos || "",
+        edad: contrib.edad || "",
+      });
+      const _sheetRow: Record<string, unknown> = {
+        // ── BLOQUE 1: Identificación del expediente (cols 1-5) ──
+        expediente_id:      _sheetExpId,
+        environment:        process.env.NODE_ENV === "production" ? "production" : "test",
+        created_at:         _nowEs,
+        updated_at:         _nowEs,
+        source_workflow:    "simulador_renta",
 
-        // ── Columnas de resultado fiscal (calculadas por el motor IRPF) ──
-        // Col 45: ingresos_brutos_calc (rendimientos del trabajo declarados)
-        ingresos_brutos_calc: String(resultado.ingresos_brutos?.toFixed(2) || "0"),
-        // Col 46: retenciones_trabajo (retenciones totales del pagador)
-        retenciones_trabajo: String(resultado.retenciones?.toFixed(2) || "0"),
-        // Col 47: reduccion_trabajo (reducción por rendimientos del trabajo Art.20 LIRPF)
-        reduccion_trabajo: String(resultado.reduccion_trabajo?.toFixed(2) || "0"),
-        // Col 48: reduccion_planes (aportación a planes de pensiones deducible)
-        reduccion_planes: String(resultado.reduccion_planes?.toFixed(2) || "0"),
-        // Col 49: base_imponible_general (casilla 435 Modelo 100)
-        base_imponible_general: String(resultado.base_imponible_general?.toFixed(2) || "0"),
-        // Col 50: cuota_integra_estatal (cuota estatal antes de deducciones)
-        cuota_integra_estatal: String(resultado.cuota_integra_estatal?.toFixed(2) || "0"),
-        // Col 51: cuota_integra_autonomica (cuota autonómica antes de deducciones)
-        cuota_integra_autonomica: String(resultado.cuota_integra_autonomica?.toFixed(2) || "0"),
-        // Col 52: cuota_integra_total (suma estatal + autonómica)
-        cuota_integra_total: String(resultado.cuota_integra_total?.toFixed(2) || "0"),
-        // Col 53: deduccion_vivienda (hipoteca pre-2013, Art.68.1 LIRPF)
-        deduccion_vivienda: String(resultado.deduccion_vivienda?.toFixed(2) || "0"),
-        // Col 54: deduccion_maternidad (Art.81 LIRPF, hasta 1.200€/hijo)
-        deduccion_maternidad: String(resultado.deduccion_maternidad?.toFixed(2) || "0"),
-        // Col 55: deduccion_familia_numerosa (Art.81bis LIRPF)
-        deduccion_familia_numerosa: String(resultado.deduccion_familia_numerosa?.toFixed(2) || "0"),
-        // Col 56: deduccion_discapacidad (mínimo por discapacidad)
-        deduccion_discapacidad: String(resultado.deduccion_discapacidad?.toFixed(2) || "0"),
-        // Col 57: deduccion_donaciones (Art.68.3 LIRPF, 80% primeros 250€)
-        deduccion_donaciones: String(resultado.deduccion_donaciones?.toFixed(2) || "0"),
-        // Col 58: deducciones_autonomicas (total deducciones de la CCAA)
-        deducciones_autonomicas: String(resultado.deducciones_autonomicas?.toFixed(2) || "0"),
-        // Col 59: total_deducciones (suma de todas las deducciones aplicadas)
-        total_deducciones: String(resultado.total_deducciones?.toFixed(2) || "0"),
-        // Col 60: cuota_liquida (cuota tras aplicar todas las deducciones)
-        cuota_liquida: String(resultado.cuota_liquida?.toFixed(2) || "0"),
-        // Col 61: resultado_declaracion (positivo=a pagar, negativo=a devolver)
-        resultado_declaracion: String(resultado.resultado?.toFixed(2) || "0"),
-        // Col 62: resultado_borrador (estimación sin deducciones optimizadas)
-        resultado_borrador: String(resultado.resultado_borrador?.toFixed(2) || "0"),
-        // Col 63: ahorro_vs_borrador (diferencia entre borrador y declaración optimizada)
-        ahorro_vs_borrador: String(resultado.ahorro_vs_borrador?.toFixed(2) || "0"),
-        // Col 64: es_derivacion (Si/No — caso complejo derivado a asesor)
-        es_derivacion: resultado.es_complejo ? "Si" : "No",
-        // Col 65: motivo_derivacion (razón de la complejidad si aplica)
-        motivo_derivacion: resultado.motivo_complejidad || "",
-        // Col 66: flag_review (Si/No — revisión humana recomendada aunque no sea complejo)
-        flag_review: resultado.flag_review ? "Si" : "No",
-        // Col 67: desglose_deducciones_json (JSON con el desglose completo de deducciones)
-        desglose_deducciones_json: JSON.stringify(
-          (resultado.desglose_deducciones || []).map((d: { concepto: string; importe: number; tipo: string }) => ({
-            concepto: d.concepto,
-            importe: d.importe,
-            tipo: d.tipo,
-          }))
-        ),
+        // ── BLOQUE 2: Datos del cliente (cols 6-11) ──
+        cliente_nombre:     _nombreCompleto,
+        cliente_email:      input.emailContacto || "",
+        cliente_telefono:   input.telefonoContacto || "",
+        nif:                (contrib.nif as string) || "",
+        nif_normalizado:    ((contrib.nif as string) || "").toUpperCase().replace(/[^A-Z0-9]/g, ""),
+        nif_valido:         contrib.nif ? "Si" : "No",
+
+        // ── BLOQUE 3: Datos personales y fiscales básicos (cols 12-30) ──
+        ccaa:               (datos.comunidad as string) || "",
+        estado_civil:       (contrib.estado_civil as string) || "",
+        num_hijos:          String(_nHijos),
+        tipo_declaracion:   "Individual",
+        contacto_preferido: input.telefonoContacto ? "telefono" : "email",
+        situacion_laboral:  datos.situacion || "",
+        ingresos_brutos:    String(_ingresos),
+        num_pagadores:      datos.mas_de_un_pagador ? "2+" : "1",
+        tiene_actividad_economica:   datos.situacion === "Autónomo" ? "Si" : "No",
+        tiene_inmuebles_alquilados:  _dedCheck.includes("alquiler") ? "Si" : "No",
+        tiene_inversiones:           _dedCheck.includes("inversiones") ? "Si" : "No",
+        tiene_discapacidad:          contrib.discapacidad ? "Si" : "No",
+        porcentaje_discapacidad:     String(_pctDiscap),
+        realiza_donaciones:          _impteDonaciones > 0 ? "Si" : "No",
+        tiene_plan_pensiones:        _aportPlanes > 0 ? "Si" : "No",
+        tipo_vivienda:               datos.vivienda_hipoteca ? "Con hipoteca" : "Sin hipoteca",
+        hipoteca_anterior_2013:      _esHipotecaPre2013 ? "Si" : "No",
+        otros_rendimientos_descripcion: "",
+        deducciones_conocidas:       _dedCheck.join(", "),
+
+        // ── BLOQUE 4: Estado del expediente (cols 31-44) ──
+        estado:             "simulacion",
+        subestado:          "pendiente_pago",
+        complejidad:        resultado.es_complejo ? "Complejo" : "Simple",
+        plan_code:          resultado.plan_code || (resultado.es_complejo ? "COMPLEJA" : "SIMPLE"),
+        precio:             _precioEur,
+        payment_status:     "pending",
+        payment_confirmed_at: "",
+        resultado_estimado: String((resultado.resultado || 0).toFixed(2)),
+        tipo_resultado:     (resultado.resultado || 0) < 0 ? "A devolver" : "A ingresar",
+        resultado_final:    "",
+        importe_resultado:  String((resultado.resultado || 0).toFixed(2)),
+        documentos_necesarios: "",
+        documentos_recibidos:  "No",
+        asesor_asignado:    "",
+
+        // ── BLOQUE 5: Gestión y seguimiento (cols 45-60) ──
+        asesor_email:       "",
+        prioridad:          resultado.es_complejo ? "Alta" : "Media",
+        fecha_contacto:     "",
+        fecha_revision:     "",
+        fecha_presentacion: "",
+        calendar_event_id:  "",
+        calendar_start:     "",
+        calendar_end:       "",
+        ultimo_recordatorio: "",
+        reminder_count:     "0",
+        flag_revision:      resultado.flag_review ? "Si" : "No",
+        confianza_clasificacion: "Alta",
+        razones_clasificacion:   resultado.motivo_complejidad || (resultado.flags || []).join(" | ") || "",
+        observaciones:      resultado.motivo_complejidad || (resultado.flags || []).join(" | ") || "",
+        raw_id_caso:        _sheetExpId,
+        legacy_timestamp:   _nowEs,
+
+        // ── BLOQUE 6: Retenciones e importes fiscales detallados (cols 61-82) ──
+        retenciones_trabajo:        String(_retenciones.toFixed(2)),
+        retenciones_capital_mob:    "0",
+        retenciones_arrendamientos: "0",
+        retenciones_act_econ:       "0",
+        pagos_fraccionados:         "0",
+        total_pagos_cuenta:         String(_retenciones.toFixed(2)),
+        base_imponible_general:     String((resultado.base_imponible_general || 0).toFixed(2)),
+        base_imponible_ahorro:      "0",
+        cuota_resultante:           String(((resultado.cuota_liquida || 0)).toFixed(2)),
+        resultado_declaracion:      String((resultado.resultado || 0).toFixed(2)),
+        deduccion_vivienda_pre2013: String((resultado.deduccion_vivienda || 0).toFixed(2)),
+        minimo_contribuyente:       String((resultado.casillas?.minimo_personal || 5550).toFixed(2)),
+        minimo_descendientes:       String((_nHijos > 0 ? (_nHijos >= 4 ? 13800 : _nHijos >= 3 ? 9100 : _nHijos >= 2 ? 5100 : 2400) : 0).toFixed(2)),
+        minimo_discapacidad:        String((resultado.deduccion_discapacidad || 0).toFixed(2)),
+        deduccion_donativos:        String((resultado.deduccion_donaciones || 0).toFixed(2)),
+        deducciones_autonomicas:    String((resultado.deducciones_autonomicas || 0).toFixed(2)),
+        segundo_pagador_importe:    "0",
+        tipo_actividad:             datos.situacion === "Autónomo" ? "Actividad económica" : "",
+        dividendos_recibidos:       "0",
+        importe_donaciones:         String(_impteDonaciones.toFixed(2)),
+        aportacion_pensiones:       String(_aportPlanes.toFixed(2)),
+        amortizacion_hipoteca:      String((datos.vivienda_precio ? Number(datos.vivienda_precio) * 0.03 : 0).toFixed(2)),
+
+        // ── BLOQUE 7: Metadatos técnicos (cols 83-97) ──
+        raw_payload:        _rawPayload,
+        ruta_preguntas:     "",
+        n8n_execution_id:   "",
+        estado_updated_by:  "simulador_backend",
+        deduccion_gym_deporte:          String((resultado.desglose_deducciones?.find((d: any) => d.concepto?.includes("deporte") || d.concepto?.includes("gym"))?.importe || 0).toFixed(2)),
+        deduccion_guarderia:            "0",
+        deduccion_material_escolar:     "0",
+        deduccion_alquiler_vivienda:    "0",
+        deduccion_familia_numerosa:     String((resultado.deduccion_familia_numerosa || 0).toFixed(2)),
+        deduccion_maternidad:           String((resultado.deduccion_maternidad || 0).toFixed(2)),
+        deduccion_nacimiento_adopcion:  "0",
+        deduccion_dependencia_mayores:  "0",
+        es_derivacion:      resultado.es_complejo ? "Si" : "No",
+        motivo_derivacion:  resultado.motivo_complejidad || "",
+        derivacion_timestamp: resultado.es_complejo ? _now.toISOString() : "",
+
+        // ── BLOQUE 8: Campos legacy camelCase (cols 98-153) ──
+        id_caso:            _sheetExpId,
+        timestamp:          _nowEs,
+        nombreCompleto:     _nombreCompleto,
+        email:              input.emailContacto || "",
+        telefono:           input.telefonoContacto || "",
+        comunidadAutonoma:  (datos.comunidad as string) || "",
+        estadoCivil:        (contrib.estado_civil as string) || "",
+        numHijos:           String(_nHijos),
+        rendimientosTrabajo: String(_ingresos),
+        numPagadores:       datos.mas_de_un_pagador ? "2" : "1",
+        tieneActividadEconomica:  datos.situacion === "Autónomo" ? "Si" : "No",
+        tieneInmueblesAlquilados: _dedCheck.includes("alquiler") ? "Si" : "No",
+        tieneInversiones:         _dedCheck.includes("inversiones") ? "Si" : "No",
+        tieneDiscapacidad:        contrib.discapacidad ? "Si" : "No",
+        realizaDonaciones:        _impteDonaciones > 0 ? "Si" : "No",
+        tienePlanPensiones:       _aportPlanes > 0 ? "Si" : "No",
+        aceptaPolitica:     "Si",
+        aceptaTratamiento:  "Si",
+        fecha_creacion:     _nowEs,
+        contactoPreferido:  input.telefonoContacto ? "telefono" : "email",
+        situacionLaboral:   datos.situacion || "",
+        ingresosBrutos:     String(_ingresos),
+        tipoVivienda:       datos.vivienda_hipoteca ? "Con hipoteca" : "Sin hipoteca",
+        hipotecaAnterior2013: _esHipotecaPre2013 ? "Si" : "No",
+        otrosRendimientosDescripcion: "",
+        deduccionesConocidas: _dedCheck.join(", "),
+        porcentajeDiscapacidad: String(_pctDiscap),
+        tipo:               resultado.es_complejo ? "Compleja" : "Simple",
+        expedienteId:       _sheetExpId,
+        plan:               resultado.plan_code || (resultado.es_complejo ? "COMPLEJA" : "SIMPLE"),
+        deduccionesDetectadas: _dedCheck.join(", "),
+        documentosNecesarios: "",
+        fechaRegistro:      _nowEs,
+        nombreEmpresa:      "",
+        nifPagador:         (contrib.nif as string) || "",
+        asesorAsignado:     "",
+        notasAsesor:        "",
+        documentosRecibidos: "No",
+        fechaContacto:      "",
+        fechaRevision:      "",
+        resultadoFinal:     "",
+        importeResultado:   String((resultado.resultado || 0).toFixed(2)),
+        fechaPresentacion:  "",
+        ultimoRecordatorio: "",
+        tipoResultado:      (resultado.resultado || 0) < 0 ? "A devolver" : "A ingresar",
+        resultadoEstimado:  String((resultado.resultado || 0).toFixed(2)),
+        prompt_sistema:     "",
+        prompt_usuario:     "",
+        clasificacion:      resultado.es_complejo ? "Compleja" : "Simple",
+        nivel:              resultado.es_complejo ? "alto" : "bajo",
+        ruta:               "",
+        confianza:          "Alta",
+        razones:            resultado.motivo_complejidad || (resultado.flags || []).join(" | ") || "",
+        id_caso_buscar:     _sheetExpId,
+        contacto:           input.emailContacto || "",
+        datos_contribuyente: _datosContribJson,
       };
       // Await Sheet write with logging — need to debug why fire-and-forget produces no output
       console.log(`[Simulador] About to call upsertDeclaracionSheet for ${_sheetExpId}`);
