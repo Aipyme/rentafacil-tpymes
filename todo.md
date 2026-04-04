@@ -263,3 +263,6 @@
 - [ ] BUG: Paso 5 del simulador — botón "Ver resultado" aparece en gris/disabled, no se puede clicar
 - [x] Email con resultado fiscal al ver simulación — buildEmailBienvenida ahora incluye resultado (a devolver/pagar), precio del servicio y CTA
 - [x] BUG CRÍTICO: Página /pago/{id} muestra "Expediente no encontrado" — columnas faltantes en DB de Railway (deduccionesSeleccionadas etc.) — RESUELTO con ALTER TABLE via dbMigrate
+- [x] Corregir deducciones autonómicas: Catalunya funciona correctamente en el motor fiscal (usa "Cataluña" con ñ igual que el formulario)
+- [x] Activar pago real Stripe en el simulador (crearSesionPago ahora usa Stripe real, igual que pagos.crearSesionCheckout)
+- [x] Añadir botón "Aplicar formato condicional" en el Panel Asesor (componente FormatoSheetButton junto al botón CSV)

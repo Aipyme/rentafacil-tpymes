@@ -545,7 +545,8 @@ export const simuladorRouter = router({
     }),
 
   /**
-   * Crear sesión de pago Stripe
+   * Crear sesión de pago Stripe (alias de pagos.crearSesionCheckout)
+   * @deprecated Usar trpc.pagos.crearSesionCheckout directamente
    */
   crearSesionPago: publicProcedure
     .input(z.object({
@@ -565,21 +566,55 @@ export const simuladorRouter = router({
         throw new Error("Expediente no encontrado");
       }
 
-      // TODO: Integrar Stripe cuando se añada la feature
-      // Por ahora devolvemos un mock para desarrollo
-      const mockSessionId = `cs_test_${Date.now()}`;
+      // Usar Stripe real via la misma lógica que pagos.crearSesionCheckout
+      const stripeKey = process.env.STRIPE_SECRET_KEY || "";
+      if (!stripeKey) {
+        throw new Error("STRIPE_SECRET_KEY no configurada en Railway");
+      }
 
-      await db!
+      const Stripe = (await import("stripe")).default;
+      const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" as any });
+
+      const precioTotal = expediente.precioTotal || 3900;
+      const nombreCliente = (expediente.datosContribuyente as any)?.contribuyente?.nombre || "Cliente";
+      const emailCliente = expediente.emailContacto || undefined;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: "Declaración de la Renta 2025",
+              description: "Gestión completa de tu declaración de la renta",
+              metadata: { expedienteId: input.expedienteId },
+            },
+            unit_amount: precioTotal,
+          },
+          quantity: 1,
+        }],
+        mode: "payment",
+        customer_email: emailCliente,
+        client_reference_id: input.expedienteId,
+        metadata: {
+          expedienteId: input.expedienteId,
+          customer_name: nombreCliente,
+          customer_email: emailCliente || "",
+        },
+        success_url: `${input.successUrl}?expediente=${input.expedienteId}&paid=1`,
+        cancel_url: `${input.cancelUrl}?expediente=${input.expedienteId}&cancelled=1`,
+        allow_promotion_codes: true,
+        locale: "es",
+      });
+
+      await db
         .update(declaraciones)
-        .set({
-          estado: "pendiente_pago",
-          stripeSessionId: mockSessionId,
-        })
+        .set({ estado: "pendiente_pago", stripeSessionId: session.id })
         .where(eq(declaraciones.expedienteId, input.expedienteId));
 
       return {
-        sessionId: mockSessionId,
-        checkoutUrl: `${input.successUrl}?expediente=${input.expedienteId}&paid=1`,
+        sessionId: session.id,
+        checkoutUrl: session.url,
       };
     }),
 

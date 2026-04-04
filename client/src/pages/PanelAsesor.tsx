@@ -123,7 +123,41 @@ function generarTokenDiario(password: string): string {
   return btoa(`${password}:${hoy}`);
 }
 
-// ── Componente principal ────────────────────────────────────────────────────
+// ── Componente: Botón de formato condicional del Sheet ───────────────────────────
+
+function FormatoSheetButton() {
+  const [loading, setLoading] = useState(false);
+  const aplicarFormato = trpc.simulador.aplicarFormatoSheet.useMutation();
+
+  const handleAplicar = async () => {
+    setLoading(true);
+    try {
+      const res = await aplicarFormato.mutateAsync();
+      if (res.success) {
+        toast.success("✅ Formato condicional aplicado al Sheet");
+      } else {
+        toast.error("Error al aplicar formato: " + (res.error || "desconocido"));
+      }
+    } catch (e: any) {
+      toast.error("Error: " + (e?.message || "desconocido"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleAplicar}
+      disabled={loading}
+      className="text-xs text-gray-500 hover:text-emerald-600 border border-gray-200 px-2 py-1 rounded transition-colors disabled:opacity-50"
+      title="Aplicar formato condicional al Google Sheet (rojo=derivados sin asesor, verde=pagados)"
+    >
+      {loading ? "⏳ Aplicando..." : "🎨 Formato Sheet"}
+    </button>
+  );
+}
+
+// ── Componente principal ──────────────────────────────────────────────────────────────────────
 
 export default function PanelAsesor() {
   // Auth
@@ -469,6 +503,7 @@ export default function PanelAsesor() {
               >
                 ↓ CSV
               </button>
+              <FormatoSheetButton />
             </>
           )}
           <button
