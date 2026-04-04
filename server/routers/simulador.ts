@@ -222,6 +222,60 @@ export const simuladorRouter = router({
         documentos_recibidos: "No",
         // Col 44: asesor_asignado
         asesor_asignado: "",
+
+        // ── Columnas de resultado fiscal (calculadas por el motor IRPF) ──
+        // Col 45: ingresos_brutos_calc (rendimientos del trabajo declarados)
+        ingresos_brutos_calc: String(resultado.ingresos_brutos?.toFixed(2) || "0"),
+        // Col 46: retenciones_trabajo (retenciones totales del pagador)
+        retenciones_trabajo: String(resultado.retenciones?.toFixed(2) || "0"),
+        // Col 47: reduccion_trabajo (reducción por rendimientos del trabajo Art.20 LIRPF)
+        reduccion_trabajo: String(resultado.reduccion_trabajo?.toFixed(2) || "0"),
+        // Col 48: reduccion_planes (aportación a planes de pensiones deducible)
+        reduccion_planes: String(resultado.reduccion_planes?.toFixed(2) || "0"),
+        // Col 49: base_imponible_general (casilla 435 Modelo 100)
+        base_imponible_general: String(resultado.base_imponible_general?.toFixed(2) || "0"),
+        // Col 50: cuota_integra_estatal (cuota estatal antes de deducciones)
+        cuota_integra_estatal: String(resultado.cuota_integra_estatal?.toFixed(2) || "0"),
+        // Col 51: cuota_integra_autonomica (cuota autonómica antes de deducciones)
+        cuota_integra_autonomica: String(resultado.cuota_integra_autonomica?.toFixed(2) || "0"),
+        // Col 52: cuota_integra_total (suma estatal + autonómica)
+        cuota_integra_total: String(resultado.cuota_integra_total?.toFixed(2) || "0"),
+        // Col 53: deduccion_vivienda (hipoteca pre-2013, Art.68.1 LIRPF)
+        deduccion_vivienda: String(resultado.deduccion_vivienda?.toFixed(2) || "0"),
+        // Col 54: deduccion_maternidad (Art.81 LIRPF, hasta 1.200€/hijo)
+        deduccion_maternidad: String(resultado.deduccion_maternidad?.toFixed(2) || "0"),
+        // Col 55: deduccion_familia_numerosa (Art.81bis LIRPF)
+        deduccion_familia_numerosa: String(resultado.deduccion_familia_numerosa?.toFixed(2) || "0"),
+        // Col 56: deduccion_discapacidad (mínimo por discapacidad)
+        deduccion_discapacidad: String(resultado.deduccion_discapacidad?.toFixed(2) || "0"),
+        // Col 57: deduccion_donaciones (Art.68.3 LIRPF, 80% primeros 250€)
+        deduccion_donaciones: String(resultado.deduccion_donaciones?.toFixed(2) || "0"),
+        // Col 58: deducciones_autonomicas (total deducciones de la CCAA)
+        deducciones_autonomicas: String(resultado.deducciones_autonomicas?.toFixed(2) || "0"),
+        // Col 59: total_deducciones (suma de todas las deducciones aplicadas)
+        total_deducciones: String(resultado.total_deducciones?.toFixed(2) || "0"),
+        // Col 60: cuota_liquida (cuota tras aplicar todas las deducciones)
+        cuota_liquida: String(resultado.cuota_liquida?.toFixed(2) || "0"),
+        // Col 61: resultado_declaracion (positivo=a pagar, negativo=a devolver)
+        resultado_declaracion: String(resultado.resultado?.toFixed(2) || "0"),
+        // Col 62: resultado_borrador (estimación sin deducciones optimizadas)
+        resultado_borrador: String(resultado.resultado_borrador?.toFixed(2) || "0"),
+        // Col 63: ahorro_vs_borrador (diferencia entre borrador y declaración optimizada)
+        ahorro_vs_borrador: String(resultado.ahorro_vs_borrador?.toFixed(2) || "0"),
+        // Col 64: es_derivacion (Si/No — caso complejo derivado a asesor)
+        es_derivacion: resultado.es_complejo ? "Si" : "No",
+        // Col 65: motivo_derivacion (razón de la complejidad si aplica)
+        motivo_derivacion: resultado.motivo_complejidad || "",
+        // Col 66: flag_review (Si/No — revisión humana recomendada aunque no sea complejo)
+        flag_review: resultado.flag_review ? "Si" : "No",
+        // Col 67: desglose_deducciones_json (JSON con el desglose completo de deducciones)
+        desglose_deducciones_json: JSON.stringify(
+          (resultado.desglose_deducciones || []).map((d: { concepto: string; importe: number; tipo: string }) => ({
+            concepto: d.concepto,
+            importe: d.importe,
+            tipo: d.tipo,
+          }))
+        ),
       };
       // Await Sheet write with logging — need to debug why fire-and-forget produces no output
       console.log(`[Simulador] About to call upsertDeclaracionSheet for ${_sheetExpId}`);
