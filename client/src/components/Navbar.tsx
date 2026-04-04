@@ -37,9 +37,9 @@ export default function Navbar() {
             Inicio
           </Link>
           <Link
-            href="/empezar"
+            href="/renta"
             className={`text-sm font-medium transition-colors no-underline ${
-              location === "/empezar" ? "text-[#1a365d]" : "text-gray-500 hover:text-[#1a365d]"
+              location === "/renta" ? "text-[#1a365d]" : "text-gray-500 hover:text-[#1a365d]"
             }`}
           >
             Hacer mi renta
@@ -84,7 +84,7 @@ export default function Navbar() {
           >
             Acceso asesor
           </a>
-          <Link href="/empezar">
+          <Link href="/renta">
             <Button className="bg-[#059669] hover:bg-[#047857] text-white font-semibold px-6 shadow-lg shadow-emerald-200/50 transition-all hover:shadow-emerald-300/50 hover:-translate-y-0.5">
               Empezar
             </Button>
@@ -119,7 +119,7 @@ export default function Navbar() {
                 Inicio
               </Link>
               <Link
-                href="/empezar"
+                href="/renta"
                 className="text-sm font-medium text-gray-700 py-2 no-underline"
                 onClick={() => setIsOpen(false)}
               >
@@ -147,7 +147,7 @@ export default function Navbar() {
               >
                 Acceso asesor
               </a>
-              <Link href="/empezar" onClick={() => setIsOpen(false)}>
+              <Link href="/renta" onClick={() => setIsOpen(false)}>
                 <Button className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold">
                   Empezar
                 </Button>

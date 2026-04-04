@@ -989,7 +989,7 @@ export default function SimuladorFiscal() {
                   Precio desde 29 € con resultado garantizado.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Link href="/empezar">
+                  <Link href="/renta">
                     <Button className="bg-[#059669] hover:bg-[#047857] text-white font-bold px-8 h-12">
                       Contratar servicio
                       <ArrowRight className="w-4 h-4 ml-2" />

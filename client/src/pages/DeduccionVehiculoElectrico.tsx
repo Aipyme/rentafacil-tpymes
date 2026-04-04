@@ -164,7 +164,7 @@ export default function DeduccionVehiculoElectrico() {
                   Simula gratis tu declaración
                 </Button>
               </Link>
-              <Link href="/empezar">
+              <Link href="/renta">
                 <Button
                   size="lg"
                   variant="outline"
@@ -396,7 +396,7 @@ export default function DeduccionVehiculoElectrico() {
                 Simula gratis — 2 minutos
               </Button>
             </Link>
-            <Link href="/empezar">
+            <Link href="/renta">
               <Button
                 size="lg"
                 variant="outline"

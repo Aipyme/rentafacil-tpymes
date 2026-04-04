@@ -921,7 +921,7 @@ export default function BlogArticle() {
                   Simular gratis
                 </span>
               </Link>
-              <Link href="/empezar">
+              <Link href="/renta">
                 <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#059669] text-white font-semibold rounded-xl text-sm hover:bg-[#047857] transition-colors">
                   Empezar mi renta
                   <ArrowRight className="w-4 h-4" />

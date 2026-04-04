@@ -363,7 +363,7 @@ export default function Blog() {
                   Simular gratis
                 </span>
               </Link>
-              <Link href="/empezar">
+              <Link href="/renta">
                 <span className="inline-flex items-center gap-2 px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:bg-[#047857] transition-colors">
                   Hacer mi renta
                   <ArrowRight className="w-4 h-4" />

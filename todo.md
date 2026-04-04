@@ -267,3 +267,7 @@
 - [x] Activar pago real Stripe en el simulador (crearSesionPago ahora usa Stripe real, igual que pagos.crearSesionCheckout)
 - [x] Añadir botón "Aplicar formato condicional" en el Panel Asesor (componente FormatoSheetButton junto al botón CSV)
 - [x] Email de resultado fiscal al momento de calcular (sin necesidad de guardar/pagar) — se envía en el endpoint calcular si el usuario tiene email y nombre
+- [ ] BUG CRÍTICO: Sheet muestra Madrid y 0 hijos en lugar de Catalunya y 1 hijo — buildRespuestas no mapea correctamente los campos del formulario
+- [ ] Verificar que el frontend envía contribuyente.email al endpoint calcular
+- [ ] Personalizar URL del CTA en el email para llevar a /pago/{expedienteId} directo
+- [ ] Email de seguimiento a 24h para usuarios que vieron el resultado pero no contrataron

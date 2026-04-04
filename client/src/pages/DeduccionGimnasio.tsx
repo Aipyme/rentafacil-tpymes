@@ -79,7 +79,7 @@ export default function DeduccionGimnasio() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/empezar">
+              <Link href="/renta">
                 <Button
                   size="lg"
                   className="bg-[#059669] hover:bg-[#047857] text-white font-bold px-8 h-12 gap-2 w-full sm:w-auto"
@@ -335,7 +335,7 @@ export default function DeduccionGimnasio() {
               incluyendo la nueva deducción por actividad física. Precio desde 39 €.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/empezar">
+              <Link href="/renta">
                 <Button
                   size="lg"
                   className="bg-[#059669] hover:bg-[#047857] text-white font-bold px-8 h-12 gap-2 w-full sm:w-auto"

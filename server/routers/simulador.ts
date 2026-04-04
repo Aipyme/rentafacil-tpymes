@@ -74,24 +74,202 @@ export const simuladorRouter = router({
       const resultado = calcularRenta(datos);
       const precio = calcularPrecio(datos, undefined);
 
-      // Enviar email con el resultado fiscal si el usuario proporcionó email y nombre
+      // Si el usuario tiene email: crear expediente provisional en DB y enviar email con CTA directo al checkout
       const emailCliente = datos.contribuyente?.email;
       const nombreCliente = datos.contribuyente?.nombre;
+      let expedienteIdProvisional: string | undefined;
+
       if (emailCliente && nombreCliente) {
-        // Generar un ID temporal para el email (no es un expediente real todavía)
-        const idTemporal = `SIM-${Date.now().toString(36).toUpperCase()}`;
+        // Crear expediente provisional en DB para que el CTA del email lleve al checkout directo
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        const randomPart = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+        expedienteIdProvisional = `RF2025-${randomPart}`;
+
+        const db = await getDb();
+        if (db) {
+          try {
+            await db.insert(declaraciones).values({
+              expedienteId: expedienteIdProvisional,
+              estado: "simulacion",
+              datosContribuyente: datos as unknown as Record<string, unknown>,
+              resultadoCalculo: resultado as unknown as Record<string, unknown>,
+              precioBase: precio.precioBase,
+              suplementos: precio.suplementos as unknown as Record<string, unknown>,
+              precioTotal: precio.precioTotal,
+              esComplejo: resultado.es_complejo,
+              motivoComplejidad: resultado.motivo_complejidad,
+              emailContacto: emailCliente,
+              telefonoContacto: datos.contribuyente?.telefono,
+            });
+            // También guardar en caché de memoria
+            expedienteCache.set(expedienteIdProvisional, {
+              expedienteId: expedienteIdProvisional,
+              estado: "simulacion",
+              subestado: "pendiente_pago",
+              datosContribuyente: datos,
+              resultadoCalculo: resultado,
+              precioBase: precio.precioBase,
+              suplementos: precio.suplementos,
+              precioTotal: precio.precioTotal,
+              esComplejo: resultado.es_complejo,
+              motivoComplejidad: resultado.motivo_complejidad,
+              emailContacto: emailCliente,
+              telefonoContacto: datos.contribuyente?.telefono,
+              createdAt: new Date(),
+            });
+          } catch (dbErr: any) {
+            console.warn(`[calcular] DB insert provisional failed: ${dbErr.message}`);
+            expedienteIdProvisional = undefined;
+          }
+        }
+
+        // Escribir en Google Sheet casos_master_v2 (fire-and-forget)
+        if (expedienteIdProvisional) {
+          const _contrib = (datos.contribuyente as Record<string, unknown>) || {};
+          const _now2 = new Date();
+          const _nowEs2 = _now2.toLocaleString("es-ES", { timeZone: "Europe/Madrid" });
+          const _dedCheck2 = Array.isArray(datos.deducciones_check) ? (datos.deducciones_check as string[]) : [];
+          const _precioEur2 = (precio.precioTotal / 100).toFixed(2);
+          const _nHijos2 = Number(datos.n_hijos || 0);
+          const _ingresos2 = Number(datos.ingresos_brutos || resultado.ingresos_brutos || 0);
+          const _retenciones2 = Number(datos.retenciones || resultado.retenciones || 0);
+          const _impteDonaciones2 = Number(datos.importe_donaciones || 0);
+          const _aportPlanes2 = Number(datos.importe_planes || 0);
+          const _pctDiscap2 = Number(_contrib.porcentaje_discapacidad || 0);
+          const _nombreCompleto2 = `${_contrib.nombre || ""} ${_contrib.apellidos || ""}`.trim();
+          const _esHipotecaPre2013_2 = datos.vivienda_hipoteca && datos.vivienda_fecha &&
+            new Date(datos.vivienda_fecha as string) < new Date("2013-01-01");
+          const _sheetRow2: Record<string, unknown> = {
+            expediente_id:      expedienteIdProvisional,
+            environment:        process.env.NODE_ENV === "production" ? "production" : "test",
+            created_at:         _nowEs2,
+            updated_at:         _nowEs2,
+            source_workflow:    "simulador_renta",
+            cliente_nombre:     _nombreCompleto2,
+            cliente_email:      emailCliente,
+            cliente_telefono:   (_contrib.telefono as string) || "",
+            nif:                (_contrib.nif as string) || "",
+            nif_normalizado:    ((_contrib.nif as string) || "").toUpperCase().replace(/[^A-Z0-9]/g, ""),
+            nif_valido:         _contrib.nif ? "Si" : "No",
+            ccaa:               (datos.comunidad as string) || "",
+            estado_civil:       (_contrib.estado_civil as string) || "",
+            num_hijos:          String(_nHijos2),
+            tipo_declaracion:   "Individual",
+            contacto_preferido: _contrib.telefono ? "telefono" : "email",
+            situacion_laboral:  datos.situacion || "",
+            ingresos_brutos:    String(_ingresos2),
+            num_pagadores:      datos.mas_de_un_pagador ? "2+" : "1",
+            tiene_actividad_economica:   datos.situacion === "Autónomo" ? "Si" : "No",
+            tiene_inmuebles_alquilados:  _dedCheck2.includes("alquiler") ? "Si" : "No",
+            tiene_inversiones:           _dedCheck2.includes("inversiones") ? "Si" : "No",
+            tiene_discapacidad:          _contrib.discapacidad ? "Si" : "No",
+            porcentaje_discapacidad:     String(_pctDiscap2),
+            realiza_donaciones:          _impteDonaciones2 > 0 ? "Si" : "No",
+            tiene_plan_pensiones:        _aportPlanes2 > 0 ? "Si" : "No",
+            tipo_vivienda:               datos.vivienda_hipoteca ? "Con hipoteca" : "Sin hipoteca",
+            hipoteca_anterior_2013:      _esHipotecaPre2013_2 ? "Si" : "No",
+            deducciones_conocidas:       _dedCheck2.join(", "),
+            estado:             "simulacion",
+            subestado:          "pendiente_pago",
+            complejidad:        resultado.es_complejo ? "Complejo" : "Simple",
+            plan_code:          resultado.plan_code || (resultado.es_complejo ? "COMPLEJA" : "SIMPLE"),
+            precio:             _precioEur2,
+            payment_status:     "pending",
+            resultado_estimado: String((resultado.resultado || 0).toFixed(2)),
+            tipo_resultado:     (resultado.resultado || 0) < 0 ? "A devolver" : "A ingresar",
+            resultado_final:    "",
+            importe_resultado:  String((resultado.resultado || 0).toFixed(2)),
+            documentos_recibidos: "No",
+            asesor_asignado:    "",
+            prioridad:          resultado.es_complejo ? "Alta" : "Media",
+            flag_revision:      resultado.flag_review ? "Si" : "No",
+            confianza_clasificacion: "Alta",
+            razones_clasificacion:   resultado.motivo_complejidad || (resultado.flags || []).join(" | ") || "",
+            observaciones:      resultado.motivo_complejidad || (resultado.flags || []).join(" | ") || "",
+            raw_id_caso:        expedienteIdProvisional,
+            legacy_timestamp:   _nowEs2,
+            retenciones_trabajo:        String(_retenciones2.toFixed(2)),
+            base_imponible_general:     String((resultado.base_imponible_general || 0).toFixed(2)),
+            cuota_resultante:           String((resultado.cuota_liquida || 0).toFixed(2)),
+            resultado_declaracion:      String((resultado.resultado || 0).toFixed(2)),
+            deduccion_vivienda_pre2013: String((resultado.deduccion_vivienda || 0).toFixed(2)),
+            deduccion_donativos:        String((resultado.deduccion_donaciones || 0).toFixed(2)),
+            deducciones_autonomicas:    String((resultado.deducciones_autonomicas || 0).toFixed(2)),
+            deduccion_familia_numerosa: String((resultado.deduccion_familia_numerosa || 0).toFixed(2)),
+            deduccion_maternidad:       String((resultado.deduccion_maternidad || 0).toFixed(2)),
+            importe_donaciones:         String(_impteDonaciones2.toFixed(2)),
+            aportacion_pensiones:       String(_aportPlanes2.toFixed(2)),
+            estado_updated_by:  "simulador_backend",
+            es_derivacion:      resultado.es_complejo ? "Si" : "No",
+            motivo_derivacion:  resultado.motivo_complejidad || "",
+            // Legacy camelCase
+            id_caso:            expedienteIdProvisional,
+            timestamp:          _nowEs2,
+            nombreCompleto:     _nombreCompleto2,
+            email:              emailCliente,
+            telefono:           (_contrib.telefono as string) || "",
+            comunidadAutonoma:  (datos.comunidad as string) || "",
+            estadoCivil:        (_contrib.estado_civil as string) || "",
+            numHijos:           String(_nHijos2),
+            rendimientosTrabajo: String(_ingresos2),
+            numPagadores:       datos.mas_de_un_pagador ? "2" : "1",
+            tieneActividadEconomica:  datos.situacion === "Autónomo" ? "Si" : "No",
+            tieneInmueblesAlquilados: _dedCheck2.includes("alquiler") ? "Si" : "No",
+            tieneInversiones:         _dedCheck2.includes("inversiones") ? "Si" : "No",
+            tieneDiscapacidad:        _contrib.discapacidad ? "Si" : "No",
+            realizaDonaciones:        _impteDonaciones2 > 0 ? "Si" : "No",
+            tienePlanPensiones:       _aportPlanes2 > 0 ? "Si" : "No",
+            aceptaPolitica:     "Si",
+            aceptaTratamiento:  "Si",
+            fecha_creacion:     _nowEs2,
+            contactoPreferido:  _contrib.telefono ? "telefono" : "email",
+            situacionLaboral:   datos.situacion || "",
+            ingresosBrutos:     String(_ingresos2),
+            tipoVivienda:       datos.vivienda_hipoteca ? "Con hipoteca" : "Sin hipoteca",
+            hipotecaAnterior2013: _esHipotecaPre2013_2 ? "Si" : "No",
+            deduccionesConocidas: _dedCheck2.join(", "),
+            porcentajeDiscapacidad: String(_pctDiscap2),
+            tipo:               resultado.es_complejo ? "Compleja" : "Simple",
+            expedienteId:       expedienteIdProvisional,
+            plan:               resultado.plan_code || (resultado.es_complejo ? "COMPLEJA" : "SIMPLE"),
+            deduccionesDetectadas: _dedCheck2.join(", "),
+            fechaRegistro:      _nowEs2,
+            asesorAsignado:     "",
+            notasAsesor:        "",
+            documentosRecibidos: "No",
+            resultadoFinal:     "",
+            importeResultado:   String((resultado.resultado || 0).toFixed(2)),
+            tipoResultado:      (resultado.resultado || 0) < 0 ? "A devolver" : "A ingresar",
+            resultadoEstimado:  String((resultado.resultado || 0).toFixed(2)),
+            clasificacion:      resultado.es_complejo ? "Compleja" : "Simple",
+            nivel:              resultado.es_complejo ? "alto" : "bajo",
+            confianza:          "Alta",
+            razones:            resultado.motivo_complejidad || (resultado.flags || []).join(" | ") || "",
+            id_caso_buscar:     expedienteIdProvisional,
+            contacto:           emailCliente,
+          };
+          upsertDeclaracionSheet(_sheetRow2, "casos_master_v2")
+            .then(r => console.log(`[calcular] Sheet write SUCCESS for ${expedienteIdProvisional}: ${r.action}`))
+            .catch((e: any) => console.error(`[calcular] Sheet write ERROR for ${expedienteIdProvisional}:`, e.message || e));
+        }
+
+        // Enviar email con resultado fiscal y CTA al checkout (o al simulador si no hay expediente)
+        const urlCTA = expedienteIdProvisional
+          ? `https://rentatpymes.aicheckpyme.co/pago/${expedienteIdProvisional}`
+          : "https://rentatpymes.aicheckpyme.co/renta";
+
         const emailData = buildEmailResultadoSimulacion({
           nombreCliente,
           emailCliente,
-          expedienteId: idTemporal,
+          expedienteId: expedienteIdProvisional ?? `SIM-${Date.now().toString(36).toUpperCase()}`,
           resultado: resultado.resultado ?? 0,
           resultadoBorrador: resultado.resultado_borrador ?? 0,
           ahorroVsBorrador: resultado.ahorro_vs_borrador ?? 0,
           comunidad: datos.comunidad ?? "España",
           situacion: datos.situacion ?? "Asalariado",
           complejidad: resultado.es_complejo ? "Complejo" : "Simple",
-          precioTotal: (precio.precioTotal ?? 0) * 100, // convertir a céntimos
-          urlSimulador: "https://rentatpymes.aicheckpyme.co/renta",
+          precioTotal: (precio.precioTotal ?? 0) * 100,
+          urlSimulador: urlCTA,
         });
         // Fire-and-forget: no bloqueamos la respuesta
         sendEmail({
@@ -101,7 +279,7 @@ export const simuladorRouter = router({
         }).catch((err: any) => console.error("[calcular] Error enviando email resultado:", err?.message));
       }
 
-      return { resultado, precio };
+      return { resultado, precio, expedienteId: expedienteIdProvisional };
     }),
 
   /**

@@ -50,7 +50,7 @@ function HeroSection() {
             </p>
 
             <div className="flex flex-wrap gap-3">
-              <Link href="/empezar">
+              <Link href="/renta">
                 <Button
                   size="lg"
                   className="font-bold px-7 text-base"
@@ -361,7 +361,7 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link href="/empezar">
+              <Link href="/renta">
                 <button className="w-full rounded-2xl font-bold py-3 text-base cursor-pointer" style={plan.btnStyle}>
                   {plan.cta}
                 </button>
@@ -509,7 +509,7 @@ function CTABand() {
             Te diremos si tu renta encaja, qué hará falta y cómo avanzar. Tecnología para lo que es eficiente. Criterio humano para lo que lo necesita.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/empezar">
+            <Link href="/renta">
               <Button
                 size="lg"
                 className="font-bold px-7 text-base"

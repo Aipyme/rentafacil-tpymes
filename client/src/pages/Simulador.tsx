@@ -620,7 +620,7 @@ export default function Simulador() {
                             </div>
                             <p className="font-['DM_Sans'] text-base font-bold text-[#1a365d] mb-1">Informe completo del Modelo 100</p>
                             <p className="text-xs text-gray-500 text-center max-w-[200px] mb-4">Casillas exactas, optimización fiscal y PDF descargable</p>
-                            <Link href="/empezar">
+                            <Link href="/renta">
                               <Button size="sm" className="bg-[#059669] hover:bg-[#047857] text-white font-semibold gap-1.5 shadow-md">
                                 <Sparkles className="w-3.5 h-3.5" />
                                 Desbloquear con el servicio
@@ -671,7 +671,7 @@ export default function Simulador() {
                           </div>
                         </div>
 
-                        <Link href="/empezar">
+                        <Link href="/renta">
                           <Button className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold h-12 text-base shadow-lg shadow-emerald-200/50">
                             Contratar servicio y obtener informe completo
                             <ArrowRight className="w-4 h-4 ml-2" />

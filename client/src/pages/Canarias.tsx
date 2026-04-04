@@ -219,7 +219,7 @@ export default function Canarias() {
               </p>
 
               <div className="flex flex-wrap gap-3">
-                <Link href="/empezar">
+                <Link href="/renta">
                   <button
                     className="inline-flex items-center gap-2 font-bold px-7 rounded-xl text-white"
                     style={{
@@ -396,7 +396,7 @@ export default function Canarias() {
             En 2 minutos analizamos tu situación y te decimos exactamente qué deducciones canarias puedes aplicar
             y cuánto puedes recuperar.
           </p>
-          <Link href="/empezar">
+          <Link href="/renta">
             <button
               className="inline-flex items-center gap-2 font-bold px-8 rounded-xl text-white"
               style={{
@@ -504,7 +504,7 @@ export default function Canarias() {
             exacto antes de contratar.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/empezar">
+            <Link href="/renta">
               <button
                 className="inline-flex items-center gap-2 font-bold px-8 rounded-xl text-white"
                 style={{

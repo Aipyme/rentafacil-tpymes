@@ -1336,7 +1336,7 @@ export default function MiRenta() {
               No hemos podido encontrar tu declaración. Comprueba el enlace o contacta con nosotros.
             </p>
             <div className="flex gap-3 justify-center">
-              <Button onClick={() => navigate("/empezar")} variant="outline" className="gap-2">
+              <Button onClick={() => navigate("/renta")} variant="outline" className="gap-2">
                 <ArrowLeft className="w-4 h-4" />
                 Volver al inicio
               </Button>

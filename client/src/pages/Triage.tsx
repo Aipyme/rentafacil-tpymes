@@ -434,7 +434,7 @@ export default function Triage() {
   useSEO({
     title: "Hacer mi Renta 2025 — Empieza aquí",
     description: "Completa el formulario inteligente y descubre qué tipo de declaración necesitas, qué documentos preparar y cuánto podrías ahorrarte con un asesor fiscal profesional.",
-    canonical: "/empezar",
+    canonical: "/renta",
   });
   const [currentStep, setCurrentStep] = useState<TriageStep>("perfil");
   const [data, setData] = useState<TriageData>(INITIAL);

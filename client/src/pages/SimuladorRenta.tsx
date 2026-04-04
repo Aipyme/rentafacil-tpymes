@@ -147,6 +147,10 @@ export default function SimuladorRenta() {
       const res = await calcularMutation.mutateAsync(respuestas);
       setResultado(res.resultado);
       setPrecio(res.precio);
+      // Si el backend creó un expediente provisional, guardarlo para el CTA de pago
+      if ((res as any).expedienteId) {
+        setExpedienteId((res as any).expedienteId);
+      }
       setPaso(TOTAL_PASOS + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) {
@@ -155,6 +159,26 @@ export default function SimuladorRenta() {
   };
 
   const handleGuardarYPagar = async () => {
+    // Si ya tenemos un expediente provisional (creado al calcular), usarlo directamente
+    if (expedienteId) {
+      if (resultado?.es_complejo) {
+        const params = new URLSearchParams();
+        params.set("expediente", expedienteId);
+        if (resultado.motivo_complejidad) params.set("motivo", resultado.motivo_complejidad);
+        if (resultado.ahorro_vs_borrador) params.set("ahorro", String(Math.abs(resultado.ahorro_vs_borrador)));
+        if (precio?.precioTotal) params.set("precio", String(Math.round(precio.precioTotal / 100)));
+        if (form.nombre) params.set("nombre", form.nombre);
+        if (form.nif) params.set("nif", form.nif);
+        if (form.email) params.set("email", form.email);
+        if (form.telefono) params.set("telefono", form.telefono);
+        navigate(`/asesor-fiscal?${params.toString()}`);
+      } else {
+        navigate(`/pago/${expedienteId}`);
+      }
+      return;
+    }
+
+    // Fallback: crear expediente nuevo si no hay provisional
     const respuestas = buildRespuestas();
     try {
       const res = await guardarMutation.mutateAsync({
@@ -205,6 +229,8 @@ export default function SimuladorRenta() {
       nif: form.nif,
       nombre: form.nombre,
       apellidos: form.apellidos,
+      email: form.email,
+      telefono: form.telefono,
       discapacidad: form.discapacidad,
       porcentaje_discapacidad: form.porcentaje_discapacidad,
       estado_civil: form.estado_civil,

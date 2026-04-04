@@ -196,7 +196,7 @@ export default function Valencia() {
                 Simular mi renta gratis
               </Link>
               <Link
-                href="/empezar"
+                href="/renta"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-8 rounded-xl transition-colors text-lg border border-white/20"
               >
                 Empezar mi declaración
@@ -408,7 +408,7 @@ export default function Valencia() {
               Simular mi renta gratis
             </Link>
             <Link
-              href="/empezar"
+              href="/renta"
               className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-8 rounded-xl transition-colors text-lg border border-white/20"
             >
               Empezar sin compromiso

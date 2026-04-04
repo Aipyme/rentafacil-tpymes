@@ -354,7 +354,7 @@ export default function DemoAlfredo() {
                 icon: <Shield className="w-5 h-5" />,
                 title: "Formulario de triage inteligente",
                 desc: "Clasifica automáticamente la complejidad del caso. Genera lista de documentos personalizada. Asigna plan y precio.",
-                link: "/empezar",
+                link: "/renta",
                 linkText: "Ver formulario →",
               },
               {
@@ -511,7 +511,7 @@ export default function DemoAlfredo() {
               Probar el simulador <Calculator className="w-5 h-5" />
             </Link>
             <Link
-              href="/empezar"
+              href="/renta"
               className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-8 rounded-xl transition-colors text-lg border border-white/20"
             >
               Ver el formulario <ArrowRight className="w-5 h-5" />
