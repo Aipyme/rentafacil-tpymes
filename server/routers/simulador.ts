@@ -816,6 +816,41 @@ export const simuladorRouter = router({
     }),
 
   /**
+   * Diagnóstico de email: verifica BREVO_API_KEY y envía un email de prueba
+   */
+  emailDiag: publicProcedure
+    .input(z.object({ to: z.string().email().optional() }))
+    .mutation(async ({ input }) => {
+      const apiKey = process.env.BREVO_API_KEY;
+      const fromEmail = process.env.EMAIL_FROM;
+      const fromName = process.env.EMAIL_FROM_NAME;
+      const diag: Record<string, unknown> = {
+        BREVO_API_KEY: apiKey ? `${apiKey.substring(0, 8)}...` : "NOT SET",
+        EMAIL_FROM: fromEmail || "NOT SET",
+        EMAIL_FROM_NAME: fromName || "NOT SET",
+      };
+
+      if (!apiKey) {
+        return { ...diag, test_email: "skipped", error: "BREVO_API_KEY no configurada" };
+      }
+
+      const testTo = input.to || fromEmail || "luisguillen@tpymes.es";
+      const emailResult = await sendEmail({
+        to: testTo,
+        subject: "[TEST] Diagnóstico email Renta Fácil TPymes",
+        htmlContent: `<h2>Test de email</h2><p>Este es un email de prueba enviado desde el sistema de diagnóstico de Renta Fácil TPymes.</p><p>Si recibes este email, el sistema de envío está funcionando correctamente.</p><p>Fecha: ${new Date().toLocaleString("es-ES", { timeZone: "Europe/Madrid" })}</p>`,
+      });
+
+      return {
+        ...diag,
+        test_email_to: testTo,
+        test_email_result: emailResult.success ? "sent" : "failed",
+        test_email_messageId: emailResult.messageId,
+        test_email_error: emailResult.error,
+      };
+    }),
+
+  /**
    * Listar declaraciones (para panel admin)
    */
   listar: publicProcedure

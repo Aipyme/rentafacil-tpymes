@@ -254,3 +254,9 @@
 - [x] Webhook Stripe: actualizar payment_status → paid, payment_confirmed_at y resultado_final en Sheet al confirmar pago
 - [x] Añadir estado_civil al formulario del simulador y al _sheetRow
 - [x] Crear vista filtrada con formato condicional en Sheet (rojo si es_derivacion=Si y asesor_asignado vacío)
+
+## Sesión 04/04/2026 — Diagnóstico y reparación sistema completo
+- [ ] Diagnosticar emails Brevo: verificar BREVO_API_KEY, EMAIL_FROM, logs de envío
+- [ ] Diagnosticar Stripe: verificar webhook, payment_status en Sheet
+- [ ] Diagnosticar Sheet: verificar que las filas se escriben correctamente en producción
+- [ ] Reparar todos los problemas encontrados
