@@ -17,7 +17,7 @@ import Footer from "@/components/Footer";
 import { useSimuladorFiscal, type ComunidadAutonoma } from "@/hooks/useSimuladorFiscal";
 import {
   Calculator, ArrowRight, ArrowLeft, TrendingUp, TrendingDown,
-  Shield, CheckCircle2, AlertCircle, Info
+  Shield, CheckCircle2, AlertCircle, Info, Lock, Sparkles
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
@@ -611,9 +611,69 @@ export default function Simulador() {
                           </p>
                         </div>
 
+                        {/* ===== MODELO 100 PREVIEW BLOQUEADO ===== */}
+                        <div className="relative rounded-2xl overflow-hidden border border-gray-200">
+                          {/* Overlay de candado */}
+                          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
+                            <div className="bg-[#1a365d] rounded-full p-3 mb-3 shadow-lg">
+                              <Lock className="w-6 h-6 text-white" />
+                            </div>
+                            <p className="font-['DM_Sans'] text-base font-bold text-[#1a365d] mb-1">Informe completo del Modelo 100</p>
+                            <p className="text-xs text-gray-500 text-center max-w-[200px] mb-4">Casillas exactas, optimización fiscal y PDF descargable</p>
+                            <Link href="/empezar">
+                              <Button size="sm" className="bg-[#059669] hover:bg-[#047857] text-white font-semibold gap-1.5 shadow-md">
+                                <Sparkles className="w-3.5 h-3.5" />
+                                Desbloquear con el servicio
+                              </Button>
+                            </Link>
+                          </div>
+                          {/* Casillas borrosas */}
+                          <div className="p-5 filter blur-[3px] select-none pointer-events-none">
+                            <div className="flex items-center gap-2 mb-4">
+                              <div className="w-8 h-8 bg-[#1a365d] rounded-lg flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">100</span>
+                              </div>
+                              <div>
+                                <p className="text-xs font-bold text-[#1a365d]">MODELO 100 — IRPF 2025</p>
+                                <p className="text-[10px] text-gray-400">Declaración del Impuesto sobre la Renta de las Personas Físicas</p>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              {[
+                                { casilla: "001", desc: "Rendimientos del trabajo", valor: formatEur(resultado.baseImponible) },
+                                { casilla: "022", desc: "Reducción trabajo", valor: formatEur(Math.min(resultado.baseImponible * 0.12, 2000)) },
+                                { casilla: "435", desc: "Base liquidable general", valor: formatEur(resultado.baseImponible * 0.88) },
+                                { casilla: "510", desc: "Cuota íntegra estatal", valor: formatEur(resultado.cuotaEstatal) },
+                                { casilla: "545", desc: "Cuota íntegra autonómica", valor: formatEur(resultado.cuotaAutonomica) },
+                                { casilla: "595", desc: "Deducciones estatales", valor: `- ${formatEur(resultado.deducciones * 0.6)}` },
+                                { casilla: "610", desc: "Cuota líquida total", valor: formatEur(resultado.cuotaLiquida) },
+                                { casilla: "726", desc: "Retenciones e ingresos a cuenta", valor: `- ${formatEur(resultado.retenciones)}` },
+                                { casilla: "760", desc: "Cuota diferencial", valor: formatEur(resultado.resultado) },
+                                { casilla: "670", desc: "Ded. por maternidad", valor: "██████" },
+                                { casilla: "672", desc: "Ded. familia numerosa", valor: "██████" },
+                                { casilla: "680", desc: "Ded. discapacidad", valor: "██████" },
+                              ].map((row) => (
+                                <div key={row.casilla} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
+                                  <div>
+                                    <span className="text-[9px] font-bold text-gray-400 block">[{row.casilla}]</span>
+                                    <span className="text-[10px] text-gray-600">{row.desc}</span>
+                                  </div>
+                                  <span className="text-xs font-bold text-[#1a365d]">{row.valor}</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between">
+                              <span className="text-xs font-bold text-gray-500">RESULTADO FINAL [760]</span>
+                              <span className={`text-sm font-bold ${resultado.resultado >= 0 ? "text-emerald-700" : "text-red-700"}`}>
+                                {resultado.resultado >= 0 ? "A devolver" : "A pagar"} {formatEur(Math.abs(resultado.resultado))}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
                         <Link href="/empezar">
                           <Button className="w-full bg-[#059669] hover:bg-[#047857] text-white font-semibold h-12 text-base shadow-lg shadow-emerald-200/50">
-                            Contratar servicio
+                            Contratar servicio y obtener informe completo
                             <ArrowRight className="w-4 h-4 ml-2" />
                           </Button>
                         </Link>

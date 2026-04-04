@@ -11,7 +11,7 @@ import {
   ChevronRight, ChevronLeft, CheckCircle2, TrendingDown, TrendingUp,
   Euro, FileText, Download, Loader2, AlertTriangle, Info,
   Building2, Users, Home, Dumbbell, Car, Rocket, Heart,
-  Baby, Briefcase, Calculator, Sparkles
+  Baby, Briefcase, Calculator, Sparkles, Upload, X, Lock
 } from "lucide-react";
 import { toast } from "sonner";
 
