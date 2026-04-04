@@ -3,7 +3,7 @@ import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { calcularRenta, calcularPrecio, type RespuestasSimulador } from "../lib/motorFiscal";
 import { getDb } from "../db";
 import { declaraciones } from "../../drizzle/schema";
-import { upsertDeclaracionSheet } from "../lib/googleSheets";
+import { upsertDeclaracionSheet, leerCasosSheet } from "../lib/googleSheets";
 import { eq } from "drizzle-orm";
 import { generarInformePDF } from "../lib/generarPDF";
 import { storagePut } from "../storage";
@@ -399,6 +399,66 @@ export const simuladorRouter = router({
       }
 
       return { expedienteId, resultado, precio };
+    }),
+
+  /**
+   * Verificar filas específicas en el Sheet (para testing)
+   */
+  verifySheetRows: publicProcedure
+    .input(z.object({ expedienteIds: z.array(z.string()) }))
+    .query(async ({ input }) => {
+      const rows = await leerCasosSheet();
+      const result: Record<string, unknown> = {};
+      for (const expId of input.expedienteIds) {
+        const row = rows.find((r: Record<string, string>) => r.expediente_id === expId);
+        if (!row) {
+          result[expId] = { found: false };
+          continue;
+        }
+        const totalCols = Object.keys(row).length;
+        const filledCols = Object.values(row).filter((v: string) => v && v.trim()).length;
+        const emptyCols = Object.entries(row)
+          .filter(([, v]: [string, string]) => !v || !v.trim())
+          .map(([k]: [string, string]) => k)
+          .slice(0, 30);
+        result[expId] = {
+          found: true,
+          totalCols,
+          filledCols,
+          emptyCols,
+          keyFields: {
+            expediente_id: row.expediente_id,
+            environment: row.environment,
+            cliente_nombre: row.cliente_nombre,
+            cliente_email: row.cliente_email,
+            cliente_telefono: row.cliente_telefono,
+            nif: row.nif,
+            ccaa: row.ccaa,
+            situacion_laboral: row.situacion_laboral,
+            ingresos_brutos: row.ingresos_brutos,
+            complejidad: row.complejidad,
+            plan_code: row.plan_code,
+            precio: row.precio,
+            payment_status: row.payment_status,
+            resultado_estimado: row.resultado_estimado,
+            tipo_resultado: row.tipo_resultado,
+            es_derivacion: row.es_derivacion,
+            motivo_derivacion: row.motivo_derivacion,
+            prioridad: row.prioridad,
+            retenciones_trabajo: row.retenciones_trabajo,
+            base_imponible_general: row.base_imponible_general,
+            resultado_declaracion: row.resultado_declaracion,
+            email: row.email,
+            telefono: row.telefono,
+            nombreCompleto: row.nombreCompleto,
+            clasificacion: row.clasificacion,
+            nivel: row.nivel,
+            confianza: row.confianza,
+            datos_contribuyente: row.datos_contribuyente,
+          },
+        };
+      }
+      return result;
     }),
 
   /**
