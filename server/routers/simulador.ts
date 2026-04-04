@@ -155,7 +155,7 @@ export const simuladorRouter = router({
         // Col 10: nif_normalizado
         nif_normalizado: (contrib.nif as string) || "",
         // Col 11: nif_valido
-        nif_valido: contrib.nif ? "Sí" : "No",
+        nif_valido: contrib.nif ? "Si" : "No",
         // Col 12: ccaa
         ccaa: (datos.comunidad as string) || "",
         // Col 13: estado_civil
@@ -173,23 +173,23 @@ export const simuladorRouter = router({
         // Col 19: num_pagadores
         num_pagadores: datos.mas_de_un_pagador ? "2+" : "1",
         // Col 20: tiene_actividad_economica
-        tiene_actividad_economica: datos.regimen_autonomo ? "Sí" : "No",
+        tiene_actividad_economica: datos.regimen_autonomo ? "Si" : "No",
         // Col 21: tiene_inmuebles_alquilados
-        tiene_inmuebles_alquilados: datos.tiene_capital_inmobiliario ? "Sí" : "No",
+        tiene_inmuebles_alquilados: datos.tiene_capital_inmobiliario ? "Si" : "No",
         // Col 22: tiene_inversiones
-        tiene_inversiones: datos.tiene_ganancias_patrimoniales ? "Sí" : "No",
+        tiene_inversiones: datos.tiene_ganancias_patrimoniales ? "Si" : "No",
         // Col 23: tiene_discapacidad
-        tiene_discapacidad: contrib.discapacidad ? "Sí" : "No",
+        tiene_discapacidad: contrib.discapacidad ? "Si" : "No",
         // Col 24: porcentaje_discapacidad
         porcentaje_discapacidad: String(contrib.porcentaje_discapacidad || "0"),
         // Col 25: realiza_donaciones
-        realiza_donaciones: _dedCheck.includes("donaciones") ? "Sí" : "No",
+        realiza_donaciones: _dedCheck.includes("donaciones") ? "Si" : "No",
         // Col 26: tiene_plan_pensiones
-        tiene_plan_pensiones: _dedCheck.includes("planes_pensiones") ? "Sí" : "No",
+        tiene_plan_pensiones: _dedCheck.includes("planes_pensiones") ? "Si" : "No",
         // Col 27: tipo_vivienda
         tipo_vivienda: datos.vivienda_hipoteca ? "Con hipoteca" : "Sin hipoteca",
         // Col 28: hipoteca_anterior_2013
-        hipoteca_anterior_2013: datos.vivienda_hipoteca && datos.vivienda_fecha && new Date(datos.vivienda_fecha as string) < new Date("2013-01-01") ? "Sí" : "No",
+        hipoteca_anterior_2013: datos.vivienda_hipoteca && datos.vivienda_fecha && new Date(datos.vivienda_fecha as string) < new Date("2013-01-01") ? "Si" : "No",
         // Col 29: otros_rendimientos_descripcion
         otros_rendimientos_descripcion: "",
         // Col 30: deducciones_conocidas
