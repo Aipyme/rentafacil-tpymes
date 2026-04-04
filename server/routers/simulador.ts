@@ -427,8 +427,11 @@ export const simuladorRouter = router({
           filledCols,
           emptyCols,
           keyFields: {
+            // Identificación
             expediente_id: row.expediente_id,
             environment: row.environment,
+            created_at: row.created_at,
+            // Cliente
             cliente_nombre: row.cliente_nombre,
             cliente_email: row.cliente_email,
             cliente_telefono: row.cliente_telefono,
@@ -436,18 +439,25 @@ export const simuladorRouter = router({
             ccaa: row.ccaa,
             situacion_laboral: row.situacion_laboral,
             ingresos_brutos: row.ingresos_brutos,
+            // Estado expediente
             complejidad: row.complejidad,
             plan_code: row.plan_code,
             precio: row.precio,
             payment_status: row.payment_status,
             resultado_estimado: row.resultado_estimado,
             tipo_resultado: row.tipo_resultado,
+            prioridad: row.prioridad,
+            // Derivación (cols 95-97)
             es_derivacion: row.es_derivacion,
             motivo_derivacion: row.motivo_derivacion,
-            prioridad: row.prioridad,
+            derivacion_timestamp: row.derivacion_timestamp,
+            // Fiscal (cols 61-82)
             retenciones_trabajo: row.retenciones_trabajo,
             base_imponible_general: row.base_imponible_general,
             resultado_declaracion: row.resultado_declaracion,
+            deduccion_maternidad: row.deduccion_maternidad,
+            deduccion_donativos: row.deduccion_donativos,
+            // Legacy camelCase (cols 98-153)
             email: row.email,
             telefono: row.telefono,
             nombreCompleto: row.nombreCompleto,
@@ -455,6 +465,8 @@ export const simuladorRouter = router({
             nivel: row.nivel,
             confianza: row.confianza,
             datos_contribuyente: row.datos_contribuyente,
+            expedienteId: row.expedienteId,
+            plan: row.plan,
           },
         };
       }

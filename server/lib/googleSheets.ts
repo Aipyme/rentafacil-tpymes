@@ -165,7 +165,7 @@ export async function leerCasosSheet(): Promise<Record<string, string>[]> {
   }
 
   try {
-    const url = `${SHEETS_API_BASE}/${sheetId}/values/A:BZ?key=${apiKey}`;
+    const url = `${SHEETS_API_BASE}/${sheetId}/values/A:EZ?key=${apiKey}`;
     const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
 
     if (!res.ok) {
@@ -208,7 +208,7 @@ async function buscarFilaPorCampo(
   sheetName = "Sheet1"
 ): Promise<{ rowIndex: number; headers: string[] } | null> {
   try {
-    const url = `${SHEETS_API_BASE}/${sheetId}/values/${encodeURIComponent(sheetName)}!A:BZ?access_token=${token}`;
+    const url = `${SHEETS_API_BASE}/${sheetId}/values/${encodeURIComponent(sheetName)}!A:EZ?access_token=${token}`;
     const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
     if (!res.ok) return null;
 
