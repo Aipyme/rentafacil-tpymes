@@ -52,9 +52,17 @@ export interface RespuestasSimulador {
     nif?: string;
     nombre?: string;
     apellidos?: string;
+    email?: string;
+    telefono?: string;
     edad?: number;
     discapacidad?: boolean;
     porcentaje_discapacidad?: number;     // 0, 33, 65
+    estado_civil?: string;
+    empresa_nombre?: string;
+    empresa_nif?: string;
+    tiene_datos_aeat?: boolean;
+    tiene_referencia_catastral?: boolean;
+    contacto_preferido?: string;
   };
 }
 

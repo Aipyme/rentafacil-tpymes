@@ -266,3 +266,4 @@
 - [x] Corregir deducciones autonómicas: Catalunya funciona correctamente en el motor fiscal (usa "Cataluña" con ñ igual que el formulario)
 - [x] Activar pago real Stripe en el simulador (crearSesionPago ahora usa Stripe real, igual que pagos.crearSesionCheckout)
 - [x] Añadir botón "Aplicar formato condicional" en el Panel Asesor (componente FormatoSheetButton junto al botón CSV)
+- [x] Email de resultado fiscal al momento de calcular (sin necesidad de guardar/pagar) — se envía en el endpoint calcular si el usuario tiene email y nombre

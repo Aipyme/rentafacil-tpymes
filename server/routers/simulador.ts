@@ -41,6 +41,8 @@ const RespuestasSchema = z.object({
     nif: z.string().optional(),
     nombre: z.string().optional(),
     apellidos: z.string().optional(),
+    email: z.string().email().optional(),
+    telefono: z.string().optional(),
     edad: z.number().optional(),
     discapacidad: z.boolean().optional(),
     porcentaje_discapacidad: z.number().optional(),
@@ -71,6 +73,34 @@ export const simuladorRouter = router({
       const datos = input as RespuestasSimulador;
       const resultado = calcularRenta(datos);
       const precio = calcularPrecio(datos, undefined);
+
+      // Enviar email con el resultado fiscal si el usuario proporcionó email y nombre
+      const emailCliente = datos.contribuyente?.email;
+      const nombreCliente = datos.contribuyente?.nombre;
+      if (emailCliente && nombreCliente) {
+        // Generar un ID temporal para el email (no es un expediente real todavía)
+        const idTemporal = `SIM-${Date.now().toString(36).toUpperCase()}`;
+        const emailData = buildEmailResultadoSimulacion({
+          nombreCliente,
+          emailCliente,
+          expedienteId: idTemporal,
+          resultado: resultado.resultado ?? 0,
+          resultadoBorrador: resultado.resultado_borrador ?? 0,
+          ahorroVsBorrador: resultado.ahorro_vs_borrador ?? 0,
+          comunidad: datos.comunidad ?? "España",
+          situacion: datos.situacion ?? "Asalariado",
+          complejidad: resultado.es_complejo ? "Complejo" : "Simple",
+          precioTotal: (precio.precioTotal ?? 0) * 100, // convertir a céntimos
+          urlSimulador: "https://rentatpymes.aicheckpyme.co/renta",
+        });
+        // Fire-and-forget: no bloqueamos la respuesta
+        sendEmail({
+          to: emailCliente,
+          subject: emailData.subject,
+          htmlContent: emailData.html,
+        }).catch((err: any) => console.error("[calcular] Error enviando email resultado:", err?.message));
+      }
+
       return { resultado, precio };
     }),
 
