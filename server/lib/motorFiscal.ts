@@ -358,9 +358,10 @@ function calcularDeduccionVivienda(datos: RespuestasSimulador): number {
 }
 
 function calcularDeduccionDonaciones(importe: number): number {
+  // Ley 49/2002 (actualizada 2023): 80% primeros 250€, 40% resto (45% si recurrente 3 años)
   if (!importe || importe <= 0) return 0;
-  if (importe <= 150) return Math.round(importe * 0.75 * 100) / 100;
-  return Math.round((150 * 0.75 + (importe - 150) * 0.30) * 100) / 100;
+  if (importe <= 250) return Math.round(importe * 0.80 * 100) / 100;
+  return Math.round((250 * 0.80 + (importe - 250) * 0.40) * 100) / 100;
 }
 
 function calcularDeduccionMaternidad(datos: RespuestasSimulador): number {
@@ -371,10 +372,74 @@ function calcularDeduccionMaternidad(datos: RespuestasSimulador): number {
 }
 
 function calcularDeduccionFamiliaNumerosa(datos: RespuestasSimulador): number {
+  // Art. 81 bis LIRPF: 1.200€ familia numerosa general (3 hijos), 2.400€ especial (5+ hijos)
+  // Adicionalmente: 600€ extra por cada hijo a partir del 4º en familia numerosa general
   const nHijos = datos.n_hijos || 0;
-  if (nHijos >= 5) return 1200;
-  if (nHijos >= 3) return 1200;
+  if (nHijos >= 5) return 2400; // familia numerosa especial
+  if (nHijos === 4) return 1800; // general + 600€ por 4º hijo
+  if (nHijos >= 3) return 1200; // familia numerosa general
   return 0;
+}
+
+/**
+ * Deducción por alquiler de vivienda habitual (contratos pre-01/01/2015)
+ * Disp. Trans. 15ª LIRPF: 10,05% de las cantidades satisfechas, base máx. 9.040€
+ */
+function calcularDeduccionAlquilerPre2015(datos: RespuestasSimulador): number {
+  // Solo si tiene contrato pre-2015 y lo ha indicado en deducciones_check
+  const checks = datos.deducciones_check || [];
+  const tieneAlquilerPre2015 = checks.includes("alquiler_pre2015") || checks.includes("Alquiler pre-2015");
+  if (!tieneAlquilerPre2015) return 0;
+  // Usamos importe_capital_inmobiliario como proxy del alquiler pagado (si no hay campo específico)
+  // En el triage se puede capturar como autonomica_checks.alquiler_pre2015_amount
+  const importeAlquiler = Number((datos.autonomica_checks || {}).alquiler_pre2015_amount || 0);
+  if (importeAlquiler <= 0) return 0;
+  const base = Math.min(importeAlquiler, 9040);
+  return Math.round(base * 0.1005 * 100) / 100;
+}
+
+/**
+ * Deducción por adquisición de vehículo eléctrico nuevo (DA 58ª LIRPF)
+ * RDL 5/2023, prorrogado RDL 9/2024: 15% del valor sin IVA, máx. 3.000€
+ * Válido para compras entre 30/06/2023 y 31/12/2025
+ */
+function calcularDeduccionVehiculoElectrico(datos: RespuestasSimulador): number {
+  const checks = datos.deducciones_check || [];
+  const tieneVehiculo = checks.includes("vehiculo_electrico") || checks.includes("Vehículo eléctrico");
+  if (!tieneVehiculo) return 0;
+  const precioVehiculo = Number((datos.autonomica_checks || {}).vehiculo_electrico_precio || 0);
+  if (precioVehiculo <= 0) return 0;
+  return Math.min(Math.round(precioVehiculo * 0.15 * 100) / 100, 3000);
+}
+
+/**
+ * Deducción por inversión en empresa de nueva creación (Art. 68.1 LIRPF)
+ * Ley 28/2022 de Startups: 50% de la inversión, base máx. 100.000€
+ */
+function calcularDeduccionStartup(datos: RespuestasSimulador): number {
+  const checks = datos.deducciones_check || [];
+  const tieneStartup = checks.includes("inversion_startup") || checks.includes("Startup");
+  if (!tieneStartup) return 0;
+  const importeInversion = Number((datos.autonomica_checks || {}).startup_inversion || 0);
+  if (importeInversion <= 0) return 0;
+  const base = Math.min(importeInversion, 100000);
+  return Math.min(Math.round(base * 0.50 * 100) / 100, 50000);
+}
+
+/**
+ * Deducción por gastos de actividad física/gimnasio (RDL 4/2024)
+ * ESTATAL: 15% de los gastos, base máx. 1.000€ → máx. 150€
+ * Aplica a cuotas de gimnasio, piscina municipal, club deportivo, clases de actividad física
+ */
+function calcularDeduccionGimnasioEstatal(datos: RespuestasSimulador): number {
+  const gastoGimnasio = datos.gasto_gimnasio || 0;
+  if (gastoGimnasio <= 0) return 0;
+  // Verificar que está marcado en deducciones_check
+  const checks = datos.deducciones_check || [];
+  const tieneGimnasio = checks.includes("cuotas_gimnasio") || checks.includes("Gimnasio") || gastoGimnasio > 0;
+  if (!tieneGimnasio) return 0;
+  const base = Math.min(gastoGimnasio, 1000);
+  return Math.round(base * 0.15 * 100) / 100; // máx. 150€
 }
 
 // ============================================================
@@ -924,16 +989,22 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
 
   // 6. Deducciones estatales
   const deduccionVivienda = calcularDeduccionVivienda(datos);
+  const deduccionAlquilerPre2015 = calcularDeduccionAlquilerPre2015(datos);
   const deduccionDonaciones = calcularDeduccionDonaciones(datos.importe_donaciones || 0);
   const deduccionMaternidad = calcularDeduccionMaternidad(datos);
   const deduccionFamiliaNumerosa = calcularDeduccionFamiliaNumerosa(datos);
   const deduccionDiscapacidad = datos.contribuyente?.discapacidad ? 1150 : 0;
+  const deduccionGimnasio = calcularDeduccionGimnasioEstatal(datos);
+  const deduccionVehiculoElectrico = calcularDeduccionVehiculoElectrico(datos);
+  const deduccionStartup = calcularDeduccionStartup(datos);
 
   // 7. Deducciones autonómicas
   const { total: deduccionesAutonomicasTotal, desglose: desgloseAut } = calcularDeduccionesAutonomicas(datos);
 
-  const totalDeducciones = deduccionVivienda + deduccionDonaciones + deduccionMaternidad +
-    deduccionFamiliaNumerosa + deduccionDiscapacidad + deduccionesAutonomicasTotal;
+  const totalDeducciones = deduccionVivienda + deduccionAlquilerPre2015 + deduccionDonaciones +
+    deduccionMaternidad + deduccionFamiliaNumerosa + deduccionDiscapacidad +
+    deduccionGimnasio + deduccionVehiculoElectrico + deduccionStartup +
+    deduccionesAutonomicasTotal;
 
   // 8. Cuota líquida
   const cuotaLiquida = Math.max(0, cuotaIntegra - totalDeducciones);
@@ -976,9 +1047,13 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
 
     // Deducciones estatales
     "547": deduccionVivienda,           // Deducción vivienda habitual (pre-2013)
+    "548": deduccionAlquilerPre2015,    // Deducción alquiler vivienda habitual (pre-2015)
     "611": deduccionMaternidad,         // Deducción por maternidad
     "660": deduccionFamiliaNumerosa,    // Deducción familia numerosa
     "750": deduccionDonaciones,         // Deducción donativos (80% primeros 250€)
+    "753": deduccionGimnasio,           // Deducción actividad física/gimnasio (RDL 4/2024)
+    "755": deduccionVehiculoElectrico,  // Deducción vehículo eléctrico (DA 58ª LIRPF)
+    "760": deduccionStartup,            // Deducción inversión empresa nueva creación
 
     // Discapacidad (mínimo)
     "511": deduccionDiscapacidad,       // Mínimo discapacidad contribuyente
@@ -1000,10 +1075,14 @@ export function calcularRenta(datos: RespuestasSimulador): ResultadoCalculo {
   // 13. Desglose de deducciones para UI
   const desgloseEstatales: Array<{ concepto: string; importe: number; tipo: "estatal" | "autonomica" }> = [];
   if (deduccionVivienda > 0) desgloseEstatales.push({ concepto: "Deducción vivienda habitual (pre-2013)", importe: deduccionVivienda, tipo: "estatal" });
-  if (deduccionDonaciones > 0) desgloseEstatales.push({ concepto: "Deducción por donativos", importe: deduccionDonaciones, tipo: "estatal" });
+  if (deduccionAlquilerPre2015 > 0) desgloseEstatales.push({ concepto: "Deducción alquiler vivienda habitual (pre-2015)", importe: deduccionAlquilerPre2015, tipo: "estatal" });
+  if (deduccionDonaciones > 0) desgloseEstatales.push({ concepto: "Deducción por donativos (80% primeros 250€)", importe: deduccionDonaciones, tipo: "estatal" });
   if (deduccionMaternidad > 0) desgloseEstatales.push({ concepto: "Deducción por maternidad", importe: deduccionMaternidad, tipo: "estatal" });
   if (deduccionFamiliaNumerosa > 0) desgloseEstatales.push({ concepto: "Deducción familia numerosa", importe: deduccionFamiliaNumerosa, tipo: "estatal" });
   if (deduccionDiscapacidad > 0) desgloseEstatales.push({ concepto: "Deducción por discapacidad", importe: deduccionDiscapacidad, tipo: "estatal" });
+  if (deduccionGimnasio > 0) desgloseEstatales.push({ concepto: "Deducción actividad física/gimnasio (RDL 4/2024)", importe: deduccionGimnasio, tipo: "estatal" });
+  if (deduccionVehiculoElectrico > 0) desgloseEstatales.push({ concepto: "Deducción vehículo eléctrico (DA 58ª LIRPF)", importe: deduccionVehiculoElectrico, tipo: "estatal" });
+  if (deduccionStartup > 0) desgloseEstatales.push({ concepto: "Deducción inversión empresa nueva creación (Art. 68.1 LIRPF)", importe: deduccionStartup, tipo: "estatal" });
 
   const desgloseAutonomicasTyped = desgloseAut.map(d => ({ ...d, tipo: "autonomica" as const }));
 

@@ -389,3 +389,89 @@ export function getDocumentosNecesarios(situacion: string, opciones?: {
 
   return docs;
 }
+
+// ============================================================
+// 3. EMAIL DE CONFIRMACIÓN DE DEDUCCIONES
+// ============================================================
+
+interface DeduccionItem {
+  id: string;
+  nombre: string;
+  importe: number;
+  tipo: "estatal" | "autonomica";
+  normativa?: string;
+}
+
+interface ConfirmacionDeduccionesData {
+  expedienteId: string;
+  nombreCliente: string;
+  deducciones: DeduccionItem[];
+  ahorroTotal: number;
+  urlMiRenta: string;
+}
+
+export function buildEmailConfirmacionDeducciones(data: ConfirmacionDeduccionesData) {
+  const nombre = data.nombreCliente || "Cliente";
+  const fmt = (n: number) => n.toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+
+  const estatales = data.deducciones.filter(d => d.tipo === "estatal");
+  const autonomicas = data.deducciones.filter(d => d.tipo === "autonomica");
+
+  const buildList = (items: DeduccionItem[]) => items.length === 0 ? "" : `
+    <ul style="margin:0 0 20px;padding-left:0;list-style:none;">
+      ${items.map(d => `
+        <li style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid #e2e8f0;">
+          <div>
+            <span style="font-size:14px;color:#1a365d;font-weight:600;">${d.nombre}</span>
+            ${d.normativa ? `<br><span style="font-size:12px;color:#718096;">${d.normativa}</span>` : ""}
+          </div>
+          <span style="font-size:14px;font-weight:700;color:#059669;white-space:nowrap;margin-left:16px;">${fmt(d.importe)}</span>
+        </li>`).join("")}
+    </ul>`;
+
+  const body = `
+    <p style="margin:0 0 8px;font-size:16px;color:#1a365d;font-weight:600;">¡Hola, ${nombre}! 🎉</p>
+    <p style="margin:0 0 24px;font-size:15px;color:#4a5568;line-height:1.6;">
+      Has confirmado tus deducciones para la declaración de la renta 2025.
+      Tu asesor ya las tiene en cuenta y las revisará con tu documentación.
+    </p>
+
+    <!-- Resumen ahorro -->
+    <div style="background:linear-gradient(135deg,#059669,#047857);border-radius:12px;padding:24px;text-align:center;margin-bottom:28px;">
+      <p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:1px;">Ahorro estimado mínimo</p>
+      <p style="margin:0;font-size:36px;font-weight:800;color:#ffffff;">${fmt(data.ahorroTotal)}</p>
+      <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.7);">Tu asesor verificará cada deducción con tu documentación</p>
+    </div>
+
+    ${estatales.length > 0 ? `
+    <p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a365d;">📋 Deducciones estatales detectadas</p>
+    ${buildList(estatales)}` : ""}
+
+    ${autonomicas.length > 0 ? `
+    <p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a365d;">🏛️ Deducciones autonómicas detectadas</p>
+    ${buildList(autonomicas)}` : ""}
+
+    <p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a365d;">¿Qué sigue ahora?</p>
+    <ol style="margin:0 0 24px;padding-left:20px;color:#4a5568;font-size:14px;line-height:2;">
+      <li>Sube los documentos necesarios en tu área personal</li>
+      <li>Tu asesor prepara el borrador de tu declaración</li>
+      <li>Revisas el borrador, lo firmas y ¡listo!</li>
+    </ol>
+
+    ${ctaButton(data.urlMiRenta, "Ver mi expediente →")}
+
+    <p style="margin:0;font-size:13px;color:#718096;text-align:center;">
+      Expediente: <code style="font-family:monospace;font-weight:700;">${data.expedienteId}</code>
+    </p>`;
+
+  return {
+    subject: `✅ Deducciones confirmadas — Ahorro estimado ${fmt(data.ahorroTotal)} | Expediente ${data.expedienteId}`,
+    html: wrapLayout(
+      "#059669",
+      "✅",
+      "Deducciones confirmadas",
+      `${data.deducciones.length} deducción${data.deducciones.length !== 1 ? "es" : ""} detectada${data.deducciones.length !== 1 ? "s" : ""} · Ahorro estimado ${fmt(data.ahorroTotal)}`,
+      body
+    ),
+  };
+}

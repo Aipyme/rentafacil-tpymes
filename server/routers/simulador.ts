@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { generarInformePDF } from "../lib/generarPDF";
 import { storagePut } from "../storage";
 import { sendEmail } from "../lib/email";
-import { buildEmailBienvenida, getDocumentosNecesarios } from "../lib/emailTemplates";
+import { buildEmailBienvenida, buildEmailConfirmacionDeducciones, getDocumentosNecesarios } from "../lib/emailTemplates";
 
 // ============================================================
 // Zod schema para las respuestas del simulador
@@ -410,20 +410,52 @@ export const simuladorRouter = router({
           deduccionesConfirmadasAt: new Date(),
         })
         .where(eq(declaraciones.expedienteId, input.expedienteId));
+      // Obtener datos del expediente para el email
+      const [expData] = await db
+        .select()
+        .from(declaraciones)
+        .where(eq(declaraciones.expedienteId, input.expedienteId));
+
+      const totalAhorro = input.deducciones.reduce((s, d) => s + d.importe, 0);
+
       // Notificar al asesor (best-effort)
       try {
-        const totalAhorro = input.deducciones.reduce((s, d) => s + d.importe, 0);
         const listaHtml = input.deducciones
-          .map(d => `<li><strong>${d.nombre}</strong>: ${d.importe.toLocaleString("es-ES", { style: "currency", currency: "EUR" })} (${d.tipo === "estatal" ? "Estatal" : "Auton\u00f3mica"})</li>`)
+          .map(d => `<li><strong>${d.nombre}</strong>: ${d.importe.toLocaleString("es-ES", { style: "currency", currency: "EUR" })} (${d.tipo === "estatal" ? "Estatal" : "Autonómica"})</li>`)
           .join("");
         const { notifyOwner } = await import("../_core/notification");
         await notifyOwner({
-          title: `\u2705 Deducciones confirmadas \u2014 Expediente ${input.expedienteId}`,
-          content: `El cliente ha confirmado ${input.deducciones.length} deducci${input.deducciones.length === 1 ? "\u00f3n" : "ones"} con un ahorro total estimado de <strong>${totalAhorro.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}</strong>.<br><br><ul>${listaHtml}</ul>`,
+          title: `✅ Deducciones confirmadas — Expediente ${input.expedienteId}`,
+          content: `El cliente ha confirmado ${input.deducciones.length} deducci${input.deducciones.length === 1 ? "ón" : "ones"} con un ahorro total estimado de <strong>${totalAhorro.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}</strong>.<br><br><ul>${listaHtml}</ul>`,
         });
       } catch (notifyErr) {
-        console.warn("[confirmarDeducciones] Notificaci\u00f3n al asesor fallida (best-effort):", notifyErr);
+        console.warn("[confirmarDeducciones] Notificación al asesor fallida (best-effort):", notifyErr);
       }
+
+      // Enviar email de confirmación al cliente (best-effort)
+      try {
+        const emailCliente = expData?.emailContacto;
+        if (emailCliente && input.deducciones.length > 0) {
+          const datos = (expData?.datosContribuyente as any) || {};
+          const nombreCliente = `${datos?.contribuyente?.nombre || datos?.nombre || ""} ${datos?.contribuyente?.apellidos || datos?.apellidos || ""}`.trim() || "Cliente";
+          const baseUrl = process.env.APP_BASE_URL || "https://rentatpymes.aicheckpyme.co";
+          const urlMiRenta = `${baseUrl}/mi-renta/${input.expedienteId}`;
+
+          const { subject, html } = buildEmailConfirmacionDeducciones({
+            expedienteId: input.expedienteId,
+            nombreCliente,
+            deducciones: input.deducciones,
+            ahorroTotal: totalAhorro,
+            urlMiRenta,
+          });
+
+          await sendEmail({ to: emailCliente, subject, htmlContent: html });
+          console.log(`[confirmarDeducciones] Email enviado a ${emailCliente} para expediente ${input.expedienteId}`);
+        }
+      } catch (emailErr) {
+        console.warn("[confirmarDeducciones] Email al cliente fallido (best-effort):", emailErr);
+      }
+
       return { success: true, total: input.deducciones.length };
     }),
 

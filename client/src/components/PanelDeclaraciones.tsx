@@ -23,6 +23,8 @@ type Declaracion = {
   datosContribuyente?: Record<string, unknown> | null;
   resultadoCalculo?: Record<string, unknown> | null;
   stripePaymentIntentId?: string | null;
+  deduccionesSeleccionadas?: Array<{ id: string; nombre: string; importe: number; tipo: string; normativa?: string }> | null;
+  deduccionesConfirmadasAt?: Date | null;
 };
 
 const ESTADO_COLORES: Record<string, string> = {
@@ -364,6 +366,42 @@ export default function PanelDeclaraciones() {
                   <div><span className="text-gray-400">Actualizado:</span> <span className="text-gray-700">{new Date(expedienteAbierto.updatedAt).toLocaleString("es-ES")}</span></div>
                 </div>
               </div>
+
+              {/* Deducciones confirmadas */}
+              {expedienteAbierto.deduccionesSeleccionadas && expedienteAbierto.deduccionesSeleccionadas.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    Deducciones confirmadas por el cliente
+                    {expedienteAbierto.deduccionesConfirmadasAt && (
+                      <span className="ml-2 text-emerald-600 font-normal normal-case">
+                        ✓ {new Date(expedienteAbierto.deduccionesConfirmadasAt).toLocaleDateString("es-ES")}
+                      </span>
+                    )}
+                  </h4>
+                  <div className="bg-emerald-50 rounded-xl border border-emerald-100 p-4 space-y-2">
+                    {expedienteAbierto.deduccionesSeleccionadas.map((d, i) => (
+                      <div key={i} className="flex items-center justify-between text-sm">
+                        <div>
+                          <span className="font-medium text-gray-800">{d.nombre}</span>
+                          {d.normativa && <span className="ml-2 text-xs text-gray-400">{d.normativa}</span>}
+                          <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full ${
+                            d.tipo === "estatal" ? "bg-blue-100 text-blue-600" : "bg-purple-100 text-purple-600"
+                          }`}>{d.tipo === "estatal" ? "Estatal" : "Autonómica"}</span>
+                        </div>
+                        <span className="font-bold text-emerald-700 ml-4 whitespace-nowrap">
+                          {d.importe.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="pt-2 border-t border-emerald-200 flex justify-between text-sm font-bold">
+                      <span className="text-gray-700">Ahorro total estimado</span>
+                      <span className="text-emerald-700">
+                        {expedienteAbierto.deduccionesSeleccionadas.reduce((s, d) => s + d.importe, 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Enlace al área de cliente */}
               <div className="pt-2 border-t border-gray-100 flex gap-3">
