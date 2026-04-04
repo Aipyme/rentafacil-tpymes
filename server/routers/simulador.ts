@@ -3,7 +3,7 @@ import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { calcularRenta, calcularPrecio, type RespuestasSimulador } from "../lib/motorFiscal";
 import { getDb } from "../db";
 import { declaraciones } from "../../drizzle/schema";
-import { upsertDeclaracionSheet, leerCasosSheet } from "../lib/googleSheets";
+import { upsertDeclaracionSheet, leerCasosSheet, aplicarFormatoCondicionalSheet } from "../lib/googleSheets";
 import { eq } from "drizzle-orm";
 import { generarInformePDF } from "../lib/generarPDF";
 import { storagePut } from "../storage";
@@ -801,6 +801,18 @@ export const simuladorRouter = router({
         derivado: esComplejo,
         motivoDerivacion: motivoComplejidad,
       };
+    }),
+
+  /**
+   * Aplicar formato condicional al Sheet casos_master_v2
+   * - Rojo: es_derivacion=Si y asesor_asignado vacío
+   * - Verde: payment_status=paid
+   * - Gris: estado=simulacion
+   */
+  aplicarFormatoSheet: publicProcedure
+    .mutation(async () => {
+      const result = await aplicarFormatoCondicionalSheet();
+      return result;
     }),
 
   /**

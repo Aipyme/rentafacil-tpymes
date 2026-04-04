@@ -272,20 +272,34 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
         }
         // Si action = "skipped_idempotent" | "updated" | "appended" → OK, no notificar n8n
 
-        // ── PASO A2: Actualizar casos_master_v2 con datos de pago ──
+        // ── PASO A2: Actualizar casos_master_v2 con datos de pago y resultado fiscal ──
         try {
+          const resultadoNum = Number(resultadoCalc.resultado || 0);
+          const tipoResultado = resultadoNum < 0 ? "A devolver" : "A ingresar";
+          const resultadoFinalStr = `${Math.abs(resultadoNum).toFixed(2)}€ ${tipoResultado}`;
+          const _nowEs = new Date().toLocaleString("es-ES", { timeZone: "Europe/Madrid" });
           const casosMasterPayload: Record<string, unknown> = {
             expediente_id: expedienteId,
+            // Estado del expediente
             estado: "pagado",
             subestado: "pendiente_documentacion",
+            updated_at: _nowEs,
+            estado_updated_by: "stripe_webhook",
+            // Pago
             payment_status: "paid",
-            payment_confirmed_at: paidAt,
-            precio: amountEur,
-            importe_pagado: amountEur,
-            updated_at: new Date().toISOString(),
+            payment_confirmed_at: _nowEs,
+            precio: amountEur.toFixed(2),
+            // Resultado fiscal (ya calculado en la simulación)
+            resultado_final: resultadoFinalStr,
+            importe_resultado: String(resultadoNum.toFixed(2)),
+            tipo_resultado: tipoResultado,
+            resultado_estimado: String(resultadoNum.toFixed(2)),
+            // Stripe IDs para trazabilidad
+            stripe_event_id: event.id,
+            stripe_payment_intent_id: paymentIntentId,
           };
-          await upsertDeclaracionSheet(casosMasterPayload, "casos_master_v2");
-          console.log(`[Stripe Webhook] casos_master_v2 actualizado para ${expedienteId}`);
+          const cmResult = await upsertDeclaracionSheet(casosMasterPayload, "casos_master_v2");
+          console.log(`[Stripe Webhook] casos_master_v2 actualizado (${cmResult.action}) para ${expedienteId}: payment_status=paid, resultado_final=${resultadoFinalStr}`);
         } catch (cmErr: any) {
           console.warn(`[Stripe Webhook] Error actualizando casos_master_v2: ${cmErr.message}`);
         }

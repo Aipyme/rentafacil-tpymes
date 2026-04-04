@@ -60,6 +60,7 @@ interface FormData {
   nif?: string;
   email?: string;
   telefono?: string;
+  estado_civil?: "Soltero/a" | "Casado/a" | "Divorciado/a" | "Viudo/a" | "Pareja de hecho";
 }
 
 const COMUNIDADES = [
@@ -206,6 +207,7 @@ export default function SimuladorRenta() {
       apellidos: form.apellidos,
       discapacidad: form.discapacidad,
       porcentaje_discapacidad: form.porcentaje_discapacidad,
+      estado_civil: form.estado_civil,
     },
   });
 
@@ -909,6 +911,22 @@ function Paso7Contacto({ form, update }: { form: FormData; update: (d: Partial<F
             value={form.telefono || ""}
             onChange={e => update({ telefono: e.target.value })}
           />
+        </div>
+
+        <div>
+          <Label className="text-sm font-semibold text-[#1a365d] mb-1.5 block">Estado civil</Label>
+          <select
+            className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            value={form.estado_civil || ""}
+            onChange={e => update({ estado_civil: e.target.value as FormData["estado_civil"] })}
+          >
+            <option value="">Selecciona tu estado civil</option>
+            <option value="Soltero/a">Soltero/a</option>
+            <option value="Casado/a">Casado/a</option>
+            <option value="Divorciado/a">Divorciado/a</option>
+            <option value="Viudo/a">Viudo/a</option>
+            <option value="Pareja de hecho">Pareja de hecho</option>
+          </select>
         </div>
       </div>
 

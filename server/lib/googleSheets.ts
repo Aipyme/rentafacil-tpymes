@@ -663,3 +663,177 @@ export async function leerCasosMasterV2(filtros?: {
     return [];
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Formato condicional: resaltar filas con es_derivacion=Si y asesor_asignado vacío
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Aplica formato condicional a la hoja casos_master_v2:
+ *  - Fondo ROJO (#FFCCCC) en filas donde es_derivacion="Si" y asesor_asignado está vacío
+ *  - Fondo VERDE (#CCFFCC) en filas donde payment_status="paid"
+ *  - Fondo GRIS (#F5F5F5) en filas donde estado="simulacion" (pendiente de pago)
+ *
+ * Requiere Service Account con permisos de escritura en el Sheet.
+ * Devuelve { success: true } si se aplicó correctamente, { success: false, error } si falló.
+ */
+export async function aplicarFormatoCondicionalSheet(): Promise<{ success: boolean; error?: string }> {
+  const sheetId = process.env.GOOGLE_SHEETS_ID;
+  if (!sheetId) return { success: false, error: "GOOGLE_SHEETS_ID no configurado" };
+
+  const sa = getServiceAccount();
+  if (!sa) return { success: false, error: "Service Account no configurada" };
+
+  let token: string;
+  try {
+    token = await getServiceAccountAccessToken(sa);
+  } catch (err: any) {
+    return { success: false, error: `Error obteniendo token SA: ${err.message}` };
+  }
+
+  // Obtener el sheetId numérico de la hoja casos_master_v2
+  let numericSheetId: number;
+  try {
+    const metaUrl = `${SHEETS_API_BASE}/${sheetId}?fields=sheets.properties`;
+    const metaRes = await fetch(metaUrl, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!metaRes.ok) return { success: false, error: `Error obteniendo metadatos: HTTP ${metaRes.status}` };
+    const meta = await metaRes.json() as { sheets: { properties: { sheetId: number; title: string } }[] };
+    const sheet = meta.sheets.find(s => s.properties.title === "casos_master_v2");
+    if (!sheet) return { success: false, error: "Hoja casos_master_v2 no encontrada" };
+    numericSheetId = sheet.properties.sheetId;
+  } catch (err: any) {
+    return { success: false, error: `Error obteniendo sheetId numérico: ${err.message}` };
+  }
+
+  // Obtener los índices de columna para es_derivacion, asesor_asignado, payment_status, estado
+  const headers = await obtenerHeaders(token, sheetId, "casos_master_v2");
+  const colEsDeriv = headers.indexOf("es_derivacion");       // col para "Si"
+  const colAsesor  = headers.indexOf("asesor_asignado");     // col para vacío
+  const colPayment = headers.indexOf("payment_status");      // col para "paid"
+  const colEstado  = headers.indexOf("estado");              // col para "simulacion"
+
+  if (colEsDeriv === -1 || colAsesor === -1) {
+    return { success: false, error: `Columnas no encontradas: es_derivacion=${colEsDeriv}, asesor_asignado=${colAsesor}` };
+  }
+
+  // Construir reglas de formato condicional via batchUpdate
+  const requests: unknown[] = [];
+
+  // Limpiar formatos condicionales previos en la hoja
+  requests.push({
+    deleteConditionalFormatRule: {
+      sheetId: numericSheetId,
+      index: 0,
+    },
+  });
+
+  // Regla 1: ROJO — es_derivacion="Si" Y asesor_asignado vacío (casos urgentes sin asignar)
+  requests.push({
+    addConditionalFormatRule: {
+      rule: {
+        ranges: [{ sheetId: numericSheetId, startRowIndex: 1, startColumnIndex: 0, endColumnIndex: headers.length }],
+        booleanRule: {
+          condition: {
+            type: "CUSTOM_FORMULA",
+            values: [{
+              userEnteredValue: `=AND(INDIRECT("R"&ROW()&"C${colEsDeriv + 1}",FALSE)="Si",INDIRECT("R"&ROW()&"C${colAsesor + 1}",FALSE)="")`,
+            }],
+          },
+          format: {
+            backgroundColor: { red: 1.0, green: 0.8, blue: 0.8 },
+            textFormat: { bold: true },
+          },
+        },
+      },
+      index: 0,
+    },
+  });
+
+  // Regla 2: VERDE — payment_status="paid" (casos pagados)
+  if (colPayment !== -1) {
+    requests.push({
+      addConditionalFormatRule: {
+        rule: {
+          ranges: [{ sheetId: numericSheetId, startRowIndex: 1, startColumnIndex: 0, endColumnIndex: headers.length }],
+          booleanRule: {
+            condition: {
+              type: "TEXT_EQ",
+              values: [{ userEnteredValue: "paid" }],
+            },
+            format: {
+              backgroundColor: { red: 0.8, green: 1.0, blue: 0.8 },
+            },
+          },
+        },
+        index: 1,
+      },
+    });
+  }
+
+  // Regla 3: GRIS CLARO — estado="simulacion" (pendiente de pago)
+  if (colEstado !== -1) {
+    requests.push({
+      addConditionalFormatRule: {
+        rule: {
+          ranges: [{ sheetId: numericSheetId, startRowIndex: 1, startColumnIndex: 0, endColumnIndex: headers.length }],
+          booleanRule: {
+            condition: {
+              type: "TEXT_EQ",
+              values: [{ userEnteredValue: "simulacion" }],
+            },
+            format: {
+              backgroundColor: { red: 0.96, green: 0.96, blue: 0.96 },
+            },
+          },
+        },
+        index: 2,
+      },
+    });
+  }
+
+  // Aplicar batchUpdate (ignorar error si no hay reglas que borrar)
+  const batchUrl = `${SHEETS_API_BASE}/${sheetId}:batchUpdate`;
+  try {
+    const batchRes = await fetch(batchUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ requests }),
+      signal: AbortSignal.timeout(15_000),
+    });
+
+    if (!batchRes.ok) {
+      const errText = await batchRes.text();
+      // Si el error es solo por el deleteConditionalFormatRule (no hay reglas previas), reintentar sin el delete
+      if (errText.includes("index") || errText.includes("out of range")) {
+        const requestsSinDelete = requests.slice(1);
+        const retryRes = await fetch(batchUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ requests: requestsSinDelete }),
+          signal: AbortSignal.timeout(15_000),
+        });
+        if (!retryRes.ok) {
+          const retryErr = await retryRes.text();
+          return { success: false, error: `Error en batchUpdate (retry): ${retryErr}` };
+        }
+        console.log("[GoogleSheets] Formato condicional aplicado correctamente (sin delete previo)");
+        return { success: true };
+      }
+      return { success: false, error: `Error en batchUpdate: ${errText}` };
+    }
+
+    console.log("[GoogleSheets] Formato condicional aplicado correctamente");
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: `Error en batchUpdate: ${err.message}` };
+  }
+}

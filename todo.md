@@ -245,3 +245,12 @@
 - [ ] App.tsx: hacer /empezar la ruta principal del triage (sin redirección a /renta)
 - [ ] Navbar: corregir link "Empezar" para que apunte directamente a /empezar
 - [ ] Backend simulador.ts: enriquecer payload del Sheet con todos los campos faltantes
+
+## Sesión 04/04/2026 — Integración Google Sheet completa
+- [x] Corregir _sheetRow a 44 columnas originales del usuario
+- [x] Ampliar _sheetRow a 153 columnas exactas del Sheet casos_master_v2
+- [x] Corregir rango de lectura de A:BZ a A:EZ para cubrir las 153 columnas
+- [x] Verificar en producción: simulación simple (RF2025-UGFAZS) y compleja (RF2025-YV7ZMM) — 153 cols OK
+- [x] Webhook Stripe: actualizar payment_status → paid, payment_confirmed_at y resultado_final en Sheet al confirmar pago
+- [x] Añadir estado_civil al formulario del simulador y al _sheetRow
+- [x] Crear vista filtrada con formato condicional en Sheet (rojo si es_derivacion=Si y asesor_asignado vacío)
